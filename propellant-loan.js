@@ -11,6 +11,9 @@ numberInstallments = null,
 sureCalculated = null, 
 feeValue = null;
 
+const inputValue = document.getElementById('input-value');
+const btnCalculate = document.getElementById('btn-calculate');
+
 init();
 
 function init() {
@@ -121,3 +124,7 @@ function maskValue(value) {
     if(!value) return '';
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
+
+inputValue.onkeyup = handleKeyUpThousandSeparators;
+inputValue.onkeypress = onlyNumberKey;
+btnCalculate.onclick = handleClickCalculate;
