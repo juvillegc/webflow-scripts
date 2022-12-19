@@ -17,6 +17,22 @@ export function onlyNumberKey(event) {
     return true;
 }
 
+export function limitCharacters(event, limit) {
+    if (event.target.value.length < limit)
+        return true;
+    return false;
+}
+
+export function validPhoneNumber(event) {
+    if(!onlyNumberKey(event)){
+        return false;
+    }
+    if(!limitCharacters(event, 10)){
+        return false;
+    }
+    return true;
+}
+
 export function cleanMask(value) {
     if(!value) return '';
     return value.replace(/\./gi, '');

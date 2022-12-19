@@ -1,8 +1,8 @@
-import {onlyNumberKey, handleKeyUpThousandSeparators} from './shared/utils.js';
+import {onlyNumberKey, handleKeyUpThousandSeparators, validPhoneNumber} from './shared/utils.js';
 import {inputEvent} from './shared/date-format.js';
 
 const inputDocumentNumber = document.getElementById('input-phone-number');
-inputDocumentNumber.onkeypress = onlyNumberKey;
+inputDocumentNumber.onkeypress = validPhoneNumber;
 
 const customPrice = document.querySelectorAll('.custom-price');
 customPrice.forEach((input) => {
