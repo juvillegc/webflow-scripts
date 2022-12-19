@@ -24,12 +24,8 @@ export function limitCharacters(event, limit) {
 }
 
 export function validPhoneNumber(event) {
-    if(!onlyNumberKey(event)){
-        return false;
-    }
-    if(!limitCharacters(event, 10)){
-        return false;
-    }
+    if (!onlyNumberKey(event)) return false;
+    if (!limitCharacters(event, 10)) return false;
     return true;
 }
 
