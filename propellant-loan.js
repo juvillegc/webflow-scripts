@@ -1,7 +1,7 @@
 import {convertToDecimal, convertToPercentage, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators} from './shared/utils.js'
 
 const interestRateEA = 37.51; // Valor dado en %
-const commissionFGA = 7.5; // Valor dado en %
+const commissionFGA = 10; // Valor dado en %
 const sure = 1450; // Valor dado en pesos ($) x cada millón
 const iva = 19; // Valor dado en %
 const initValue = 1000000; // Valor prestamo inicial (Para que cargue una simulacion por defecto)
