@@ -44,3 +44,24 @@ export function handleKeyUpThousandSeparators(event) {
     var commaSeparatedNumber = tempNumber.split(/(?=(?:\d{3})+$)/).join('.');
     event.target.value = commaSeparatedNumber;
 }
+
+export function validateEmail(event) {
+    const target = event.target;
+    const validateEmail = String(target.value)
+        .toLowerCase()
+        .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+
+    const idElementError = `error-message-${target.id}`;
+    const elementError = document.getElementById(idElementError);
+
+    if (validateEmail) {
+        target.classList.remove('input-class__error');
+        elementError.remove();
+    } else if (!elementError) {
+        target.classList.add('input-class__error');
+        const paragraphHtml = `<p id="${idElementError}" class="input-message__error">Ingrese un correo válido</p>`;
+        target.insertAdjacentHTML('afterend', paragraphHtml);
+    }
+}

@@ -1,4 +1,4 @@
-import {onlyNumberKey, handleKeyUpThousandSeparators, validPhoneNumber} from './shared/utils.js';
+import {onlyNumberKey, handleKeyUpThousandSeparators, validPhoneNumber, validateEmail} from './shared/utils.js';
 import {inputEvent} from './shared/date-format.js';
 
 const inputDocumentNumber = document.getElementById('numero_celular');
@@ -12,3 +12,6 @@ customPrice.forEach((input) => {
 
 const inputDateTakeMoney = document.getElementById('fecha_recarga');
 inputDateTakeMoney.oninput = inputEvent;
+
+const inputDocumentMail = document.getElementById('email-2');
+inputDocumentMail.oninput = validateEmail;
