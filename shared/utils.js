@@ -58,7 +58,9 @@ export function validateEmail(event) {
 
     if (validateEmail) {
         target.classList.remove('input-class__error');
-        elementError.remove();
+        if(elementError) {
+            elementError.remove();
+        }
     } else if (!elementError) {
         target.classList.add('input-class__error');
         const paragraphHtml = `<p id="${idElementError}" class="input-message__error">Ingrese un correo válido</p>`;
