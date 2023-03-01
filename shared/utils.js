@@ -67,3 +67,9 @@ export function validateEmail(event) {
         target.insertAdjacentHTML('afterend', paragraphHtml);
     }
 }
+
+export function validDocumentNumber(event) {
+    if (!onlyNumberKey(event)) return false;
+    if (!limitCharacters(event, 15)) return false;
+    return true;
+}
