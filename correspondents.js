@@ -1,4 +1,4 @@
-import {onlyNumberKey, handleKeyUpThousandSeparators, validPhoneNumber, validateEmail} from './shared/utils.js';
+import {onlyNumberKey, handleKeyUpThousandSeparators, validPhoneNumber, validateEmail, validDocumentNumber} from './shared/utils.js';
 import {inputEvent} from './shared/date-format.js';
 
 const inputPhoneNumber = document.getElementById('numero_celular');
