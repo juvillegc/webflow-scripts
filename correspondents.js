@@ -17,4 +17,4 @@ const inputDocumentMail = document.getElementById('email-2');
 inputDocumentMail.oninput = validateEmail;
 
 const inputDocumentNumber = document.getElementById('numero_documento');
-inputDocumentNumber.onkeypress = validPhoneNumber;
+inputDocumentNumber.onkeypress = validDocumentNumber;
