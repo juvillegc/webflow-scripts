@@ -7,7 +7,11 @@ export function convertToPercentage(value) {
 }
 
 export function roundDecimals(value) {
-    return Math.ceil(value * 100) / 100;
+    return Math.round(value * 100) / 100;
+}
+
+export function round(value) {
+    return Math.round(value);
 }
 
 export function onlyNumberKey(event) {

@@ -1,4 +1,4 @@
-import {convertToDecimal, convertToPercentage, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators} from './shared/utils.js'
+import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators} from './shared/utils.js'
 
 const interestRateEA = 37.51; // Valor dado en %
 const commissionFGA = 10; // Valor dado en %
@@ -12,7 +12,13 @@ let loanValue = null,
 loanValueCommission = null, 
 numberInstallments = null, 
 sureCalculated = null, 
-feeValue = null;
+feeValue = null,
+vtua = {
+    total: null,
+    sure: null,
+    capital: null,
+    interest: null
+};
 
 const inputValue = document.getElementById('input-value');
 const btnCalculate = document.getElementById('btn-calculate');
@@ -21,13 +27,12 @@ init();
 
 function init() {
     if(!initValue) return;
-    document.getElementById('input-value').value = maskValue(initValue);
+    inputValue.value = maskValue(initValue);
     calculate();
     printInfo();
 }
 
 function handleClickCalculate() {
-    const inputValue = document.getElementById('input-value');
     inputValue.classList.remove('error-input');
     if(!inputValue.value){
         inputValue.classList.add('error-input');
@@ -38,7 +43,7 @@ function handleClickCalculate() {
 }
 
 function calculate() {
-    loanValue = cleanMask(document.getElementById('input-value').value);
+    loanValue = cleanMask(inputValue.value);
     numberInstallments = document.getElementById('months').value;
 
     if(!loanValue || !numberInstallments) return;
@@ -46,15 +51,25 @@ function calculate() {
     loanValueCommission = calculateLoanValueCommission();
     sureCalculated = calculateSure();
     feeValue = calculateFeeValue();
+    calculateVtua();
 }
 
 function printInfo() {
     document.getElementById('loan-value').innerHTML = `$ ${maskValue(loanValue)}`;
     document.getElementById('loan-value-commission').innerHTML = `$ ${maskValue(loanValueCommission)}`;
-    document.getElementById('fee-value').innerHTML = `$ ${maskValue(feeValue)}`;
+    document.getElementById('fee-value').innerHTML = `$ ${maskValue(round(feeValue))}`;
     document.getElementById('interest').innerHTML = `${interestRateMV} % E.M (${interestRateEA}% E.A)`;
     document.getElementById('number-installments').innerHTML = `${numberInstallments} meses`;
     document.getElementById('sure').innerHTML = `$ ${maskValue(sureCalculated)}`;
+    printInfoVtua();
+}
+
+function printInfoVtua() {
+    if(!document.getElementById('vtua')) return;
+    document.getElementById('vtua').innerHTML = `$ ${maskValue(vtua.total)}`;
+    document.getElementById('vtua-sure').innerHTML = `$ ${maskValue(vtua.sure)}`;
+    document.getElementById('vtua-capital').innerHTML = `$ ${maskValue(vtua.capital)}`;
+    document.getElementById('vtua-interest').innerHTML = `$ ${maskValue(vtua.interest)}`;
 }
 
 /* --------- Loan Calculations ------------ */
@@ -72,7 +87,14 @@ function calculateFeeValue() {
     const interestRateMVDecimal = convertToDecimal(interestRateMV);
     const feeValueWithoutSure = (loanValueCommission / ((1 - (1 + interestRateMVDecimal) ** (numberInstallments * -1) ) / interestRateMVDecimal));
     const feeValueWithSure = feeValueWithoutSure + sureCalculated;
-    return Math.round(feeValueWithSure);
+    return roundDecimals(feeValueWithSure);
+}
+
+function calculateVtua() {
+    vtua.total = round(feeValue * numberInstallments);
+    vtua.sure = sureCalculated * numberInstallments;
+    vtua.capital = loanValueCommission;
+    vtua.interest = vtua.total - (vtua.sure + vtua.capital);
 }
 
 /* --------- Initial Calculations ------------ */
