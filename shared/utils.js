@@ -77,3 +77,16 @@ export function validDocumentNumber(event) {
     if (!limitCharacters(event, 15)) return false;
     return true;
 }
+
+export const removeAllOptions = (select) => {
+    while (select.options.length > 0) {
+        select.remove(0);
+    }
+}
+
+export const addFirstOption = (label, select) => {
+    const option = document.createElement('option');
+    option.value = null;
+    option.innerHTML = label;
+    select.appendChild(option);
+}
