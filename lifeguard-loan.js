@@ -1,6 +1,6 @@
 import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators} from './shared/utils.js'
 
-const interestRateEA = 25.00; // Valor dado en %
+const interestRateEA = 28.07; // Valor dado en %
 const sure = 1450; // Valor dado en pesos ($) x cada millón
 const initValue = 500000; // Valor prestamo inicial (Para que cargue una simulacion por defecto)
 
