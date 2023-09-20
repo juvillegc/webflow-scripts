@@ -1,5 +1,5 @@
 import { maskValue, round } from "./shared/utils.js";
-import { calculateType, clearInnerHTMLToZero, clearValueToZero } from "./calculate/calculator.js";
+import { calculateType, clearInnerHTMLToZero, clearValueToZero } from "./calculate/calculator-bussines.js";
 
 let typeAction = ''
 let clear = ''
