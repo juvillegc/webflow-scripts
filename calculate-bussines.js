@@ -1,14 +1,10 @@
-import { maskValue, round } from "./shared/utils.js";
+import { cleanMask, handleKeyUpThousandSeparators, maskValue, round } from "./shared/utils.js";
 import { calculateType, clearInnerHTMLToZero, clearValueToZero } from "./calculate/calculator-bussines.js";
 
 let typeAction = ''
 let clear = ''
 
 document.addEventListener('click', function(e) {
-
-  // buttons
-  const button = document.querySelectorAll('input.calculator-button--calculate');
-  const clearBtn = document.querySelectorAll('input.calculator-button--clear');
 
   // Inputs
   const transactions_per_month = document.querySelectorAll('input.transactions_per_month');
@@ -20,10 +16,13 @@ document.addEventListener('click', function(e) {
   const data_iva_calculate = document.querySelectorAll('div.data-iva-calculate');
   const calculator_total_account = document.querySelectorAll('div.calculator_total_account');
 
+  validateOnKeyUp(transactions_per_month, average_transaction);
+  
   const elemento = e.target;
   typeAction = elemento.getAttribute('data-action');
   clear = elemento.getAttribute('data-clear');
   if (clear && clear !== '') {
+    e.preventDefault();
     const divTotalSalesMonth = getOutPuts(clear, total_sales_month);
     const divMonthlyCommission = getOutPuts(clear, monthly_commission);
     const divCalculatorTotalAccount = getOutPuts(clear, calculator_total_account);
@@ -33,10 +32,11 @@ document.addEventListener('click', function(e) {
     clearValueToZero([dataTransactionMonth, dataAverageTransaction]);
   }
   if (typeAction) {
-    const dataTransactionMonth = getInputs(transactions_per_month, typeAction);
-    const dataAverageTransaction = getInputs(average_transaction, typeAction);
+    e.preventDefault();
+    const dataTransactionMonth = cleanMask(getInputs(transactions_per_month, typeAction));
+    const dataAverageTransaction = cleanMask(getInputs(average_transaction, typeAction));
     if (dataTransactionMonth && dataAverageTransaction) {
-      const response = calculateType(typeAction, dataTransactionMonth, dataAverageTransaction);
+      const response = calculateType(typeAction, Number(dataTransactionMonth), Number(dataAverageTransaction));
       if (response) {
         const divTotalSalesMonth = getOutPuts(typeAction, total_sales_month);
         const divMonthlyCommission = getOutPuts(typeAction, monthly_commission);
@@ -49,20 +49,47 @@ document.addEventListener('click', function(e) {
   }
 });
 
+const validateOnKeyUp = (transactions_per_month, average_transaction) => {
+  if (transactions_per_month && transactions_per_month.length > 0) {
+    transactions_per_month.forEach(ele => {
+      ele.onkeyup = handleKeyUpThousandSeparators
+    })
+  }
+  if (average_transaction && average_transaction.length > 0) {
+    average_transaction.forEach(ele => {
+      ele.onkeyup = handleKeyUpThousandSeparators
+    })
+  }
+}
+
+/**
+ * 
+ * @param {*} array from <input />
+ * @param {*} typeAction
+ * @returns values from <input />
+ */
+
 const getInputs = (array, typeAction) => {
 
   if (array.length === 0) return 0;
-  if (array.length === 1) return array[0].valueAsNumber;
+  if (array.length === 1) return array[0].value;
 
   let value = 0
 
   array.forEach(element => {
     if (element && element.dataset && element.dataset.type === typeAction) {
-      value = element.valueAsNumber
+      value = element.value
     }
   });
   return value
 }
+
+/**
+ * 
+ * @param {*} typeAction 
+ * @param {*} array from HTMLDivElement[]
+ * @returns HTMLDivElement()
+ */
 
 const getOutPuts = (typeAction = '', array = []) => {
   if (array.length === 0) return new HTMLDivElement();
