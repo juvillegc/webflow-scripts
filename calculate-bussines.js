@@ -26,8 +26,9 @@ document.addEventListener('click', function(e) {
     const divTotalSalesMonth = getOutPuts(clear, total_sales_month);
     const divMonthlyCommission = getOutPuts(clear, monthly_commission);
     const divCalculatorTotalAccount = getOutPuts(clear, calculator_total_account);
-    const dataTransactionMonth = getOutPuts(clear, transactions_per_month)
-    const dataAverageTransaction = getOutPuts(clear, average_transaction)
+    const dataTransactionMonth = getOutPuts(clear, transactions_per_month);
+    const dataAverageTransaction = getOutPuts(clear, average_transaction);
+    const divIvaCalculate = getOutPuts(clear, data_iva_calculate);
     clearInnerHTMLToZero([divTotalSalesMonth, divMonthlyCommission, divCalculatorTotalAccount]);
     clearValueToZero([dataTransactionMonth, dataAverageTransaction]);
   }
@@ -41,9 +42,11 @@ document.addEventListener('click', function(e) {
         const divTotalSalesMonth = getOutPuts(typeAction, total_sales_month);
         const divMonthlyCommission = getOutPuts(typeAction, monthly_commission);
         const divCalculatorTotalAccount = getOutPuts(typeAction, calculator_total_account);
-        divTotalSalesMonth.innerHTML = `$ ${maskValue(response.cal_total_sales_month)}`
-        divMonthlyCommission.innerHTML = `$ ${maskValue(response.cal_monthly_commission)}`
-        divCalculatorTotalAccount.innerHTML = `$ ${maskValue(round(response.cal_total_account))}`
+        const dataIvaCalculate = getOutPuts(typeAction, data_iva_calculate);
+        divTotalSalesMonth.innerHTML = `$${maskValue(response.cal_total_sales_month)}`
+        divMonthlyCommission.innerHTML = `$${maskValue(response.cal_monthly_commission)}`
+        divCalculatorTotalAccount.innerHTML = `$${maskValue(round(response.cal_total_account))}`
+        dataIvaCalculate.innerHTML = `$${maskValue(round(response.cal_iva_calculate))}`
       }
     }
   }
