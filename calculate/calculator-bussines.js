@@ -52,29 +52,35 @@ export function clearInnerHTMLToZero(arrayHTML = []) {
 
 
 const calculateSuperQR = (cal_total_sales_month) => {
-  let cal_monthly_commission = cal_total_sales_month * convertToDecimal(MONTHLY_COMMISSION);
-  let cal_total_account = cal_total_sales_month - cal_monthly_commission - (cal_monthly_commission * convertToDecimal(IVA));
+  const cal_monthly_commission = cal_total_sales_month * convertToDecimal(MONTHLY_COMMISSION);
+  const cal_total_account = cal_total_sales_month - cal_monthly_commission - (cal_monthly_commission * convertToDecimal(IVA));
+  const cal_iva_calculate = cal_monthly_commission * convertToDecimal(IVA);
   return {
     cal_monthly_commission,
-    cal_total_account
+    cal_total_account,
+    cal_iva_calculate
   }
 }
 
 const calculateCodesForSilver = (cal_total_sales_month, transaction_per_month) => {
-  let cal_monthly_commission = transaction_per_month * CODE_FOR_SILVER;
-  let cal_total_account = cal_total_sales_month - cal_monthly_commission - (cal_monthly_commission * convertToDecimal(IVA));
+  const cal_monthly_commission = transaction_per_month * CODE_FOR_SILVER;
+  const cal_total_account = cal_total_sales_month - cal_monthly_commission - (cal_monthly_commission * convertToDecimal(IVA));
+  const cal_iva_calculate = cal_monthly_commission * convertToDecimal(IVA);
   return {
     cal_monthly_commission,
-    cal_total_account
+    cal_total_account,
+    cal_iva_calculate
   }
 }
 
 const calculateDispersions = (cal_total_sales_month, transaction_per_month) => {
-  let cal_monthly_commission = transaction_per_month * DISPERSIONS;
-  let cal_total_account = cal_total_sales_month - cal_monthly_commission - (cal_monthly_commission * convertToDecimal(IVA));
+  const cal_monthly_commission = transaction_per_month * DISPERSIONS;
+  const cal_total_account = cal_total_sales_month - cal_monthly_commission - (cal_monthly_commission * convertToDecimal(IVA));
+  const cal_iva_calculate = cal_monthly_commission * convertToDecimal(IVA);
   return {
     cal_monthly_commission,
-    cal_total_account
+    cal_total_account,
+    cal_iva_calculate
   }
 }
 
@@ -86,10 +92,12 @@ const calculateChargeNequi = (cal_total_sales_month, transaction_per_month, tran
   } else {
     cal_monthly_commission = transaction_per_month * CHARGE_TRANSACTION;
   }
-  let cal_total_account = cal_total_sales_month - cal_monthly_commission - (cal_monthly_commission * convertToDecimal(IVA));
+  const cal_total_account = cal_total_sales_month - cal_monthly_commission - (cal_monthly_commission * convertToDecimal(IVA));
+  const cal_iva_calculate = cal_monthly_commission * convertToDecimal(IVA);
   return {
     cal_monthly_commission,
-    cal_total_account
+    cal_total_account,
+    cal_iva_calculate
   }
 }
 
