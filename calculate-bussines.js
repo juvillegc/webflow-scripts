@@ -1,4 +1,4 @@
-import { cleanMask, handleKeyUpThousandSeparators, maskValue, round } from "./shared/utils.js";
+import { cleanMask, handleKeyUpThousandSeparators, maskValue, onlyNumberKey, round } from "./shared/utils.js";
 import { calculateType, clearInnerHTMLToZero, clearValueToZero } from "./calculate/calculator-bussines.js";
 
 let typeAction = ''
@@ -55,11 +55,13 @@ document.addEventListener('click', function(e) {
 const validateOnKeyUp = (transactions_per_month, average_transaction) => {
   if (transactions_per_month && transactions_per_month.length > 0) {
     transactions_per_month.forEach(ele => {
+      ele.onkeypress = onlyNumberKey
       ele.onkeyup = handleKeyUpThousandSeparators
     })
   }
   if (average_transaction && average_transaction.length > 0) {
     average_transaction.forEach(ele => {
+      ele.onkeypress = onlyNumberKey
       ele.onkeyup = handleKeyUpThousandSeparators
     })
   }
