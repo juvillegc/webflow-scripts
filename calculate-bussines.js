@@ -29,7 +29,7 @@ document.addEventListener('click', function(e) {
     const dataTransactionMonth = getOutPuts(clear, transactions_per_month);
     const dataAverageTransaction = getOutPuts(clear, average_transaction);
     const divIvaCalculate = getOutPuts(clear, data_iva_calculate);
-    clearInnerHTMLToZero([divTotalSalesMonth, divMonthlyCommission, divCalculatorTotalAccount]);
+    clearInnerHTMLToZero([divTotalSalesMonth, divMonthlyCommission, divCalculatorTotalAccount, divIvaCalculate]);
     clearValueToZero([dataTransactionMonth, dataAverageTransaction]);
   }
   if (typeAction) {
