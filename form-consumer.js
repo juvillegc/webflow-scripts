@@ -1,5 +1,5 @@
 
-import { validPhoneNumber, validateEmail, validDocumentNumber, handleKeyUpThousandSeparators } from './shared/utils.js';
+import { validPhoneNumber, validateEmail, validDocumentNumber, handleKeyUpThousandSeparators, onlyNumberKey} from './shared/utils.js';
 import { inputEvent } from './shared/date-format.js';
 
 
