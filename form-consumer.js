@@ -3,15 +3,17 @@ import { validPhoneNumber, validateEmail, validDocumentNumber } from './shared/u
 import { inputEvent } from './shared/date-format.js';
 
 
-const inputPhoneNumber = document.getElementById('numero_celular');
 const inputDocumentMail = document.getElementById('correo_electronico');
 const inputDocumentNumber = document.getElementById('numero_documento');
 const inputDateTakeMoney = document.getElementById('fecha_recarga');
+const inputPhoneNumber = document.querySelectorAll('.numero_cedula_gamer');
 
 
 const validateInputs = () => {
     
-    inputPhoneNumber.onkeypress = validPhoneNumber;
+   inputPhoneNumber.forEach((input) => {
+        input.onkeypress = validPhoneNumber;
+    });
     
     inputDocumentMail.oninput = validateEmail;
 
