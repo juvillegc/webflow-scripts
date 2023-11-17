@@ -3,7 +3,7 @@ import { validPhoneNumber, validateEmail, validDocumentNumber } from './shared/u
 
 const inputPhoneNumber = document.getElementById('numero_celular');
 const inputDocumentMail = document.getElementById('correo_electronico');
-const inputDocumentNumber = document.getElementById('numero_documento');
+const inputDocumentNumber = document.getElementById('numero_documento_loan');
 
 
 const validateInputs = () => {
