@@ -1,6 +1,6 @@
 import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators} from './shared/utils.js'
 
-const interestRateEA = 37.51; // Valor dado en %
+const interestRateEA = 37.00; // Valor dado en %
 const commissionFGA = 10; // Valor dado en %
 const sure = 1450; // Valor dado en pesos ($) x cada millón
 const iva = 19; // Valor dado en %
