@@ -8,7 +8,7 @@ const inputDateTakeMoney = document.getElementById('fecha_recarga');
 const selDepartments = document.querySelector('#departamentos');
 const selCities = document.querySelector('#ciudades');
 const inputDocumentMail = document.getElementById('email-2');
-const inputDocumentNumber = document.querySelector('.numero_documento');
+const inputDocumentNumber = document.querySelectorAll('.numero_documento');
 
 const validateInputs = () => {
     
@@ -24,6 +24,10 @@ const validateInputs = () => {
     inputDocumentMail.oninput = validateEmail;
     
     inputDocumentNumber.onkeypress = validDocumentNumber;
+
+      inputDocumentNumber.forEach((input) => {
+        input.onkeypress = onlyNumberKey;
+    });
 }
 
 
