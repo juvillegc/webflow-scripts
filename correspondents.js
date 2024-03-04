@@ -8,7 +8,7 @@ const inputDateTakeMoney = document.getElementById('fecha_recarga');
 const selDepartments = document.querySelector('#departamentos');
 const selCities = document.querySelector('#ciudades');
 const inputDocumentMail = document.getElementById('email-2');
-const inputDocumentNumber = document.getElementById('numero_documento');
+const inputDocumentNumber = document.getElementByAll('.numero_documento');
 
 const validateInputs = () => {
     
