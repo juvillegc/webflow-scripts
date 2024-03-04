@@ -9,7 +9,7 @@ const selDepartments = document.querySelector('#departamentos');
 const selCities = document.querySelector('#ciudades');
 const inputDocumentMail = document.getElementById('email-2');
 const inputDocumentNumber = document.getElementById('numero_documento');
-const inputDocumentNumber = document.getElementById('numero_tirilla');
+const inputDocumentNumber = document.getElementById('numero_terminal');
 
 const validateInputs = () => {
     
