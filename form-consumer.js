@@ -6,9 +6,9 @@ import { getDepartments, getCities } from './services/location.service.js';
 
 const inputDocumentMail = document.getElementById('correo_electronico');
 const inputDocumentNumber = document.getElementById('numero_documento');
-const inputDateTakeMoney = document.getElementById('fecha_recarga');
 const selDepartments = document.querySelector('#departamentos');
 const selCities = document.querySelector('#ciudades');
+const inputDateTakeMoney = document.getElementById('fecha_recarga');
 const inputPhoneNumber = document.querySelectorAll('.numero_cedula_gamer');
 const customPrice = document.querySelectorAll('.custom-price');
 
@@ -56,9 +56,5 @@ const main = async () => {
     selDepartments.addEventListener('change', handleChangeDepartment);
 }
 
-
-const main = async () => {
-    validateInputs();
-}
 
 main();
