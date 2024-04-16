@@ -12,19 +12,8 @@ const inputPhoneNumber = document.getElementById('numero_celular');
 
 const validateInputs = () => {
 
-    
-   inputPhoneNumber.forEach((input) => {
-        input.onkeypress = validPhoneNumber;
-    });
+    inputPhoneNumber.onkeypress = validPhoneNumber;
 
-     customPrice.forEach((input) => {
-        input.onkeyup = handleKeyUpThousandSeparators;
-        input.onkeypress = onlyNumberKey;
-    });
-    
-
-    inputDateTakeMoney.oninput = inputEvent;
-    
 }
 
 const loadDepartments = async () => {
