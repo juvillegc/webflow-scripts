@@ -3,8 +3,8 @@ import { validPhoneNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeA
 import { getDepartments, getCities } from './services/location.service.js';
 
 
-const selDepartments = document.querySelectorAll('.departamentos'); 
-const selCities = document.querySelectorAll('.ciudades');
+const selDepartments = document.getElementsByClassName('.departamentos'); 
+const selCities = document.getElementsByClassName('.ciudades');
 const inputPhoneNumber = document.querySelectorAll('.numero_celular');
 
 
