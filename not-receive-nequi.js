@@ -18,27 +18,31 @@ const validateInputs = () => {
 }
 
 const loadDepartments = async () => {
-    const { deparments } = await getDepartments();
+    const { departments } = await getDepartments();
     addFirstOption('Seleccione el departamento', selDepartments);
-    deparments.forEach(department => {
-        const option = document.createElement('option');
-        option.value = department.id;
-        option.setAttribute('key', department.key);
-        option.innerHTML = department.label;
-        selDepartments.appendChild(option);
-    });
+    for (const selDepartment of selDepartments) {
+        departments.forEach(department => {
+            const option = document.createElement('option');
+            option.value = department.id;
+            option.setAttribute('key', department.key);
+            option.innerHTML = department.label;
+            selDepartment.appendChild(option);
+        });
+    }
 }
 
 const loadCities = async (keyDepartment) => {
     removeAllOptions(selCities);
     addFirstOption('Seleccione la ciudad', selCities);
     const cities = await getCities(keyDepartment);
-    cities.forEach(city => {
-        const option = document.createElement('option');
-        option.value = city.id;
-        option.innerHTML = city.label;
-        selCities.appendChild(option);
-    });
+    for (const selCity of selCities) {
+        cities.forEach(city => {
+            const option = document.createElement('option');
+            option.value = city.id;
+            option.innerHTML = city.label;
+            selCity.appendChild(option);
+        });
+    }
 }
 
 const handleChangeDepartment = async () => {
