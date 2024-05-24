@@ -1,6 +1,5 @@
 
 import { validPhoneNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeAllOptions, addFirstOption } from './shared/utils.js';
-import { inputEvent } from './shared/date-format.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
 
