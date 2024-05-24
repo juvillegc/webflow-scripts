@@ -3,7 +3,7 @@ import { getDepartments, getCities } from './services/location.service.js';
 
 
 const selDepartments = document.querySelector('.departamentos');
-const selCities = document.querySelector('.ciudades');
+const selCities = document.querySelectorAll('.ciudades');
 const inputPhoneNumber = document.querySelectorAll('.numero_celular');
 
 
