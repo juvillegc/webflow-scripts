@@ -10,9 +10,11 @@ const inputPhoneNumber = document.querySelectorAll('.numero_celular');
 
 
 const validateInputs = () => {
-
-    inputPhoneNumber.onkeypress = validPhoneNumber;
-
+    
+     inputPhoneNumber.forEach((input) => {
+        input.onkeypress = validPhoneNumber;
+    });
+    
 }
 
 const loadDepartments = async () => {
