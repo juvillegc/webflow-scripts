@@ -1,15 +1,21 @@
-import { validPhoneNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeAllOptions, addFirstOption } from './shared/utils.js';
+import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeAllOptions, addFirstOption } from './shared/utils.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
 
 const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
 const inputPhoneNumber = document.querySelectorAll('.numero_celular');
+const inputDocumentNumber = document.querySelectorAll('.numero_documento');
 
 const validateInputs = () => {
     inputPhoneNumber.forEach((input) => {
         input.onkeypress = validPhoneNumber;
     });
+
+    inputDocumentNumber.forEach((input) => {
+        input.onkeypress = validDocumentNumber;
+    });
+
 }
 
 const loadDepartments = async () => {
