@@ -18,14 +18,16 @@ const validateInputs = () => {
 }
 
 const loadDepartments = async () => {
-    const { deparments } = await getDepartments();
-    addFirstOption('Seleccione el departamento', selDepartments);
-    deparments.forEach(department => {
-        const option = document.createElement('option');
-        option.value = department.id;
-        option.setAttribute('key', department.key);
-        option.innerHTML = department.label;
-        selDepartments.appendChild(option);
+    selDepartments.forEach((selDepartment) => {
+        const { departments } = await getDepartments();
+        addFirstOption('Seleccione el departamento', selDepartment);
+        departments.forEach(department => {
+            const option = document.createElement('option');
+            option.value = department.id;
+            option.setAttribute('key', department.key);
+            option.innerHTML = department.label;
+            selDepartment.appendChild(option);
+        });
     });
 }
 
