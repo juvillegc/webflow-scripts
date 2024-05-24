@@ -2,8 +2,8 @@ import { validPhoneNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeA
 import { getDepartments, getCities } from './services/location.service.js';
 
 
-const selDepartments = document.querySelector('.departamentos');
-const selCities = document.querySelectorAll('.ciudades');
+const selDepartments = document.querySelector('departamentos');
+const selCities = document.querySelector('ciudades');
 const inputPhoneNumber = document.querySelectorAll('.numero_celular');
 
 
