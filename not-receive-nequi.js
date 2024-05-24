@@ -4,9 +4,9 @@ import { inputEvent } from './shared/date-format.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
 
-const selDepartments = document.querySelector('#departamentos');
-const selCities = document.querySelector('#ciudades');
-const inputPhoneNumber = document.getElementById('numero_celular');
+const selDepartments = document.querySelectorAll('.departamentos'); 
+const selCities = document.querySelectorAll('.ciudades');
+const inputPhoneNumber = document.querySelectorAll('.numero_celular');
 
 
 
