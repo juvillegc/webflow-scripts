@@ -20,7 +20,7 @@ const loadDepartments = async () => {
     const { departments } = await getDepartments();
     
     selDepartments.forEach(selectElement => {
-        addFirstOption('Seleccione el departamento', selectElement);
+        addFirstOption('Seleccione el departamento', selDepartments);
         departments.forEach(department => {
             const option = document.createElement('option');
             option.value = department.id;
