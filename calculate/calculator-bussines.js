@@ -3,10 +3,10 @@ import { convertToDecimal } from '../shared/utils.js';
 
 const MONTHLY_COMMISSION = 1;
 const IVA = 19;
-const CODE_FOR_SILVER = 990;
-const DISPERSIONS = 1000;
+const CODE_FOR_SILVER = 1082;
+const DISPERSIONS = 1082;
 const PER_COMISSION_TRANSACTION = 1.5;
-const CHARGE_TRANSACTION = 2900;
+const CHARGE_TRANSACTION = 3169;
 
 export function calculateType(typeCalculate = '', transaction_per_month, transaction_avarage) {
   const cal_total_sales_month = transaction_per_month * transaction_avarage
@@ -87,7 +87,7 @@ const calculateDispersions = (cal_total_sales_month, transaction_per_month) => {
 const calculateChargeNequi = (cal_total_sales_month, transaction_per_month, transaction_avarage) => {
   let cal_monthly_commission = 0;
   let commission_transaction = transaction_avarage * convertToDecimal(PER_COMISSION_TRANSACTION);
-  if (commission_transaction < 2900) {
+  if (commission_transaction < 3169) {
     cal_monthly_commission = cal_total_sales_month * convertToDecimal(PER_COMISSION_TRANSACTION);
   } else {
     cal_monthly_commission = transaction_per_month * CHARGE_TRANSACTION;
@@ -100,5 +100,3 @@ const calculateChargeNequi = (cal_total_sales_month, transaction_per_month, tran
     cal_iva_calculate
   }
 }
-
-
