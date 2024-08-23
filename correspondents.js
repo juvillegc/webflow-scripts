@@ -21,7 +21,7 @@ const validateInputs = () => {
     
     inputDateTakeMoney.oninput = inputEvent;
     
-    inputDocumentMail.oninput = validateEmail;
+
     
     inputDocumentNumber.onkeypress = validDocumentNumber;
 
