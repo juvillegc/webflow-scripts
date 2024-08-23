@@ -17,7 +17,6 @@ const validateInputs = () => {
     customPrice.forEach((input) => {
         input.onkeyup = handleKeyUpThousandSeparators;
         input.onkeypress = onlyNumberKey;
-        input.required = true;
     });
     
     inputDateTakeMoney.oninput = inputEvent;
@@ -36,7 +35,6 @@ const validateInputs = () => {
 const loadDepartments = async () => {
     const { deparments } = await getDepartments();
     addFirstOption('Seleccione el departamento', selDepartments);
-    selDepartments.required = true; // Hace que el campo sea requerido
     deparments.forEach(department => {
         const option = document.createElement('option');
         option.value = department.id;
@@ -49,8 +47,6 @@ const loadDepartments = async () => {
 const loadCities = async (keyDepartment) => {
     removeAllOptions(selCities);
     addFirstOption('Seleccione la ciudad', selCities);
-    selCities.required = true; // Hace que el campo sea requerido
-    
     const cities = await getCities(keyDepartment);
     cities.forEach(city => {
         const option = document.createElement('option');
