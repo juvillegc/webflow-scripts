@@ -17,6 +17,7 @@ const validateInputs = () => {
     customPrice.forEach((input) => {
         input.onkeyup = handleKeyUpThousandSeparators;
         input.onkeypress = onlyNumberKey;
+        input.required = true;
     });
     
     inputDateTakeMoney.oninput = inputEvent;
