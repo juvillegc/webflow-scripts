@@ -20,7 +20,7 @@ const validateInputs = () => {
     });
     
     inputDateTakeMoney.oninput = inputEvent;
-    
+
     inputDocumentMail.oninput = validateEmail;
     
     inputDocumentNumber.onkeypress = validDocumentNumber;
@@ -29,8 +29,6 @@ const validateInputs = () => {
         input.onkeypress = onlyNumberKey;
     });
 }
-
-
 
 const loadDepartments = async () => {
     const { deparments } = await getDepartments();
