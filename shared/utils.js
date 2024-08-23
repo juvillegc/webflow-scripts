@@ -88,6 +88,7 @@ export const addFirstOption = (label, select) => {
     const option = document.createElement('option');
     option.value = "";
     option.disabled = true;
+    option.selected = true;
     option.innerHTML = label;
     select.appendChild(option);
 }
