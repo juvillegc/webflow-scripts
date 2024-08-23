@@ -86,7 +86,7 @@ export const removeAllOptions = (select) => {
 
 export const addFirstOption = (label, select) => {
     const option = document.createElement('option');
-    option.value = null;
+    option.value = "";
     option.innerHTML = label;
     select.appendChild(option);
 }
