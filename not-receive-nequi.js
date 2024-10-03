@@ -23,6 +23,8 @@ const loadDepartments = async () => {
 
     selDepartments.forEach((selDepartment) => {
         addFirstOption('Seleccione el departamento', selDepartment);
+
+        selDepartment.setAttribute('required', 'true');
         deparments.forEach(department => {
             const option = document.createElement('option');
             option.value = department.id;
