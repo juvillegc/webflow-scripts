@@ -30,7 +30,7 @@ export function limitCharacters(event, limit) {
 export function validPhoneNumber(event) {
     if (!onlyNumberKey(event)) return false;
     if (!limitCharacters(event, 10)) return false;
-      event.target.value = event.target.value.replace(/\s/g, "");
+      
     setTimeout(() => {
         event.target.value = event.target.value.replace(/\s/g, "");
     }, 0);
