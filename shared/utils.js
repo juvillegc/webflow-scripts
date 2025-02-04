@@ -30,7 +30,7 @@ export function limitCharacters(event, limit) {
 export function validPhoneNumber(event) {
      if (event.type === "paste") {
         event.preventDefault();
-        alert("No puedes pegar texto, solo escribir.");
+        alert("Ups! Aquí toca digitarlo, no se puede pegar.");
         return false;
     }
     if (!onlyNumberKey(event)) return false;
