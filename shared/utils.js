@@ -28,6 +28,11 @@ export function limitCharacters(event, limit) {
 }
 
 export function validPhoneNumber(event) {
+     if (event.type === "paste") {
+        event.preventDefault();
+        alert("No puedes pegar texto, solo escribir.");
+        return false;
+    }
     if (!onlyNumberKey(event)) return false;
     if (!limitCharacters(event, 10)) return false;
       event.target.value = event.target.value.replace(/\s/g, "");
