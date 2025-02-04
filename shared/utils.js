@@ -31,9 +31,7 @@ export function validPhoneNumber(event) {
     if (!onlyNumberKey(event)) return false;
     if (!limitCharacters(event, 10)) return false;
       
-    setTimeout(() => {
-        event.target.value = event.target.value.replace(/\s/g, "");
-    }, 0);
+   event.target.value = event.target.value.replace(/\s/g, "");
     
     return true;
 }
