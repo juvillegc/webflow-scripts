@@ -22,30 +22,33 @@ document.addEventListener("DOMContentLoaded", validateInputs);
 
 const loadDepartments = async () => {
     const { deparments } = await getDepartments();
-    
-    addFirstOption('Seleccione el departamento', selDepartments);
-    selDepartments.setAttribute('required', 'true'); // ← Hacer obligatorio
 
-    deparments.forEach(department => {
-        const option = document.createElement('option');
-        option.value = department.id;
-        option.setAttribute('key', department.key);
-        option.innerHTML = department.label;
-        selDepartments.appendChild(option);
+    selDepartments.forEach((selDepartment) => {
+        addFirstOption('Seleccione el departamento', selDepartment);
+        deparments.forEach(department => {
+            const option = document.createElement('option');
+            option.value = department.id;
+            option.setAttribute('key', department.key);
+            option.innerHTML = department.label;
+            selDepartment.appendChild(option);
+        });
     });
 }
 
 const loadCities = async (keyDepartment) => {
-    removeAllOptions(selCities);
-    addFirstOption('Seleccione la ciudad', selCities);
-    selCities.setAttribute('required', 'true'); // ← Hacer obligatorio
+    selCities.forEach((selCity) => {
+        removeAllOptions(selCity);
+        addFirstOption('Seleccione la ciudad', selCity);
+    });
 
     const cities = await getCities(keyDepartment);
     cities.forEach(city => {
         const option = document.createElement('option');
         option.value = city.id;
         option.innerHTML = city.label;
-        selCities.appendChild(option);
+        selCities.forEach((selCity) => {
+            selCity.appendChild(option.cloneNode(true));
+        });
     });
 }
 const handleChangeDepartment = async (event) => {
