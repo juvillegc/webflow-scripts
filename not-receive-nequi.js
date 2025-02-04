@@ -10,7 +10,6 @@ const inputDocumentNumber = document.querySelectorAll('.numero_documento');
 const validateInputs = () => {
     inputPhoneNumber.forEach((input) => {
         input.onkeypress = validPhoneNumber;
-        input.addEventListener("paste", validPhoneNumber); // Validar cuando pega
         input.addEventListener("input", validPhoneNumber); // Validar en tiempo real
     });
 
@@ -19,6 +18,7 @@ const validateInputs = () => {
     });
 
 }
+document.addEventListener("DOMContentLoaded", validateInputs);
 
 const loadDepartments = async () => {
     const { deparments } = await getDepartments();
