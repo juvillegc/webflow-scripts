@@ -10,7 +10,6 @@ const inputDocumentNumber = document.querySelectorAll('.numero_documento');
 const validateInputs = () => {
     inputPhoneNumber.forEach((input) => {
         input.onkeypress = validPhoneNumber;
-        input.addEventListener("input", validPhoneNumber); // Validar en tiempo real
     });
 
     inputDocumentNumber.forEach((input) => {
@@ -18,7 +17,6 @@ const validateInputs = () => {
     });
 
 }
-document.addEventListener("DOMContentLoaded", validateInputs);
 
 const loadDepartments = async () => {
     const { deparments } = await getDepartments();
@@ -51,6 +49,7 @@ const loadCities = async (keyDepartment) => {
         });
     });
 }
+
 const handleChangeDepartment = async (event) => {
     const selDepartment = event.target;
     const keyDepartment = selDepartment.options[selDepartment.selectedIndex].getAttribute('key');
