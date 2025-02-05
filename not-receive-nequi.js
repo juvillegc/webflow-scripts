@@ -22,6 +22,13 @@ const validateInputs = () => {
     });
 };
 
+const normalizeTex = (str) => {
+    return str.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ñ/g, 'n')
+}
+
+
 const loadDepartments = async () => {
     const { deparments } = await getDepartments();
 
@@ -31,7 +38,7 @@ const loadDepartments = async () => {
 
         deparments.forEach(department => {
             const option = document.createElement('option');
-            option.value = department.id;
+            option.value = normalizeTex(department.id);
             option.setAttribute('key', department.key);
             option.innerHTML = department.label;
             selDepartment.appendChild(option);
@@ -49,7 +56,7 @@ const loadCities = async (keyDepartment) => {
     const cities = await getCities(keyDepartment);
     cities.forEach(city => {
         const option = document.createElement('option');
-        option.value = city.id;
+         option.value = normalizeTex(city.id);
         option.innerHTML = city.label;
         selCities.forEach((selCity) => {
             selCity.appendChild(option.cloneNode(true));
