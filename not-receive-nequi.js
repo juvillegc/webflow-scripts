@@ -9,10 +9,16 @@ const inputDocumentNumber = document.querySelectorAll('.numero_documento');
 const validateInputs = () => {
     inputPhoneNumber.forEach((input) => {
         input.onkeypress = validPhoneNumber;
+         input.onpaste = (event) => {
+            event.preventDefault();
+        };
     });
 
     inputDocumentNumber.forEach((input) => {
         input.onkeypress = validDocumentNumber;
+         input.onpaste = (event) => {
+            event.preventDefault();
+        };
     });
 };
 
