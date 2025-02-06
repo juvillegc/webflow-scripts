@@ -5,6 +5,7 @@ const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
 const inputPhoneNumber = document.querySelectorAll('.numero_celular');
 const inputDocumentNumber = document.querySelectorAll('.numero_documento');
+const inputDocumentText = document.querySelectorAll('.input-form-text');
 
 const validateInputs = () => {
     inputPhoneNumber.forEach((input) => {
@@ -22,11 +23,23 @@ const validateInputs = () => {
     });
 };
 
+
 const normalizeTex = (str) => {
     return str.normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/ñ/g, 'n')
+    .replace(/Ñ/g, 'N'); 
 }
+
+const handleNormalizeInput = (event) => {
+    event.target.value = normalizeTex(event.target.value);
+};
+
+// Agregar el evento a cada input con la clase `.input-form-text`
+inputDocumentText.forEach((input) => {
+    input.addEventListener("input", handleNormalizeInput);
+});
+
 
 
 const loadDepartments = async () => {
