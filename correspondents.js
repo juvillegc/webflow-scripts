@@ -9,6 +9,7 @@ const selDepartments = document.querySelector('#departamentos');
 const selCities = document.querySelector('#ciudades');
 const inputDocumentMail = document.getElementById('email-2');
 const inputDocumentNumber = document.querySelectorAll('.numero_documento');
+const inputDocumentText = document.querySelectorAll('.input-form-text');
 
 const validateInputs = () => {
     
@@ -29,6 +30,16 @@ const validateInputs = () => {
         input.onkeypress = onlyNumberKey;
     });
 }
+
+// Normaliza el input para no permitir caracteres espaciales.
+
+const handleNormalizeInput = (event) => {
+    event.target.value = normalizeTex(event.target.value);
+};
+
+inputDocumentText.forEach((input) => {
+    input.addEventListener("input", handleNormalizeInput);
+});
 
 const loadDepartments = async () => {
     const { deparments } = await getDepartments();
