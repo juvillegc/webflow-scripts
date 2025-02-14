@@ -1,4 +1,4 @@
-import { onlyNumberKey, handleKeyUpThousandSeparators, validPhoneNumber, validateEmail, validDocumentNumber, removeAllOptions, addFirstOption } from './shared/utils.js';
+import { onlyNumberKey, handleKeyUpThousandSeparators, validPhoneNumber, validateEmail, validDocumentNumber, removeAllOptions, addFirstOption, normalizeTex } from './shared/utils.js';
 import { inputEvent } from './shared/date-format.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
