@@ -24,12 +24,6 @@ const validateInputs = () => {
 };
 
 
-const normalizeTex = (str) => {
-    return str.normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/ñ/g, 'n')
-    .replace(/Ñ/g, 'N'); 
-}
 
 const handleNormalizeInput = (event) => {
     event.target.value = normalizeTex(event.target.value);
