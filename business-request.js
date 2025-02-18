@@ -2,7 +2,7 @@ import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, o
 import { getDepartments, getCities } from './services/location.service.js';
 
 
-
+// Selección de elementos
 const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
 const inputPhoneNumber = document.querySelectorAll('.numero_celular');
@@ -22,12 +22,34 @@ const numero3 = form?.querySelector(".numero3");
 const direccionCompleta = form?.querySelector(".direccion-completa"); // Campo oculto
 
 /**
- * Validaciones de input
+ * 📌 Validaciones de input
  */
 const validateInputs = () => {
+    // Validar número de celular (mínimo 10 dígitos)
     inputPhoneNumber.forEach((input) => {
         input.onkeypress = validPhoneNumber;
         input.onpaste = (event) => event.preventDefault();
+
+        // Crear mensaje de error dinámico
+        const errorMsg = document.createElement("span");
+        errorMsg.classList.add("error-message");
+        errorMsg.style.color = "red";
+        errorMsg.style.fontSize = "12px";
+        errorMsg.style.display = "none"; // Ocultarlo inicialmente
+        errorMsg.textContent = "Completa el número";
+
+        input.parentNode.insertBefore(errorMsg, input.nextSibling); // Insertar después del input
+
+        // Validar longitud del número de celular
+        input.addEventListener("input", () => {
+            if (input.value.length < 10) {
+                input.style.borderColor = "red";
+                errorMsg.style.display = "block";
+            } else {
+                input.style.borderColor = ""; // Restablecer color
+                errorMsg.style.display = "none";
+            }
+        });
     });
 
     inputDocumentNumber.forEach((input) => {
@@ -43,7 +65,7 @@ const validateInputs = () => {
 };
 
 /**
- *  Cargar departamentos desde la API
+ * 📌 Cargar departamentos desde la API
  */
 const loadDepartments = async () => {
     const { deparments } = await getDepartments();
@@ -63,7 +85,7 @@ const loadDepartments = async () => {
 };
 
 /**
- * Cargar ciudades basadas en el departamento seleccionado
+ * 📌 Cargar ciudades basadas en el departamento seleccionado
  */
 const loadCities = async (keyDepartment) => {
     selCities.forEach((selCity) => {
@@ -85,7 +107,7 @@ const loadCities = async (keyDepartment) => {
 };
 
 /**
- *  Manejo del cambio de departamento
+ * 📌 Manejo del cambio de departamento
  */
 const handleChangeDepartment = async (event) => {
     const selDepartment = event.target;
@@ -94,7 +116,7 @@ const handleChangeDepartment = async (event) => {
 };
 
 /**
- * Generar dirección completa en Webflow
+ * 📌 Generar dirección completa en Webflow
  */
 const generateAddress = () => {
     if (!direccionCompleta) {
@@ -124,7 +146,7 @@ const generateAddress = () => {
 };
 
 /**
- * Inicializar eventos en el formulario
+ * 📌 Inicializar eventos en el formulario
  */
 const initFormHandlers = () => {
     if (!form) return;
@@ -162,7 +184,7 @@ const initFormHandlers = () => {
 };
 
 /**
- *  Función principal
+ * 📌 Función principal
  */
 const main = async () => {
     validateInputs();
@@ -181,3 +203,8 @@ const main = async () => {
 };
 
 main();
+
+
+
+
+
