@@ -1,7 +1,6 @@
 import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeAllOptions, addFirstOption, normalizeTex } from './shared/utils.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
-
 // Selección de elementos
 const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
@@ -22,7 +21,7 @@ const numero3 = form?.querySelector(".numero3");
 const direccionCompleta = form?.querySelector(".direccion-completa"); // Campo oculto
 
 /**
- * 📌 Ocultar `.direccion-completa` pero asegurando que Webflow lo detecte
+ * 📌 Ocultar `.direccion-completa` asegurando que Webflow lo detecte
  */
 const setupDireccionCompleta = () => {
     if (!direccionCompleta) {
@@ -79,10 +78,11 @@ const validateInputs = () => {
         input.onpaste = (event) => event.preventDefault();
     });
 
+    // ❌ Bloquear copiar y pegar en `.input-form-text`
     inputDocumentText.forEach((input) => {
-        input.addEventListener("input", (event) => {
-            event.target.value = normalizeTex(event.target.value);
-        });
+        input.addEventListener("paste", (event) => event.preventDefault());
+        input.addEventListener("copy", (event) => event.preventDefault());
+        input.addEventListener("drop", (event) => event.preventDefault());
     });
 };
 
@@ -97,7 +97,7 @@ const loadDepartments = async () => {
         selDepartment.setAttribute('required', 'true');
 
         deparments
-            .filter(department => department.label.toLowerCase() !== "bogotá") // ❌ Filtrar Bogotá
+            .filter(department => department.label.toLowerCase() !== "bogotá d.c.") // ❌ Filtrar Bogotá
             .forEach(department => {
                 const option = document.createElement('option');
                 option.value = cleanText(department.id);
@@ -120,9 +120,9 @@ const loadCities = async (keyDepartment) => {
 
     let cities = await getCities(keyDepartment);
 
-    // ✅ Si el usuario elige Cundinamarca, agregamos Bogotá manualmente
+    // ✅ Si el usuario elige Cundinamarca, agregamos "BOGOTÁ" manualmente
     if (keyDepartment.toLowerCase() === "cundinamarca") {
-        cities.unshift({ id: "bogota", label: "Bogotá" });
+        cities.unshift({ id: "bogota", label: "BOGOTÁ" });
     }
 
     cities.forEach(city => {
@@ -194,20 +194,6 @@ const initFormHandlers = () => {
             direccionCompleta.blur();
         }, 200);
     });
-
-    [numero1, numero2, numero3].forEach(input => {
-        if (!input) return;
-
-        input.addEventListener("keypress", (event) => {
-            if (!/[0-9]/.test(event.key)) {
-                event.preventDefault();
-            }
-        });
-
-        input.addEventListener("paste", (event) => event.preventDefault());
-        input.addEventListener("copy", (event) => event.preventDefault());
-        input.addEventListener("drop", (event) => event.preventDefault());
-    });
 };
 
 /**
@@ -231,8 +217,6 @@ const main = async () => {
 };
 
 main();
-
-
 
 
 
