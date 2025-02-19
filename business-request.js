@@ -22,6 +22,24 @@ const numero3 = form?.querySelector(".numero3");
 const direccionCompleta = form?.querySelector(".direccion-completa"); // Campo oculto
 
 /**
+ * 📌 Ocultar `.direccion-completa` pero asegurando que Webflow lo detecte
+ */
+const setupDireccionCompleta = () => {
+    if (!direccionCompleta) {
+        console.error("❌ No se encontró el campo direccion-completa");
+        return;
+    }
+
+    direccionCompleta.setAttribute("type", "hidden");
+    direccionCompleta.style.opacity = "0";
+    direccionCompleta.style.position = "absolute";
+    direccionCompleta.style.left = "-9999px"; // Lo mueve fuera de la pantalla
+    direccionCompleta.style.height = "0px";
+    direccionCompleta.style.width = "0px";
+    direccionCompleta.style.visibility = "hidden";
+};
+
+/**
  * 📌 Validaciones de input
  */
 const validateInputs = () => {
@@ -35,10 +53,10 @@ const validateInputs = () => {
         errorMsg.classList.add("error-message");
         errorMsg.style.color = "red";
         errorMsg.style.fontSize = "12px";
-        errorMsg.style.display = "none"; // Ocultarlo inicialmente
+        errorMsg.style.display = "none";
         errorMsg.textContent = "Completa el número";
 
-        input.parentNode.insertBefore(errorMsg, input.nextSibling); // Insertar después del input
+        input.parentNode.insertBefore(errorMsg, input.nextSibling);
 
         // Validar longitud del número de celular
         input.addEventListener("input", () => {
@@ -46,7 +64,7 @@ const validateInputs = () => {
                 input.style.borderColor = "red";
                 errorMsg.style.display = "block";
             } else {
-                input.style.borderColor = ""; // Restablecer color
+                input.style.borderColor = "";
                 errorMsg.style.display = "none";
             }
         });
@@ -72,7 +90,7 @@ const loadDepartments = async () => {
     
     selDepartments.forEach((selDepartment) => {
         addFirstOption('Seleccione el departamento', selDepartment);
-        selDepartment.setAttribute('required', 'true'); // Hacer obligatorio
+        selDepartment.setAttribute('required', 'true');
 
         deparments.forEach(department => {
             const option = document.createElement('option');
@@ -138,7 +156,6 @@ const generateAddress = () => {
 
     direccionCompleta.value = direccion.join(" ");
 
-    // 🔥 Forzar que Webflow detecte el cambio
     direccionCompleta.dispatchEvent(new Event("input", { bubbles: true }));
     direccionCompleta.dispatchEvent(new Event("change", { bubbles: true }));
 
@@ -187,6 +204,7 @@ const initFormHandlers = () => {
  * 📌 Función principal
  */
 const main = async () => {
+    setupDireccionCompleta(); // Ocultar `.direccion-completa`
     validateInputs();
     await loadDepartments();
     
@@ -203,6 +221,8 @@ const main = async () => {
 };
 
 main();
+
+
 
 
 
