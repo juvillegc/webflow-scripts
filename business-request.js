@@ -2,8 +2,6 @@ import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, o
 import { getDepartments, getCities } from './services/location.service.js';
 
 
-
-// 🔹 Selección de elementos
 const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
 const inputPhoneNumber = document.querySelectorAll('.numero_celular');
@@ -207,4 +205,30 @@ const generateAddress = (form) => {
 
     direccionCompleta.value = direccion.join(" ");
     direccionCompleta.dispatchEvent(new Event("input", { bubbles: true }));
-    direccio
+    direccionCompleta.dispatchEvent(new Event("change", { bubbles: true }));
+};
+
+/**
+ * 📌 Inicializar eventos en cada formulario
+ */
+const initFormHandlers = () => {
+    forms.forEach((form) => {
+        setupDireccionCompleta(form);
+        const submitButton = form.querySelector("input[type='submit']");
+        if (!submitButton) return;
+        submitButton.addEventListener("click", () => generateAddress(form));
+    });
+};
+
+/**
+ * 📌 Función principal
+ */
+const main = async () => {
+    validateInputs();
+    await loadDepartments();
+    selDepartments.forEach((selDepartment) => selDepartment.addEventListener('change', handleChangeDepartment));
+    initFormHandlers();
+};
+
+main();
+
