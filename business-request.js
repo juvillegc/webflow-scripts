@@ -1,6 +1,7 @@
 import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeAllOptions, addFirstOption, normalizeTex } from './shared/utils.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
+
 // 🔹 Selección de elementos
 const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
@@ -10,7 +11,25 @@ const inputDocumentText = document.querySelectorAll('.input-form-text');
 const forms = document.querySelectorAll("form");
 
 /**
- * 📌 Ocultar `.direccion-completa` asegurando que Webflow lo detecte en cada formulario
+ * 📌 Bloquear caracteres especiales y letras en inputs de número
+ */
+const restrictToNumbers = (event) => {
+    if (!/^\d$/.test(event.key)) {
+        event.preventDefault();
+    }
+};
+
+/**
+ * 📌 Bloquear copiar y pegar en campos de números
+ */
+const blockCopyPaste = (input) => {
+    input.addEventListener("paste", (event) => event.preventDefault());
+    input.addEventListener("copy", (event) => event.preventDefault());
+    input.addEventListener("drop", (event) => event.preventDefault());
+};
+
+/**
+ * 📌 Ocultar `.direccion-completa` en cada formulario
  */
 const setupDireccionCompleta = (form) => {
     const direccionCompleta = form.querySelector(".direccion-completa");
@@ -29,7 +48,7 @@ const setupDireccionCompleta = (form) => {
  * 📌 Eliminar sufijos `_dep`, `_ant`, etc., de los valores seleccionados
  */
 const cleanText = (text) => {
-    return text.replace(/_[a-zA-Z]+$/, ""); // Elimina cualquier sufijo con `_`
+    return text.replace(/_[a-zA-Z]+$/, ""); 
 };
 
 /**
@@ -38,7 +57,7 @@ const cleanText = (text) => {
 const validateInputs = () => {
     inputPhoneNumber.forEach((input) => {
         input.onkeypress = validPhoneNumber;
-        input.onpaste = (event) => event.preventDefault();
+        blockCopyPaste(input);
 
         // Validación visual para 10 dígitos
         input.addEventListener("input", () => {
@@ -54,15 +73,11 @@ const validateInputs = () => {
 
     inputDocumentNumber.forEach((input) => {
         input.onkeypress = validDocumentNumber;
-        input.onpaste = (event) => event.preventDefault();
+        blockCopyPaste(input);
     });
 
     // ❌ Bloquear copiar y pegar en `.input-form-text`
-    inputDocumentText.forEach((input) => {
-        input.addEventListener("paste", (event) => event.preventDefault());
-        input.addEventListener("copy", (event) => event.preventDefault());
-        input.addEventListener("drop", (event) => event.preventDefault());
-    });
+    inputDocumentText.forEach(blockCopyPaste);
 };
 
 /**
@@ -76,7 +91,7 @@ const loadDepartments = async () => {
         selDepartment.setAttribute('required', 'true');
 
         deparments
-            .filter(department => !/bogotá|bogota|bogotá d.c|bogota d.c/i.test(department.label)) // ✅ ELIMINA Bogotá sin importar mayúsculas o variaciones
+            .filter(department => !/bogotá|bogota|bogotá d.c|bogota d.c/i.test(department.label))
             .forEach(department => {
                 const option = document.createElement('option');
                 option.value = cleanText(department.id);
@@ -184,6 +199,14 @@ const initFormHandlers = () => {
                 }
             }, 200);
         });
+
+        // ✅ Aplicar restricciones en campos de número
+        const numeros = form.querySelectorAll(".numero1, .numero2, .numero3");
+        numeros.forEach(input => {
+            if (!input) return;
+            input.addEventListener("keypress", restrictToNumbers);
+            blockCopyPaste(input);
+        });
     });
 };
 
@@ -207,11 +230,3 @@ const main = async () => {
 };
 
 main();
-
-
-
-
-
-
-
-
