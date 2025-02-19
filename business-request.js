@@ -100,7 +100,7 @@ const loadDepartments = async () => {
         selDepartment.setAttribute('required', 'true');
 
         deparments
-            .filter(department => !/bogotá|bogota|bogotá d.c|bogota d.c/i.test(department.label)) // ✅ ELIMINA Bogotá sin importar mayúsculas o variaciones
+            .filter(department => !/bogotá|bogota|bogotá d.c|bogota d.c/i.test(department.label)) 
             .forEach(department => {
                 const option = document.createElement('option');
                 option.value = department.id.replace(/_[a-zA-Z]+$/, "");
@@ -117,7 +117,7 @@ const loadDepartments = async () => {
 const loadCities = async (keyDepartment) => {
     selCities.forEach((selCity) => {
         removeAllOptions(selCity);
-        addFirstOption('Seleccione la ciudad', selCity);
+        addFirstOption('Seleccione la ciudad', selCity, true); // 🔥 Placeholder fijo
         selCity.setAttribute('required', 'true');
     });
 
@@ -160,6 +160,7 @@ const generateAddress = (form) => {
 
     const numero2 = form.querySelector(".numero2");
     const letra2 = form.querySelector(".letra2");
+    const complemento2 = form.querySelector(".complemento2");
 
     const numero3 = form.querySelector(".numero3");
 
@@ -167,7 +168,7 @@ const generateAddress = (form) => {
         direccion.push(`${numero1.value} ${letra1?.value || ""} ${complemento1?.value || ""}`.trim());
     }
     if (numero2?.value.trim()) {
-        direccion.push(`#${numero2.value} ${letra2?.value || ""}`.trim());
+        direccion.push(`#${numero2.value} ${letra2?.value || ""} ${complemento2?.value || ""}`.trim());
     }
     if (numero3?.value.trim()) {
         direccion.push(`- ${numero3.value}`.trim());
