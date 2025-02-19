@@ -1,7 +1,6 @@
 import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeAllOptions, addFirstOption, normalizeTex } from './shared/utils.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
-
 const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
 const inputPhoneNumber = document.querySelectorAll('.numero_celular');
@@ -13,7 +12,8 @@ const forms = document.querySelectorAll("form");
  * 📌 Bloquear caracteres especiales, tildes y ñ en `.input-form-text`
  */
 const restrictSpecialCharacters = (event) => {
-    if (!/^[a-zA-Z0-9\s]*$/.test(event.key)) {
+    const invalidChars = /[^a-zA-Z0-9\s]/; // ❌ Bloquea caracteres especiales y tildes
+    if (invalidChars.test(event.key)) {
         event.preventDefault();
     }
 };
@@ -178,47 +178,15 @@ const handleChangeDepartment = async (event) => {
 };
 
 /**
- * 📌 Generar dirección completa en Webflow
- */
-const generateAddress = (form) => {
-    const direccionCompleta = form.querySelector(".direccion-completa");
-    if (!direccionCompleta) return;
-
-    let direccion = [];
-    ["numero1", "numero2", "numero3"].forEach((className, index) => {
-        const input = form.querySelector(`.${className}`);
-        if (input?.value.trim()) {
-            const prefix = index === 1 ? `#${input.value}` : index === 2 ? `- ${input.value}` : input.value;
-            direccion.push(prefix);
-        }
-    });
-
-    direccionCompleta.value = direccion.join(" ");
-    direccionCompleta.dispatchEvent(new Event("input", { bubbles: true }));
-    direccionCompleta.dispatchEvent(new Event("change", { bubbles: true }));
-};
-
-/**
- * 📌 Inicializar eventos en cada formulario
- */
-const initFormHandlers = () => {
-    forms.forEach((form) => {
-        setupDireccionCompleta(form);
-        const submitButton = form.querySelector("input[type='submit']");
-        if (!submitButton) return;
-        submitButton.addEventListener("click", () => generateAddress(form));
-    });
-};
-
-/**
  * 📌 Función principal
  */
 const main = async () => {
     validateInputs();
     await loadDepartments();
     selDepartments.forEach((selDepartment) => selDepartment.addEventListener('change', handleChangeDepartment));
-    initFormHandlers();
+    forms.forEach(setupDireccionCompleta);
 };
 
 main();
+
 
