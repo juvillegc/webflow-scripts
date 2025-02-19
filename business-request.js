@@ -46,48 +46,7 @@ const cleanText = (text) => {
 };
 
 /**
- * 📌 Validaciones de input
- */
-const validateInputs = () => {
-    inputPhoneNumber.forEach((input) => {
-        input.onkeypress = validPhoneNumber;
-        input.onpaste = (event) => event.preventDefault();
-
-        const errorMsg = document.createElement("span");
-        errorMsg.classList.add("error-message");
-        errorMsg.style.color = "red";
-        errorMsg.style.fontSize = "12px";
-        errorMsg.style.display = "none";
-        errorMsg.textContent = "Completa el número";
-
-        input.parentNode.insertBefore(errorMsg, input.nextSibling);
-
-        input.addEventListener("input", () => {
-            if (input.value.length < 10) {
-                input.style.borderColor = "red";
-                errorMsg.style.display = "block";
-            } else {
-                input.style.borderColor = "";
-                errorMsg.style.display = "none";
-            }
-        });
-    });
-
-    inputDocumentNumber.forEach((input) => {
-        input.onkeypress = validDocumentNumber;
-        input.onpaste = (event) => event.preventDefault();
-    });
-
-    // ❌ Bloquear copiar y pegar en `.input-form-text`
-    inputDocumentText.forEach((input) => {
-        input.addEventListener("paste", (event) => event.preventDefault());
-        input.addEventListener("copy", (event) => event.preventDefault());
-        input.addEventListener("drop", (event) => event.preventDefault());
-    });
-};
-
-/**
- * 📌 Cargar departamentos desde la API (Filtra Bogotá)
+ * 📌 Cargar departamentos desde la API (Eliminar Bogotá)
  */
 const loadDepartments = async () => {
     const { deparments } = await getDepartments();
@@ -97,7 +56,7 @@ const loadDepartments = async () => {
         selDepartment.setAttribute('required', 'true');
 
         deparments
-            .filter(department => department.label.toLowerCase() !== "BOGOTA. D.C") // ❌ Filtrar Bogotá
+            .filter(department => !department.label.toLowerCase().includes("bogotá")) // ✅ Elimina Bogotá D.C.
             .forEach(department => {
                 const option = document.createElement('option');
                 option.value = cleanText(department.id);
@@ -121,7 +80,7 @@ const loadCities = async (keyDepartment) => {
     let cities = await getCities(keyDepartment);
 
     // ✅ Si el usuario elige Cundinamarca, agregamos "BOGOTÁ" manualmente
-    if (keyDepartment.toLowerCase() === "cundinamarca") {
+    if (keyDepartment.toLowerCase().includes("cundinamarca")) {
         cities.unshift({ id: "bogota", label: "BOGOTÁ" });
     }
 
@@ -201,7 +160,6 @@ const initFormHandlers = () => {
  */
 const main = async () => {
     setupDireccionCompleta(); 
-    validateInputs();
     await loadDepartments();
     
     selCities.forEach((selCity) => {
@@ -217,6 +175,7 @@ const main = async () => {
 };
 
 main();
+
 
 
 
