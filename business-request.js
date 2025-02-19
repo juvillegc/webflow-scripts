@@ -1,7 +1,6 @@
 import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeAllOptions, addFirstOption, normalizeTex } from './shared/utils.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
-
 // 🔹 Selección de elementos
 const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
@@ -20,12 +19,13 @@ const restrictToNumbers = (event) => {
 };
 
 /**
- * 📌 Bloquear copiar y pegar en campos de números
+ * 📌 Bloquear copiar, pegar y auto-rellenado en campos numéricos
  */
 const blockCopyPaste = (input) => {
     input.addEventListener("paste", (event) => event.preventDefault());
     input.addEventListener("copy", (event) => event.preventDefault());
     input.addEventListener("drop", (event) => event.preventDefault());
+    input.setAttribute("autocomplete", "off"); // ❌ Bloquea auto-rellenado
 };
 
 /**
@@ -108,6 +108,12 @@ const loadDepartments = async () => {
                 option.innerHTML = department.label;
                 selDepartment.appendChild(option);
             });
+    });
+
+    // 🔥 Asegurar que el placeholder de ciudad siempre esté visible
+    selCities.forEach((selCity) => {
+        removeAllOptions(selCity);
+        addFirstOption('Seleccione la ciudad', selCity, true);
     });
 };
 
@@ -202,7 +208,6 @@ const initFormHandlers = () => {
 
         const numeros = form.querySelectorAll(".numero1, .numero2, .numero3");
         numeros.forEach(input => {
-            if (!input) return;
             input.addEventListener("keypress", restrictToNumbers);
             blockCopyPaste(input);
         });
