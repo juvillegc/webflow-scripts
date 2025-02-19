@@ -21,25 +21,22 @@ const restrictToNumbers = (event) => {
 };
 
 /**
- * 📌 Bloquear caracteres especiales, tildes y ñ en `.input-form-text`
- */
-const restrictSpecialCharacters = (event) => {
-    const invalidChars = /[^a-zA-Z0-9\s]/; // ❌ Bloquea caracteres especiales y tildes
-    if (invalidChars.test(event.key) || event.key === "Dead") {
-        event.preventDefault();
-    }
-};
-
-/**
  * 📌 Bloquear copiar, pegar y auto-rellenado en campos específicos
  */
 const blockCopyPaste = (input) => {
     input.addEventListener("paste", (event) => event.preventDefault());
     input.addEventListener("copy", (event) => event.preventDefault());
     input.addEventListener("drop", (event) => event.preventDefault());
-    input.setAttribute("autocomplete", "off"); // ❌ Bloquea auto-rellenado
+    input.setAttribute("autocomplete", "off");
     input.setAttribute("autocorrect", "off");
     input.setAttribute("spellcheck", "false");
+};
+
+/**
+ * 📌 Normalizar `.input-form-text` (eliminar tildes y ñ)
+ */
+const normalizeInputText = (event) => {
+    event.target.value = normalizeTex(event.target.value);
 };
 
 /**
@@ -99,9 +96,9 @@ const validateInputs = () => {
         blockCopyPaste(input);
     });
 
-    // ❌ Bloquear copiar, pegar, caracteres especiales y tildes en `.input-form-text`
+    // ❌ Bloquear copiar, pegar y normalizar caracteres en `.input-form-text`
     inputDocumentText.forEach((input) => {
-        input.addEventListener("keypress", restrictSpecialCharacters);
+        input.addEventListener("input", normalizeInputText);
         blockCopyPaste(input);
     });
 
@@ -210,31 +207,4 @@ const generateAddress = (form) => {
 
     direccionCompleta.value = direccion.join(" ");
     direccionCompleta.dispatchEvent(new Event("input", { bubbles: true }));
-    direccionCompleta.dispatchEvent(new Event("change", { bubbles: true }));
-};
-
-/**
- * 📌 Inicializar eventos en cada formulario
- */
-const initFormHandlers = () => {
-    forms.forEach((form) => {
-        setupDireccionCompleta(form);
-        const submitButton = form.querySelector("input[type='submit']");
-        if (!submitButton) return;
-        submitButton.addEventListener("click", () => generateAddress(form));
-    });
-};
-
-/**
- * 📌 Función principal
- */
-const main = async () => {
-    validateInputs();
-    await loadDepartments();
-    selDepartments.forEach((selDepartment) => selDepartment.addEventListener('change', handleChangeDepartment));
-    initFormHandlers();
-};
-
-main();
-
-
+    direccio
