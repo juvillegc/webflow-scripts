@@ -81,7 +81,7 @@ const loadCities = async (keyDepartment) => {
 
     // ✅ Si el usuario elige Cundinamarca, agregamos "BOGOTÁ" manualmente
     if (keyDepartment.toLowerCase().includes("cundinamarca")) {
-        cities.unshift({ id: "bogota", label: "BOGOTÁ" });
+        cities.unshift({ id: "bogota", label: "BOGOTA" });
     }
 
     cities.forEach(city => {
