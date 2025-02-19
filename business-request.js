@@ -1,7 +1,6 @@
 import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeAllOptions, addFirstOption, normalizeTex } from './shared/utils.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
-
 const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
 const inputPhoneNumber = document.querySelectorAll('.numero_celular');
@@ -126,9 +125,9 @@ const loadDepartments = async () => {
             .filter(department => !/bogotá|bogota|bogotá d.c|bogota d.c/i.test(department.label)) 
             .forEach(department => {
                 const option = document.createElement('option');
-                option.value = department.id.replace(/_[a-zA-Z]+$/, "");
+                option.value = normalizeTex(department.id.replace(/_[a-zA-Z]+$/, "")); // 🔥 Normalización
                 option.setAttribute('key', department.key);
-                option.innerHTML = department.label;
+                option.innerHTML = normalizeTex(department.label); // 🔥 Normalización
                 selDepartment.appendChild(option);
             });
     });
@@ -158,8 +157,8 @@ const loadCities = async (keyDepartment) => {
 
     cities.forEach(city => {
         const option = document.createElement('option');
-        option.value = city.id.replace(/_[a-zA-Z]+$/, "");
-        option.innerHTML = city.label;
+        option.value = normalizeTex(city.id.replace(/_[a-zA-Z]+$/, "")); // 🔥 Normalización
+        option.innerHTML = normalizeTex(city.label); // 🔥 Normalización
         selCities.forEach((selCity) => {
             selCity.appendChild(option.cloneNode(true));
         });
