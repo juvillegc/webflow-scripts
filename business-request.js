@@ -97,7 +97,7 @@ const loadDepartments = async () => {
         selDepartment.setAttribute('required', 'true');
 
         deparments
-            .filter(department => department.label.toLowerCase() !== "bogotá d.c.") // ❌ Filtrar Bogotá
+            .filter(department => department.label.toLowerCase() !== "BOGOTA. D.C") // ❌ Filtrar Bogotá
             .forEach(department => {
                 const option = document.createElement('option');
                 option.value = cleanText(department.id);
