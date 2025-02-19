@@ -1,33 +1,20 @@
 import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeAllOptions, addFirstOption, normalizeTex } from './shared/utils.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
-// Selección de elementos
+// 🔹 Selección de elementos
 const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
 const inputPhoneNumber = document.querySelectorAll('.numero_celular');
 const inputDocumentNumber = document.querySelectorAll('.numero_documento');
 const inputDocumentText = document.querySelectorAll('.input-form-text');
-const form = document.querySelector("form");
-
-// Inputs de dirección en Webflow
-const numero1 = form?.querySelector(".numero1");
-const letra1 = form?.querySelector(".letra1");
-const complemento1 = form?.querySelector(".complemento1");
-
-const numero2 = form?.querySelector(".numero2");
-const letra2 = form?.querySelector(".letra2");
-
-const numero3 = form?.querySelector(".numero3");
-const direccionCompleta = form?.querySelector(".direccion-completa"); // Campo oculto
+const forms = document.querySelectorAll("form");
 
 /**
- * 📌 Ocultar `.direccion-completa` asegurando que Webflow lo detecte
+ * 📌 Ocultar `.direccion-completa` asegurando que Webflow lo detecte en cada formulario
  */
-const setupDireccionCompleta = () => {
-    if (!direccionCompleta) {
-        console.error("❌ No se encontró el campo direccion-completa");
-        return;
-    }
+const setupDireccionCompleta = (form) => {
+    const direccionCompleta = form.querySelector(".direccion-completa");
+    if (!direccionCompleta) return;
 
     direccionCompleta.setAttribute("type", "hidden");
     direccionCompleta.style.opacity = "0";
@@ -39,36 +26,28 @@ const setupDireccionCompleta = () => {
 };
 
 /**
- * 📌 Quitar sufijos `_dep`, `_ant`, `_xyz` de los valores seleccionados
+ * 📌 Eliminar sufijos `_dep`, `_ant`, etc., de los valores seleccionados
  */
 const cleanText = (text) => {
     return text.replace(/_[a-zA-Z]+$/, ""); // Elimina cualquier sufijo con `_`
 };
 
 /**
- * 📌 Validaciones de input
+ * 📌 Validaciones de input (teléfono y documento)
  */
 const validateInputs = () => {
     inputPhoneNumber.forEach((input) => {
         input.onkeypress = validPhoneNumber;
         input.onpaste = (event) => event.preventDefault();
 
-        const errorMsg = document.createElement("span");
-        errorMsg.classList.add("error-message");
-        errorMsg.style.color = "red";
-        errorMsg.style.fontSize = "12px";
-        errorMsg.style.display = "none";
-        errorMsg.textContent = "Completa el número de tu cel.";
-
-        input.parentNode.insertBefore(errorMsg, input.nextSibling);
-
+        // Validación visual para 10 dígitos
         input.addEventListener("input", () => {
             if (input.value.length < 10) {
-                input.style.borderColor = "red";
-                errorMsg.style.display = "block";
+                input.style.border = "2px solid red";
+                input.setCustomValidity("El número debe tener 10 dígitos.");
             } else {
-                input.style.borderColor = "";
-                errorMsg.style.display = "none";
+                input.style.border = "";
+                input.setCustomValidity("");
             }
         });
     });
@@ -87,7 +66,7 @@ const validateInputs = () => {
 };
 
 /**
- * 📌 Cargar departamentos desde la API (ELIMINAR Bogotá)
+ * 📌 Cargar departamentos desde la API (Eliminar Bogotá)
  */
 const loadDepartments = async () => {
     const { deparments } = await getDepartments();
@@ -122,7 +101,7 @@ const loadCities = async (keyDepartment) => {
 
     // ✅ Si el usuario elige Cundinamarca, agregamos "BOGOTÁ" manualmente
     if (/cundinamarca/i.test(keyDepartment)) {
-        cities.unshift({ id: "bogota", label: "BOGOTA" });
+        cities.unshift({ id: "bogota", label: "BOGOTÁ" });
     }
 
     cities.forEach(city => {
@@ -145,15 +124,21 @@ const handleChangeDepartment = async (event) => {
 };
 
 /**
- * 📌 Generar dirección completa en Webflow
+ * 📌 Generar dirección completa en cada formulario
  */
-const generateAddress = () => {
-    if (!direccionCompleta) {
-        console.error("❌ No se encontró el campo direccion-completa");
-        return;
-    }
+const generateAddress = (form) => {
+    const direccionCompleta = form.querySelector(".direccion-completa");
+    if (!direccionCompleta) return;
 
     let direccion = [];
+    const numero1 = form.querySelector(".numero1");
+    const letra1 = form.querySelector(".letra1");
+    const complemento1 = form.querySelector(".complemento1");
+
+    const numero2 = form.querySelector(".numero2");
+    const letra2 = form.querySelector(".letra2");
+
+    const numero3 = form.querySelector(".numero3");
 
     if (numero1?.value.trim()) {
         direccion.push(`${numero1.value} ${letra1?.value || ""} ${complemento1?.value || ""}`.trim());
@@ -166,7 +151,6 @@ const generateAddress = () => {
     }
 
     direccionCompleta.value = direccion.join(" ");
-
     direccionCompleta.dispatchEvent(new Event("input", { bubbles: true }));
     direccionCompleta.dispatchEvent(new Event("change", { bubbles: true }));
 
@@ -174,25 +158,32 @@ const generateAddress = () => {
 };
 
 /**
- * 📌 Inicializar eventos en el formulario
+ * 📌 Inicializar eventos en cada formulario
  */
 const initFormHandlers = () => {
-    if (!form) return;
+    forms.forEach((form, index) => {
+        console.log(`🔹 Configurando formulario #${index + 1}`);
 
-    const submitButton = form.querySelector("input[type='submit']");
-    if (!submitButton) {
-        console.error("❌ No se encontró el botón de envío");
-        return;
-    }
+        setupDireccionCompleta(form);
 
-    submitButton.addEventListener("click", () => {
-        console.log("📩 Botón de envío clickeado, procesando dirección...");
-        generateAddress();
+        const submitButton = form.querySelector("input[type='submit']");
+        if (!submitButton) {
+            console.error(`❌ No se encontró el botón de envío en el formulario #${index + 1}`);
+            return;
+        }
 
-        setTimeout(() => {
-            direccionCompleta.focus();
-            direccionCompleta.blur();
-        }, 200);
+        submitButton.addEventListener("click", () => {
+            console.log(`📩 Procesando dirección en formulario #${index + 1}...`);
+            generateAddress(form);
+
+            setTimeout(() => {
+                const direccionCompleta = form.querySelector(".direccion-completa");
+                if (direccionCompleta) {
+                    direccionCompleta.focus();
+                    direccionCompleta.blur();
+                }
+            }, 200);
+        });
     });
 };
 
@@ -200,7 +191,6 @@ const initFormHandlers = () => {
  * 📌 Función principal
  */
 const main = async () => {
-    setupDireccionCompleta(); 
     validateInputs();
     await loadDepartments();
     
