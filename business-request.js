@@ -194,8 +194,6 @@ const generateAddress = (form) => {
     direccionCompleta.value = direccion.join(" ");
     direccionCompleta.dispatchEvent(new Event("input", { bubbles: true }));
     direccionCompleta.dispatchEvent(new Event("change", { bubbles: true }));
-
-    console.log("✅ Dirección generada:", direccionCompleta.value);
 };
 
 /**
@@ -204,17 +202,9 @@ const generateAddress = (form) => {
 const initFormHandlers = () => {
     forms.forEach((form) => {
         setupDireccionCompleta(form);
-
         const submitButton = form.querySelector("input[type='submit']");
         if (!submitButton) return;
-
         submitButton.addEventListener("click", () => generateAddress(form));
-
-        const numeros = form.querySelectorAll(".numero1, .numero2, .numero3");
-        numeros.forEach(input => {
-            input.addEventListener("keypress", restrictToNumbers);
-            blockCopyPaste(input);
-        });
     });
 };
 
@@ -229,3 +219,4 @@ const main = async () => {
 };
 
 main();
+
