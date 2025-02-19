@@ -10,15 +10,6 @@ const inputDocumentText = document.querySelectorAll('.input-form-text');
 const forms = document.querySelectorAll("form");
 
 /**
- * 📌 Bloquear caracteres especiales y letras en inputs numéricos
- */
-const restrictToNumbers = (event) => {
-    if (!/^\d$/.test(event.key)) {
-        event.preventDefault();
-    }
-};
-
-/**
  * 📌 Bloquear caracteres especiales, tildes y ñ en `.input-form-text`
  */
 const restrictSpecialCharacters = (event) => {
@@ -28,13 +19,24 @@ const restrictSpecialCharacters = (event) => {
 };
 
 /**
+ * 📌 Bloquear caracteres especiales y letras en inputs numéricos
+ */
+const restrictToNumbers = (event) => {
+    if (!/^\d$/.test(event.key)) {
+        event.preventDefault();
+    }
+};
+
+/**
  * 📌 Bloquear copiar, pegar y auto-rellenado en campos específicos
  */
-const blockCopyPaste = (input) => {
+const blockCopyPasteAndAutocomplete = (input) => {
     input.addEventListener("paste", (event) => event.preventDefault());
     input.addEventListener("copy", (event) => event.preventDefault());
     input.addEventListener("drop", (event) => event.preventDefault());
     input.setAttribute("autocomplete", "off"); // ❌ Bloquea auto-rellenado
+    input.setAttribute("autocorrect", "off");
+    input.setAttribute("spellcheck", "false");
 };
 
 /**
@@ -85,19 +87,30 @@ const validatePhoneNumber = (input) => {
 const validateInputs = () => {
     inputPhoneNumber.forEach((input) => {
         input.onkeypress = validPhoneNumber;
-        blockCopyPaste(input);
+        blockCopyPasteAndAutocomplete(input);
         validatePhoneNumber(input);
     });
 
     inputDocumentNumber.forEach((input) => {
         input.onkeypress = validDocumentNumber;
-        blockCopyPaste(input);
+        blockCopyPasteAndAutocomplete(input);
     });
 
     // ❌ Bloquear copiar, pegar, caracteres especiales y tildes en `.input-form-text`
     inputDocumentText.forEach((input) => {
         input.addEventListener("keypress", restrictSpecialCharacters);
-        blockCopyPaste(input);
+        blockCopyPasteAndAutocomplete(input);
+    });
+
+    // ❌ Aplicar restricciones a los campos de dirección
+    forms.forEach((form) => {
+        ["numero1", "numero2", "numero3"].forEach((className) => {
+            const input = form.querySelector(`.${className}`);
+            if (input) {
+                input.addEventListener("keypress", restrictToNumbers);
+                blockCopyPasteAndAutocomplete(input);
+            }
+        });
     });
 };
 
@@ -172,25 +185,13 @@ const generateAddress = (form) => {
     if (!direccionCompleta) return;
 
     let direccion = [];
-    const numero1 = form.querySelector(".numero1");
-    const letra1 = form.querySelector(".letra1");
-    const complemento1 = form.querySelector(".complemento1");
-
-    const numero2 = form.querySelector(".numero2");
-    const letra2 = form.querySelector(".letra2");
-    const complemento2 = form.querySelector(".complemento2");
-
-    const numero3 = form.querySelector(".numero3");
-
-    if (numero1?.value.trim()) {
-        direccion.push(`${numero1.value} ${letra1?.value || ""} ${complemento1?.value || ""}`.trim());
-    }
-    if (numero2?.value.trim()) {
-        direccion.push(`#${numero2.value} ${letra2?.value || ""} ${complemento2?.value || ""}`.trim());
-    }
-    if (numero3?.value.trim()) {
-        direccion.push(`- ${numero3.value}`.trim());
-    }
+    ["numero1", "numero2", "numero3"].forEach((className, index) => {
+        const input = form.querySelector(`.${className}`);
+        if (input?.value.trim()) {
+            const prefix = index === 1 ? `#${input.value}` : index === 2 ? `- ${input.value}` : input.value;
+            direccion.push(prefix);
+        }
+    });
 
     direccionCompleta.value = direccion.join(" ");
     direccionCompleta.dispatchEvent(new Event("input", { bubbles: true }));
@@ -220,3 +221,4 @@ const main = async () => {
 };
 
 main();
+
