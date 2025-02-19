@@ -96,10 +96,12 @@ export const addFirstOption = (label, select) => {
     select.appendChild(option);
 }
 
-
 export const normalizeTex = (str) => {
     return str.normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/ñ/g, 'n')
-    .replace(/Ñ/g, 'N'); 
-}
+        .replace(/[\u0300-\u036f]/g, '') // Elimina tildes
+        .replace(/ñ/g, 'n') // Reemplaza ñ por n
+        .replace(/Ñ/g, 'N') // Reemplaza Ñ por N
+        .replace(/,/g, ''); // Elimina comas
+};
+
+
