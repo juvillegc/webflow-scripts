@@ -2,6 +2,18 @@ import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, o
 import { getDepartments, getCities } from './services/location.service.js';
 
 
+import { 
+    validPhoneNumber, 
+    validDocumentNumber, 
+    handleKeyUpThousandSeparators, 
+    onlyNumberKey, 
+    removeAllOptions, 
+    addFirstOption, 
+    normalizeTex 
+} from './shared/utils.js';
+
+import { getDepartments, getCities } from './services/location.service.js';
+
 // Selección de elementos
 const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
@@ -33,22 +45,27 @@ const setupDireccionCompleta = () => {
     direccionCompleta.setAttribute("type", "hidden");
     direccionCompleta.style.opacity = "0";
     direccionCompleta.style.position = "absolute";
-    direccionCompleta.style.left = "-9999px"; // Lo mueve fuera de la pantalla
+    direccionCompleta.style.left = "-9999px"; 
     direccionCompleta.style.height = "0px";
     direccionCompleta.style.width = "0px";
     direccionCompleta.style.visibility = "hidden";
 };
 
 /**
+ * 📌 Quitar sufijos `_dep`, `_ant`, `_xyz` de los valores seleccionados
+ */
+const cleanText = (text) => {
+    return text.replace(/_[a-zA-Z]+$/, ""); // Elimina cualquier sufijo con `_`
+};
+
+/**
  * 📌 Validaciones de input
  */
 const validateInputs = () => {
-    // Validar número de celular (mínimo 10 dígitos)
     inputPhoneNumber.forEach((input) => {
         input.onkeypress = validPhoneNumber;
         input.onpaste = (event) => event.preventDefault();
 
-        // Crear mensaje de error dinámico
         const errorMsg = document.createElement("span");
         errorMsg.classList.add("error-message");
         errorMsg.style.color = "red";
@@ -58,7 +75,6 @@ const validateInputs = () => {
 
         input.parentNode.insertBefore(errorMsg, input.nextSibling);
 
-        // Validar longitud del número de celular
         input.addEventListener("input", () => {
             if (input.value.length < 10) {
                 input.style.borderColor = "red";
@@ -83,7 +99,7 @@ const validateInputs = () => {
 };
 
 /**
- * 📌 Cargar departamentos desde la API
+ * 📌 Cargar departamentos desde la API (Filtra Bogotá)
  */
 const loadDepartments = async () => {
     const { deparments } = await getDepartments();
@@ -92,13 +108,15 @@ const loadDepartments = async () => {
         addFirstOption('Seleccione el departamento', selDepartment);
         selDepartment.setAttribute('required', 'true');
 
-        deparments.forEach(department => {
-            const option = document.createElement('option');
-            option.value = normalizeTex(department.id);
-            option.setAttribute('key', department.key);
-            option.innerHTML = department.label;
-            selDepartment.appendChild(option);
-        });
+        deparments
+            .filter(department => department.label.toLowerCase() !== "bogotá") // ❌ Filtrar Bogotá
+            .forEach(department => {
+                const option = document.createElement('option');
+                option.value = cleanText(department.id);
+                option.setAttribute('key', department.key);
+                option.innerHTML = department.label;
+                selDepartment.appendChild(option);
+            });
     });
 };
 
@@ -112,11 +130,16 @@ const loadCities = async (keyDepartment) => {
         selCity.setAttribute('required', 'true');
     });
 
-    const cities = await getCities(keyDepartment);
-    
+    let cities = await getCities(keyDepartment);
+
+    // ✅ Si el usuario elige Cundinamarca, agregamos Bogotá manualmente
+    if (keyDepartment.toLowerCase() === "cundinamarca") {
+        cities.unshift({ id: "bogota", label: "Bogotá" });
+    }
+
     cities.forEach(city => {
         const option = document.createElement('option');
-        option.value = normalizeTex(city.id);
+        option.value = cleanText(city.id);
         option.innerHTML = city.label;
         selCities.forEach((selCity) => {
             selCity.appendChild(option.cloneNode(true));
@@ -184,7 +207,6 @@ const initFormHandlers = () => {
         }, 200);
     });
 
-    // Validar que solo números sean permitidos en los inputs de número
     [numero1, numero2, numero3].forEach(input => {
         if (!input) return;
 
@@ -204,7 +226,7 @@ const initFormHandlers = () => {
  * 📌 Función principal
  */
 const main = async () => {
-    setupDireccionCompleta(); // Ocultar `.direccion-completa`
+    setupDireccionCompleta(); 
     validateInputs();
     await loadDepartments();
     
@@ -221,6 +243,8 @@ const main = async () => {
 };
 
 main();
+
+
 
 
 
