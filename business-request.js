@@ -1,6 +1,15 @@
 import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeAllOptions, addFirstOption, normalizeTex } from './shared/utils.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
+import { 
+    validPhoneNumber, 
+    validDocumentNumber, 
+    removeAllOptions, 
+    addFirstOption, 
+    normalizeTex 
+} from './shared/utils.js';
+
+import { getDepartments, getCities } from './services/location.service.js';
 
 // 🔹 Selección de elementos
 const selDepartments = document.querySelectorAll('.departamentos');
@@ -74,6 +83,98 @@ const validateInputs = () => {
 };
 
 /**
+ * 📌 Cargar departamentos desde la API (Eliminar Bogotá)
+ */
+const loadDepartments = async () => {
+    const { deparments } = await getDepartments();
+    
+    selDepartments.forEach((selDepartment) => {
+        addFirstOption('Seleccione el departamento', selDepartment);
+        selDepartment.setAttribute('required', 'true');
+
+        deparments
+            .filter(department => !/bogotá|bogota|bogotá d.c|bogota d.c/i.test(department.label))
+            .forEach(department => {
+                const option = document.createElement('option');
+                option.value = cleanText(department.id);
+                option.setAttribute('key', department.key);
+                option.innerHTML = department.label;
+                selDepartment.appendChild(option);
+            });
+    });
+};
+
+/**
+ * 📌 Cargar ciudades basadas en el departamento seleccionado
+ */
+const loadCities = async (keyDepartment) => {
+    selCities.forEach((selCity) => {
+        removeAllOptions(selCity);
+        addFirstOption('Seleccione la ciudad', selCity);
+        selCity.setAttribute('required', 'true');
+    });
+
+    let cities = await getCities(keyDepartment);
+
+    // ✅ Si el usuario elige Cundinamarca, agregamos "BOGOTÁ" manualmente
+    if (/cundinamarca/i.test(keyDepartment)) {
+        cities.unshift({ id: "bogota", label: "BOGOTÁ" });
+    }
+
+    cities.forEach(city => {
+        const option = document.createElement('option');
+        option.value = cleanText(city.id);
+        option.innerHTML = city.label;
+        selCities.forEach((selCity) => {
+            selCity.appendChild(option.cloneNode(true));
+        });
+    });
+};
+
+/**
+ * 📌 Manejo del cambio de departamento
+ */
+const handleChangeDepartment = async (event) => {
+    const selDepartment = event.target;
+    const keyDepartment = selDepartment.options[selDepartment.selectedIndex].getAttribute('key');
+    await loadCities(keyDepartment);
+};
+
+/**
+ * 📌 Generar dirección completa en cada formulario
+ */
+const generateAddress = (form) => {
+    const direccionCompleta = form.querySelector(".direccion-completa");
+    if (!direccionCompleta) return;
+
+    let direccion = [];
+    const numero1 = form.querySelector(".numero1");
+    const letra1 = form.querySelector(".letra1");
+    const complemento1 = form.querySelector(".complemento1");
+
+    const numero2 = form.querySelector(".numero2");
+    const letra2 = form.querySelector(".letra2");
+
+    const numero3 = form.querySelector(".numero3");
+
+    if (numero1?.value.trim()) {
+        direccion.push(`${numero1.value} ${letra1?.value || ""} ${complemento1?.value || ""}`.trim());
+    }
+    if (numero2?.value.trim()) {
+        direccion.push(`#${numero2.value} ${letra2?.value || ""}`.trim());
+    }
+    if (numero3?.value.trim()) {
+        direccion.push(`- ${numero3.value}`.trim());
+    }
+
+    direccionCompleta.value = direccion.join(" ");
+    direccionCompleta.dispatchEvent(new Event("input", { bubbles: true }));
+    direccionCompleta.dispatchEvent(new Event("change", { bubbles: true }));
+
+    console.log("✅ Dirección generada:", direccionCompleta.value);
+};
+
+/**
  * 📌 Inicializar eventos en cada formulario
  */
 const initFormHandlers = () => {
@@ -85,6 +186,10 @@ const initFormHandlers = () => {
             console.error(`❌ No se encontró el botón de envío en el formulario #${index + 1}`);
             return;
         }
+
+        submitButton.addEventListener("click", () => {
+            generateAddress(form);
+        });
 
         // ✅ Aplicar restricciones en campos de número
         const numeros = form.querySelectorAll(".numero1, .numero2, .numero3");
@@ -101,6 +206,7 @@ const initFormHandlers = () => {
  */
 const main = async () => {
     validateInputs();
+    await loadDepartments();
     initFormHandlers();
 };
 
