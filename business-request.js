@@ -1,6 +1,7 @@
 import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeAllOptions, addFirstOption, normalizeTex } from './shared/utils.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
+
 const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
 const inputPhoneNumber = document.querySelectorAll('.numero_celular');
@@ -18,10 +19,10 @@ const restrictToNumbers = (event) => {
 };
 
 /**
- * 📌 Bloquear caracteres especiales en `.input-form-text`
+ * 📌 Bloquear caracteres especiales, tildes y ñ en `.input-form-text`
  */
 const restrictSpecialCharacters = (event) => {
-    if (!/^[a-zA-Z0-9\s]+$/.test(event.key)) {
+    if (!/^[a-zA-Z0-9\s]*$/.test(event.key)) {
         event.preventDefault();
     }
 };
@@ -93,7 +94,7 @@ const validateInputs = () => {
         blockCopyPaste(input);
     });
 
-    // ❌ Bloquear copiar, pegar y caracteres especiales en `.input-form-text`
+    // ❌ Bloquear copiar, pegar, caracteres especiales y tildes en `.input-form-text`
     inputDocumentText.forEach((input) => {
         input.addEventListener("keypress", restrictSpecialCharacters);
         blockCopyPaste(input);
@@ -219,4 +220,3 @@ const main = async () => {
 };
 
 main();
-
