@@ -2,18 +2,6 @@ import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, o
 import { getDepartments, getCities } from './services/location.service.js';
 
 
-import { 
-    validPhoneNumber, 
-    validDocumentNumber, 
-    handleKeyUpThousandSeparators, 
-    onlyNumberKey, 
-    removeAllOptions, 
-    addFirstOption, 
-    normalizeTex 
-} from './shared/utils.js';
-
-import { getDepartments, getCities } from './services/location.service.js';
-
 // Selección de elementos
 const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
