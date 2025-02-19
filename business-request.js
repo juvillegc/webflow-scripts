@@ -1,7 +1,6 @@
 import { validPhoneNumber, validDocumentNumber, handleKeyUpThousandSeparators, onlyNumberKey, removeAllOptions, addFirstOption, normalizeTex } from './shared/utils.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
-// 🔹 Selección de elementos
 const selDepartments = document.querySelectorAll('.departamentos');
 const selCities = document.querySelectorAll('.ciudades');
 const inputPhoneNumber = document.querySelectorAll('.numero_celular');
@@ -10,7 +9,7 @@ const inputDocumentText = document.querySelectorAll('.input-form-text');
 const forms = document.querySelectorAll("form");
 
 /**
- * 📌 Bloquear caracteres especiales y letras en inputs de número
+ * 📌 Bloquear caracteres especiales y letras en inputs numéricos
  */
 const restrictToNumbers = (event) => {
     if (!/^\d$/.test(event.key)) {
@@ -19,7 +18,16 @@ const restrictToNumbers = (event) => {
 };
 
 /**
- * 📌 Bloquear copiar, pegar y auto-rellenado en campos numéricos
+ * 📌 Bloquear caracteres especiales en `.input-form-text`
+ */
+const restrictSpecialCharacters = (event) => {
+    if (!/^[a-zA-Z0-9\s]+$/.test(event.key)) {
+        event.preventDefault();
+    }
+};
+
+/**
+ * 📌 Bloquear copiar, pegar y auto-rellenado en campos específicos
  */
 const blockCopyPaste = (input) => {
     input.addEventListener("paste", (event) => event.preventDefault());
@@ -71,7 +79,7 @@ const validatePhoneNumber = (input) => {
 };
 
 /**
- * 📌 Validaciones de input (teléfono y documento)
+ * 📌 Validaciones de input (teléfono, documento y texto)
  */
 const validateInputs = () => {
     inputPhoneNumber.forEach((input) => {
@@ -85,8 +93,11 @@ const validateInputs = () => {
         blockCopyPaste(input);
     });
 
-    // ❌ Bloquear copiar y pegar en `.input-form-text`
-    inputDocumentText.forEach(blockCopyPaste);
+    // ❌ Bloquear copiar, pegar y caracteres especiales en `.input-form-text`
+    inputDocumentText.forEach((input) => {
+        input.addEventListener("keypress", restrictSpecialCharacters);
+        blockCopyPaste(input);
+    });
 };
 
 /**
@@ -191,20 +202,13 @@ const generateAddress = (form) => {
  * 📌 Inicializar eventos en cada formulario
  */
 const initFormHandlers = () => {
-    forms.forEach((form, index) => {
-        console.log(`🔹 Configurando formulario #${index + 1}`);
-
-        const submitButton = form.querySelector("input[type='submit']");
-        if (!submitButton) {
-            console.error(`❌ No se encontró el botón de envío en el formulario #${index + 1}`);
-            return;
-        }
-
+    forms.forEach((form) => {
         setupDireccionCompleta(form);
 
-        submitButton.addEventListener("click", () => {
-            generateAddress(form);
-        });
+        const submitButton = form.querySelector("input[type='submit']");
+        if (!submitButton) return;
+
+        submitButton.addEventListener("click", () => generateAddress(form));
 
         const numeros = form.querySelectorAll(".numero1, .numero2, .numero3");
         numeros.forEach(input => {
@@ -220,11 +224,7 @@ const initFormHandlers = () => {
 const main = async () => {
     validateInputs();
     await loadDepartments();
-    
-    selDepartments.forEach((selDepartment) => {
-        selDepartment.addEventListener('change', handleChangeDepartment);
-    });
-
+    selDepartments.forEach((selDepartment) => selDepartment.addEventListener('change', handleChangeDepartment));
     initFormHandlers();
 };
 
