@@ -1,27 +1,22 @@
-import { validPhoneNumber,  validDocumentNumber, validateEmail } from './shared/utils.js';
+import { validPhoneNumber, validDocumentNumber, validateEmail } from './shared/utils.js';
 import { inputEvent } from './shared/date-format.js';
 
-
-const inputPhoneNumber = document.getElementById('numero_celular');
-const inputDateTakeMoney = document.getElementById('fecha_nacimiento');
-const inputDocumentNumber = document.getElementById('numero_documento');
-const inputDocumentMail = document.getElementById('correo_electronico');
-
-
+const waitForElement = (id, callback) => {
+    const element = document.getElementById(id);
+    if (element) {
+        callback(element);
+    }
+};
 
 const validateInputs = () => {
-    
-    inputDocumentNumber.onkeypress = validDocumentNumber;
-    inputDateTakeMoney.oninput = inputEvent;
-    inputDocumentMail.oninput = validateEmail;
-    inputPhoneNumber.onkeypress = validPhoneNumber;
-  
-    
-}
-
+    waitForElement('numero_celular', (input) => input.onkeypress = validPhoneNumber);
+    waitForElement('fecha_nacimiento', (input) => input.oninput = inputEvent);
+    waitForElement('numero_documento', (input) => input.onkeypress = validDocumentNumber);
+    waitForElement('correo_electronico', (input) => input.oninput = validateEmail);
+};
 
 const main = async () => {
     validateInputs();
-}
+};
 
 main();
