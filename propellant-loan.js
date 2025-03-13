@@ -1,5 +1,5 @@
 import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators} from './shared/utils.js';
-import { sendCleverTapEvent } from './event.clevertap.js';
+import { sendCleverTapEvent } from './services/event.clevertap.js';
 
 
 const interestRateEA = 24.82; // Valor dado en %
