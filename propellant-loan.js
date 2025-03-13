@@ -1,4 +1,6 @@
 import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators} from './shared/utils.js'
+import { sendCleverTapEvent } from './event.clevertap.js';
+
 
 const interestRateEA = 24.82; // Valor dado en %
 const commissionFGA = 10; // Valor dado en %
@@ -42,16 +44,27 @@ function handleClickCalculate() {
     printInfo();
 }
 
+/* --------- function de calcular y enviar datos clevertap ------------ */
 function calculate() {
-    loanValue = cleanMask(inputValue.value);
-    numberInstallments = document.getElementById('months').value;
+    const loanValueLocal = cleanMask(document.getElementById('input-value').value);
+    const numberInstallmentsLocal = document.getElementById('months').value;
+    const phone = document.getElementById('phoneNumber').value.trim();
 
-    if(!loanValue || !numberInstallments) return;
-
+    if (!loanValueLocal || !numberInstallmentsLocal || !phone) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+    
+    loanValue = loanValueLocal;
+    numberInstallments = numberInstallmentsLocal;
+    
     loanValueCommission = calculateLoanValueCommission();
     sureCalculated = calculateSure();
     feeValue = calculateFeeValue();
     calculateVtua();
+
+    // Envío del evento a CleverTap usando la función importada
+    sendCleverTapEvent(phone, loanValue, numberInstallments);
 }
 
 function printInfo() {
