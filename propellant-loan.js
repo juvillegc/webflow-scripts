@@ -1,7 +1,6 @@
 import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators} from './shared/utils.js';
 import { sendCleverTapEvent } from './services/event.clevertap.js';
 
-
 const interestRateEA = 24.82; // Valor dado en %
 const commissionFGA = 10; // Valor dado en %
 const sure = 1450; // Valor dado en pesos ($) x cada millón
@@ -129,3 +128,4 @@ function calculateCommissionFgaIva(commissionFGA, iva) {
 inputValue.onkeyup = handleKeyUpThousandSeparators;
 inputValue.onkeypress = onlyNumberKey;
 btnCalculate.onclick = handleClickCalculate;
+
