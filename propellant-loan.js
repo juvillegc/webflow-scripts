@@ -45,67 +45,48 @@ function handleClickCalculate() {
 
 /* --------- function de calcular y enviar datos clevertap ------------ */
 function calculate() {
-  // 1. Obtener valores de la UI
-  loanValue = cleanMask(inputValue.value);
-  numberInstallments = document.getElementById('months').value;
-  
-  // Si no hay monto o cuotas, salimos (como en tu lógica original)
-  if (!loanValue || !numberInstallments) return;
 
-  // 2. Realizar los cálculos de siempre (para mostrar simulación por defecto)
-  loanValueCommission = calculateLoanValueCommission();
-  sureCalculated = calculateSure();
-  feeValue = calculateFeeValue();
-  calculateVtua();
+    loanValue = cleanMask(inputValue.value);
+    numberInstallments = document.getElementById('months').value;
 
-  // (Si tienes alguna función para pintar en la interfaz, llámala aquí)
-  // printInfo();
+    if (!loanValue || !numberInstallments) return;
 
-  // 3. Verificar si el usuario ha ingresado un teléfono
-  const phoneInput = document.getElementById('phoneNumber');
-  const phoneError = document.getElementById('phoneError');
-  const phone = phoneInput.value.trim();
+    loanValueCommission = calculateLoanValueCommission();
+    sureCalculated = calculateSure();
+    feeValue = calculateFeeValue();
+    calculateVtua();
+    
+    const phone = document.getElementById('phoneNumber').value.trim();
 
-  // Si el usuario no ha digitado nada, no enviamos nada a CleverTap,
-  // pero tampoco detenemos el cálculo ya hecho.
-  if (!phone) {
-    // Puedes dejar un mensaje opcional o simplemente no hacer nada.
-    // phoneError.innerText = "Teléfono vacío (opcional)";
-    return;
-  }
+    if (phone.length !== 10) {
+        document.getElementById('phoneNumber').focus();
+        return;
+    }
 
-  // 4. Validar el teléfono (solo dígitos, máximo 10)
-  if (!/^\d{1,10}$/.test(phone)) {
-    // Mostrar error y no enviar a CleverTap
-    phoneError.innerText = "Ingresa un número de teléfono válido (hasta 10 dígitos).";
-    return;
-  } else {
-    // Borrar el mensaje de error si estaba
-    phoneError.innerText = "";
-  }
-
-  // 5. Si llegamos aquí, el teléfono es válido => enviamos datos a CleverTap
-  sendCleverTapEvent(phone, loanValue, numberInstallments);
+    sendCleverTapEvent(phone, loanValue, numberInstallments);
 }
 
 
 /* --------- Validar input phoneNumber ------------ */
 
-const phoneInput = document.getElementById('phoneNumber');
-phoneInput.addEventListener("keypress", function(e) {
+document.addEventListener('DOMContentLoaded', () => {
+  const phoneInput = document.getElementById('phoneNumber');
 
-  if (e.charCode < 48 || e.charCode > 57) {
+  phoneInput.addEventListener("keypress", function(e) {
+    if (e.charCode < 48 || e.charCode > 57) {
+      e.preventDefault();
+    }
+    if (phoneInput.value.length >= 10) {
+      e.preventDefault();
+    }
+  });
+
+  phoneInput.addEventListener("paste", function(e) {
     e.preventDefault();
-  }
-  if (phoneInput.value.length >= 10) {
-    e.preventDefault();
-  }
-});
+  });
 
-phoneInput.addEventListener("paste", function(e){
-  e.preventDefault();
+  validatePhoneNumber(phoneInput);
 });
-
 
 function printInfo() {
     document.getElementById('loan-value').innerHTML = `$ ${maskValue(loanValue)}`;
