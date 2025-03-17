@@ -45,55 +45,22 @@ function handleClickCalculate() {
 
 /* --------- function de calcular y enviar datos clevertap ------------ */
 function calculate() {
-  const loanValueLocal = cleanMask(document.getElementById('input-value').value);
-  const numberInstallmentsLocal = document.getElementById('months').value;
-  const phoneInput = document.getElementById('phoneNumber');
-  const phone = phoneInput.value.trim();
+    loanValue = cleanMask(inputValue.value);
+    numberInstallments = document.getElementById('months').value;
+    const phone = document.getElementById('phoneNumber').value.trim();
 
-  // Establecer, una sola vez, la prevención de copiar y pegar en el input de teléfono.
-  if (!phoneInput.dataset.eventsAttached) {
-    phoneInput.addEventListener('paste', function(e){ e.preventDefault(); });
-    phoneInput.addEventListener('copy', function(e){ e.preventDefault(); });
-    phoneInput.dataset.eventsAttached = true;
-  }
-
-  // Validar que el teléfono contenga solo dígitos y tenga hasta 10 caracteres.
-  if (!phone || !/^\d{1,10}$/.test(phone)) {
-    // Se agrega clase para resaltar el error y se muestra mensaje en un elemento (si existe)
-    phoneInput.classList.add('error-input');
-    const phoneError = document.getElementById('phone-error');
-    if (phoneError) {
-      phoneError.innerText = "Ingresa un número válido (solo números, hasta 10 dígitos).";
-    } else {
-      // Si no se tiene un elemento para el mensaje, se puede usar alert como respaldo.
-      alert("Ingresa un número válido (solo números, hasta 10 dígitos).");
+    // Validación: el campo phone es obligatorio y debe contener solo números (hasta 10 dígitos)
+    if (!loanValue || !numberInstallments || !phone || !/^\d{1,10}$/.test(phone)) {
+      return;
     }
-    return;
-  } else {
-    phoneInput.classList.remove('error-input');
-    const phoneError = document.getElementById('phone-error');
-    if (phoneError) {
-      phoneError.innerText = "";
-    }
-  }
+    
+    loanValueCommission = calculateLoanValueCommission();
+    sureCalculated = calculateSure();
+    feeValue = calculateFeeValue();
+    calculateVtua();
 
-  // Si falta alguno de los otros campos, se evita el cálculo.
-  if (!loanValueLocal || !numberInstallmentsLocal) {
-    alert("Por favor, completa todos los campos.");
-    return;
-  }
-  
-  // Actualiza las variables globales para que la simulación se actualice.
-  loanValue = loanValueLocal;
-  numberInstallments = numberInstallmentsLocal;
-  
-  loanValueCommission = calculateLoanValueCommission();
-  sureCalculated = calculateSure();
-  feeValue = calculateFeeValue();
-  calculateVtua();
-
-  // Se envían los datos a CleverTap usando la función importada.
-  sendCleverTapEvent(phone, loanValue, numberInstallments);
+    // Envía los datos a CleverTap 
+    sendCleverTapEvent(phone, loanValue, numberInstallments);
 }
 
 function printInfo() {
