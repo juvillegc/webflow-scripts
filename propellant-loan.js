@@ -45,35 +45,49 @@ function handleClickCalculate() {
 
 /* --------- function de calcular y enviar datos clevertap ------------ */
 function calculate() {
-  const phoneInput = document.getElementById('phoneNumber');
-  const phoneError = document.getElementById('phoneError');
-  const phone = phoneInput.value.trim();
-
-
-  if (!/^\d{1,10}$/.test(phone)) {
-    // Muestra el mensaje de error en lugar de un alert
-    phoneError.innerText = "Ingresa un número de teléfono válido (hasta 10 dígitos).";
-    phoneInput.focus(); 
-    return;
-  } else {
-    // Si el teléfono es válido, limpia el mensaje de error
-    phoneError.innerText = "";
-  }
-
-  // 2. Mantener la lógica original de cálculo
+  // 1. Obtener valores de la UI
   loanValue = cleanMask(inputValue.value);
   numberInstallments = document.getElementById('months').value;
-
+  
+  // Si no hay monto o cuotas, salimos (como en tu lógica original)
   if (!loanValue || !numberInstallments) return;
 
+  // 2. Realizar los cálculos de siempre (para mostrar simulación por defecto)
   loanValueCommission = calculateLoanValueCommission();
   sureCalculated = calculateSure();
   feeValue = calculateFeeValue();
   calculateVtua();
 
-  // 3. Si llegamos hasta aquí, el teléfono es válido => enviamos datos a CleverTap
+  // (Si tienes alguna función para pintar en la interfaz, llámala aquí)
+  // printInfo();
+
+  // 3. Verificar si el usuario ha ingresado un teléfono
+  const phoneInput = document.getElementById('phoneNumber');
+  const phoneError = document.getElementById('phoneError');
+  const phone = phoneInput.value.trim();
+
+  // Si el usuario no ha digitado nada, no enviamos nada a CleverTap,
+  // pero tampoco detenemos el cálculo ya hecho.
+  if (!phone) {
+    // Puedes dejar un mensaje opcional o simplemente no hacer nada.
+    // phoneError.innerText = "Teléfono vacío (opcional)";
+    return;
+  }
+
+  // 4. Validar el teléfono (solo dígitos, máximo 10)
+  if (!/^\d{1,10}$/.test(phone)) {
+    // Mostrar error y no enviar a CleverTap
+    phoneError.innerText = "Ingresa un número de teléfono válido (hasta 10 dígitos).";
+    return;
+  } else {
+    // Borrar el mensaje de error si estaba
+    phoneError.innerText = "";
+  }
+
+  // 5. Si llegamos aquí, el teléfono es válido => enviamos datos a CleverTap
   sendCleverTapEvent(phone, loanValue, numberInstallments);
 }
+
 
 /* --------- Validar input phoneNumber ------------ */
 
