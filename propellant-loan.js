@@ -1,5 +1,5 @@
 import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators} from './shared/utils.js';
-import { sendCleverTapEvent } from './services/event.clevertap.js';
+import { validatePhoneNumber, sendCleverTapEvent } from './services/event.clevertap.js';
 
 const interestRateEA = 24.82; // Valor dado en %
 const commissionFGA = 10; // Valor dado en %
@@ -43,6 +43,24 @@ function handleClickCalculate() {
     printInfo();
 }
 
+/* --------- Validar input phoneNumber ------------ */
+
+document.addEventListener('DOMContentLoaded', () => {
+  const phoneInput = document.getElementById('phoneNumber');
+
+  phoneInput.addEventListener("keypress", function(e) {
+    if (e.charCode < 48 || e.charCode > 57) {
+      e.preventDefault();
+    }
+    if (phoneInput.value.length >= 10) {
+      e.preventDefault();
+    }
+  });
+  phoneInput.addEventListener("paste", e => e.preventDefault());
+    
+  validatePhoneNumber(phoneInput);
+});
+
 /* --------- function de calcular y enviar datos clevertap ------------ */
 function calculate() {
 
@@ -67,26 +85,7 @@ function calculate() {
 }
 
 
-/* --------- Validar input phoneNumber ------------ */
 
-document.addEventListener('DOMContentLoaded', () => {
-  const phoneInput = document.getElementById('phoneNumber');
-
-  phoneInput.addEventListener("keypress", function(e) {
-    if (e.charCode < 48 || e.charCode > 57) {
-      e.preventDefault();
-    }
-    if (phoneInput.value.length >= 10) {
-      e.preventDefault();
-    }
-  });
-
-  phoneInput.addEventListener("paste", function(e) {
-    e.preventDefault();
-  });
-
-  validatePhoneNumber(phoneInput);
-});
 
 function printInfo() {
     document.getElementById('loan-value').innerHTML = `$ ${maskValue(loanValue)}`;
