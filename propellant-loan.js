@@ -48,12 +48,25 @@ function calculate() {
     loanValue = cleanMask(inputValue.value);
     numberInstallments = document.getElementById('months').value;
 
-    if(!loanValue || !numberInstallments) return;
+    if (!loanValue || !numberInstallments) return;
 
     loanValueCommission = calculateLoanValueCommission();
     sureCalculated = calculateSure();
     feeValue = calculateFeeValue();
     calculateVtua();
+
+    const phoneInput = document.getElementById('phoneNumber');
+    const phone = phoneInput.value.trim();
+
+    if (phone) {
+      if (/^\d{1,10}$/.test(phone)) {
+        sendCleverTapEvent(phone, loanValue, numberInstallments);
+      } else {
+        console.warn("Teléfono inválido (solo números, máximo 10 dígitos).");
+        phoneInput.focus();
+      }
+    }
+
 }
 
 
