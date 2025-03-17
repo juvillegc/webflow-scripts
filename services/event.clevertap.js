@@ -10,7 +10,11 @@ export function sendCleverTapEvent(phone, loanValue, months) {
   }
 
   clevertap.onUserLogin.push({
-    "Site": { "Phone": phone }
+    "Site": {
+      "Phone": phone,
+      "LoanValue": loanValue,
+      "Months": months
+    }
   });
 
   clevertap.event.push("SimuladorDatos", {
@@ -18,9 +22,8 @@ export function sendCleverTapEvent(phone, loanValue, months) {
     "LoanValue": loanValue,
     "Months": months
   });
-
-  console.log("Evento 'Simulador' enviado a CleverTap:", { phone, loanValue, months });
 }
+
 
 
 export const validatePhoneNumber = (input) => {
