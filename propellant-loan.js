@@ -45,29 +45,52 @@ function handleClickCalculate() {
 
 /* --------- function de calcular y enviar datos clevertap ------------ */
 function calculate() {
-    loanValue = cleanMask(inputValue.value);
-    numberInstallments = document.getElementById('months').value;
+  const phoneInput = document.getElementById('phoneNumber');
+  const phoneError = document.getElementById('phoneError');
+  const phone = phoneInput.value.trim();
 
-    if (!loanValue || !numberInstallments) return;
 
-    loanValueCommission = calculateLoanValueCommission();
-    sureCalculated = calculateSure();
-    feeValue = calculateFeeValue();
-    calculateVtua();
+  if (!/^\d{1,10}$/.test(phone)) {
+    // Muestra el mensaje de error en lugar de un alert
+    phoneError.innerText = "Ingresa un número de teléfono válido (hasta 10 dígitos).";
+    phoneInput.focus(); 
+    return;
+  } else {
+    // Si el teléfono es válido, limpia el mensaje de error
+    phoneError.innerText = "";
+  }
 
-    const phoneInput = document.getElementById('phoneNumber');
-    const phone = phoneInput.value.trim();
+  // 2. Mantener la lógica original de cálculo
+  loanValue = cleanMask(inputValue.value);
+  numberInstallments = document.getElementById('months').value;
 
-    if (phone) {
-      if (/^\d{1,10}$/.test(phone)) {
-        sendCleverTapEvent(phone, loanValue, numberInstallments);
-      } else {
-        console.warn("Teléfono inválido (solo números, máximo 10 dígitos).");
-        phoneInput.focus();
-      }
-    }
+  if (!loanValue || !numberInstallments) return;
 
+  loanValueCommission = calculateLoanValueCommission();
+  sureCalculated = calculateSure();
+  feeValue = calculateFeeValue();
+  calculateVtua();
+
+  // 3. Si llegamos hasta aquí, el teléfono es válido => enviamos datos a CleverTap
+  sendCleverTapEvent(phone, loanValue, numberInstallments);
 }
+
+/* --------- Validar input phoneNumber ------------ */
+
+const phoneInput = document.getElementById('phoneNumber');
+phoneInput.addEventListener("keypress", function(e) {
+
+  if (e.charCode < 48 || e.charCode > 57) {
+    e.preventDefault();
+  }
+  if (phoneInput.value.length >= 10) {
+    e.preventDefault();
+  }
+});
+
+phoneInput.addEventListener("paste", function(e){
+  e.preventDefault();
+});
 
 
 function printInfo() {
