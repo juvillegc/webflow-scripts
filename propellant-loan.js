@@ -47,21 +47,15 @@ function handleClickCalculate() {
 function calculate() {
     loanValue = cleanMask(inputValue.value);
     numberInstallments = document.getElementById('months').value;
-    const phone = document.getElementById('phoneNumber').value.trim();
 
-    // Validación: el campo phone es obligatorio y debe contener solo números (hasta 10 dígitos)
-    if (!loanValue || !numberInstallments || !phone || !/^\d{1,10}$/.test(phone)) {
-      return;
-    }
-    
+    if(!loanValue || !numberInstallments) return;
+
     loanValueCommission = calculateLoanValueCommission();
     sureCalculated = calculateSure();
     feeValue = calculateFeeValue();
     calculateVtua();
-
-    // Envía los datos a CleverTap 
-    sendCleverTapEvent(phone, loanValue, numberInstallments);
 }
+
 
 function printInfo() {
     document.getElementById('loan-value').innerHTML = `$ ${maskValue(loanValue)}`;
