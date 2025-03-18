@@ -1,5 +1,5 @@
-import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators} from './shared/utils.js';
-import { validatePhoneNumber, sendCleverTapEvent } from './services/event.clevertap.js';
+import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators, validatePhoneError} from './shared/utils.js';
+import { sendCleverTapEvent } from './services/event.clevertap.js';
 
 const interestRateEA = 24.82; // Valor dado en %
 const commissionFGA = 10; // Valor dado en %
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   phoneInput.addEventListener("paste", e => e.preventDefault());
     
-  validatePhoneNumber(phoneInput);
+  validatePhoneError(phoneInput);
 });
 
 /* --------- function de calcular y enviar datos clevertap ------------ */
