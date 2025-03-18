@@ -128,3 +128,23 @@ export const validatePhoneError = (input) => {
 };
 
 
+export function configurePhoneInput() {
+  const phoneInput = document.getElementById('phoneNumber');
+  
+  phoneInput.addEventListener("keypress", function(e) {
+    if (e.charCode < 48 || e.charCode > 57) {
+      e.preventDefault();
+    }
+    if (phoneInput.value.length >= 10) {
+      e.preventDefault();
+    }
+  });
+  
+  phoneInput.addEventListener("paste", function(e) {
+    e.preventDefault();
+  });
+  
+  validatePhoneError(phoneInput);
+}
+
+
