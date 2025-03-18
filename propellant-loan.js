@@ -1,4 +1,4 @@
-import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators, validatePhoneError} from './shared/utils.js';
+import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators, validatePhoneError, configurePhoneInput} from './shared/utils.js';
 import { sendCleverTapEvent } from './services/event.clevertap.js';
 
 const interestRateEA = 24.82; // Valor dado en %
@@ -44,23 +44,7 @@ function handleClickCalculate() {
 }
 
 /* --------- Validar input phoneNumber ------------ */
-
-document.addEventListener('DOMContentLoaded', () => {
-  const phoneInput = document.getElementById('phoneNumber');
-
-  phoneInput.addEventListener("keypress", function(e) {
-    if (e.charCode < 48 || e.charCode > 57) {
-      e.preventDefault();
-    }
-    if (phoneInput.value.length >= 10) {
-      e.preventDefault();
-    }
-  });
-  phoneInput.addEventListener("paste", e => e.preventDefault());
-    
-  validatePhoneError(phoneInput);
-});
-
+configurePhoneInput();
 /* --------- function de calcular y enviar datos clevertap ------------ */
 function calculate() {
 
