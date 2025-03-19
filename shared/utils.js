@@ -105,46 +105,43 @@ export const normalizeTex = (str) => {
 };
 
 export const validatePhoneError = (input) => {
-  let errorMsg = document.createElement("span");
-  errorMsg.classList.add("error-msg");
-  errorMsg.style.color = "red";
-  errorMsg.style.fontSize = "12px";
-  errorMsg.style.display = "none";
-  errorMsg.innerText = "El número debe tener 10 dígitos.";
-
-  input.parentNode.insertBefore(errorMsg, input.nextSibling);
-
-  input.addEventListener("input", () => {
-    if (input.value.length < 10) {
-      input.style.border = "2px solid red";
-      errorMsg.style.display = "block";
-      input.setCustomValidity("El número debe tener 10 dígitos.");
-    } else {
-      input.style.border = "";
-      errorMsg.style.display = "none";
-      input.setCustomValidity("");
-    }
-  });
-};
-
-
-export function configurePhoneInput() {
-  const phoneInput = document.getElementById('phoneNumber');
+    let errorMsg = document.createElement("span");
+    errorMsg.classList.add("error-msg");
+    errorMsg.style.color = "red";
+    errorMsg.style.fontSize = "12px";
+    errorMsg.style.display = "none";
+    errorMsg.innerText = "El número debe tener 10 dígitos.";
   
-  phoneInput.addEventListener("keypress", function(e) {
-    if (e.charCode < 48 || e.charCode > 57) {
+    input.parentNode.insertBefore(errorMsg, input.nextSibling);
+  
+    input.addEventListener("input", () => {
+      if (input.value.length < 10) {
+        input.style.border = "2px solid red";
+        errorMsg.style.display = "block";
+        input.setCustomValidity("El número debe tener 10 dígitos.");
+      } else {
+        input.style.border = "";
+        errorMsg.style.display = "none";
+        input.setCustomValidity("");
+      }
+    });
+  };
+
+export const configurePhoneInput  =  ( inputID = 'phoneNumber') => {
+    const phoneInput = document.getElementById(inputID);
+    phoneInput.addEventListener("keypress", function(e) {
+        if (!/^[0-9]$/.test(e.key)) {
+            e.preventDefault();
+          }   
+      if (phoneInput.value.length >= 10) {
+        e.preventDefault();
+      }
+    });
+
+    phoneInput.addEventListener("paste", function(e) {
       e.preventDefault();
-    }
-    if (phoneInput.value.length >= 10) {
-      e.preventDefault();
-    }
-  });
-  
-  phoneInput.addEventListener("paste", function(e) {
-    e.preventDefault();
-  });
-  
-  validatePhoneError(phoneInput);
+    });
+
+    validatePhoneError(phoneInput);
+
 }
-
-
