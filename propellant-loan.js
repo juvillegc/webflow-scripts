@@ -44,29 +44,37 @@ function handleClickCalculate() {
 }
 
 /* --------- Validar input phoneNumber ------------ */
-configurePhoneInput();
+configurePhoneInput('phoneNumber');
 /* --------- function de calcular y enviar datos clevertap ------------ */
 function calculate() {
+  
+      loanValue = cleanMask(inputValue.value);
+      numberInstallments = document.getElementById('months').value;
+  
+      if (!loanValue || !numberInstallments) return;
+  
+      loanValueCommission = calculateLoanValueCommission();
+      sureCalculated = calculateSure();
+      feeValue = calculateFeeValue();
+      calculateVtua();
 
-    loanValue = cleanMask(inputValue.value);
-    numberInstallments = document.getElementById('months').value;
+      const phoneInput = document.getElementById('phoneNumber');
+      const phone = phoneInput.value.trim();
 
-    if (!loanValue || !numberInstallments) return;
-
-    loanValueCommission = calculateLoanValueCommission();
-    sureCalculated = calculateSure();
-    feeValue = calculateFeeValue();
-    calculateVtua();
-    
-    const phone = document.getElementById('phoneNumber').value.trim();
-
-    if (phone.length !== 10) {
-        document.getElementById('phoneNumber').focus();
+      if(!phoneInput.checkVisibility()){
+        phoneInput.reportValidity();
+        phoneInput.focus();
         return;
-    }
-
-    sendCleverTapEvent(phone, loanValue, numberInstallments);
-}
+      }
+      
+    //   const phone = document.getElementById('phoneNumber').value.trim();
+  
+    //   if (phone.length !== 10) {
+    //       document.getElementById('phoneNumber').focus();
+    //       return;
+    //   }
+  
+      sendCleverTapEvent(phone, loanValue, numberInstallments);
 
 
 
