@@ -63,13 +63,14 @@ function calculate() {
 
       if (!phoneInput.checkValidity()) {
         return;
-      }
-      
+}
+
       sendCleverTapEvent('SimuladorDatos', {
-        Phone: phone,
-        loanValue: loanValue,
-        months: numberInstallments
-      });
+      Phone: phone,
+      loanValue: loanValue,
+      months: numberInstallments
+});
+
   }
 
 
