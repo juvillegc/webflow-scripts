@@ -65,18 +65,11 @@ function calculate() {
         phoneInput.reportValidity();
         phoneInput.focus();
         return;
-      }
-      
-    //   const phone = document.getElementById('phoneNumber').value.trim();
-  
-    //   if (phone.length !== 10) {
-    //       document.getElementById('phoneNumber').focus();
-    //       return;
-    //   }
+      }    
   
       sendCleverTapEvent(phone, loanValue, numberInstallments);
 
-
+}
 
 
 function printInfo() {
