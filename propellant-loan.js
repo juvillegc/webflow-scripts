@@ -61,15 +61,19 @@ function calculate() {
       const phoneInput = document.getElementById('phoneNumber');
       const phone = phoneInput.value.trim();
 
-      if(!phoneInput.checkVisibility()){
+      if (!phoneInput.checkValidity()) {
         phoneInput.reportValidity();
         phoneInput.focus();
         return;
-      }    
+      }
+      
   
-      sendCleverTapEvent(phone, loanValue, numberInstallments);
-
-}
+      sendCleverTapEvent('SimuladorDatos', {
+        Phone: phone,
+        loanValue: loanValue,
+        months: numberInstallments
+      });
+  }
 
 
 function printInfo() {
