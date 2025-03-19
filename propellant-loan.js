@@ -62,12 +62,9 @@ function calculate() {
       const phone = phoneInput.value.trim();
 
       if (!phoneInput.checkValidity()) {
-        phoneInput.reportValidity();
-        phoneInput.focus();
         return;
       }
       
-  
       sendCleverTapEvent('SimuladorDatos', {
         Phone: phone,
         loanValue: loanValue,
