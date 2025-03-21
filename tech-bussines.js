@@ -1,4 +1,4 @@
-import { validPhoneNumber,  validateEmail, validDocumentNumber } from './shared/utils.js';
+import { validPhoneNumber,  validateEmail, validDocumentNumber, onlyNumberKey } from './shared/utils.js';
 
 const inputPhoneNumber = document.getElementById('numero_celular');
 const inputDocumentMail = document.getElementById('correo_electronico');
@@ -15,10 +15,10 @@ const validateInputs = () => {
     inputDocumentMail.oncopy = (e) => e.preventDefault();
     inputDocumentMail.oninput = validateEmail;
 
-    inputDocumentNumber.onkeypress = validDocumentNumber;
-    inputDocumentNumber.forEach((input) => {
-        input.onkeypress = onlyNumberKey;
-    });
+    inputDocumentNumber.onkeypress = (e) => {
+        validDocumentNumber(e);
+        onlyNumberKey(e);
+    };
 };
 
 const main = async () => {
