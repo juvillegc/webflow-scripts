@@ -2,7 +2,7 @@ import { validPhoneNumber,  validateEmail, validDocumentNumber, onlyNumberKey } 
 
 const inputPhoneNumber = document.getElementById('numero_celular');
 const inputDocumentMail = document.getElementById('correo_electronico');
-const inputDocumentNumber = document.getElementById('numero_documento');
+const inputDocumentNumber = document.querySelectorAll('.numero_documento');
 
 const validateInputs = () => {
     // Deshabilitar copiar y pegar en el campo de celular
@@ -15,10 +15,11 @@ const validateInputs = () => {
     inputDocumentMail.oncopy = (e) => e.preventDefault();
     inputDocumentMail.oninput = validateEmail;
 
-    inputDocumentNumber.onkeypress = (e) => {
-        validDocumentNumber(e);
-        onlyNumberKey(e);
-    };
+    inputDocumentNumber.onkeypress = validDocumentNumber;
+
+      inputDocumentNumber.forEach((input) => {
+        input.onkeypress = onlyNumberKey;
+    });
 };
 
 const main = async () => {
