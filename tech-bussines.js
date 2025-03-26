@@ -4,24 +4,17 @@ const inputPhoneNumber = document.getElementById('numero_celular');
 const inputDocumentMail = document.getElementById('correo_electronico');
 const inputDocumentNumber = document.querySelectorAll('.numero_documento');
 
-
-
 const validateInputs = () => {
-    
-   inputPhoneNumber.forEach((input) => {
-        input.onkeypress = validPhoneNumber;
-    });
-    
-    inputDocumentMail.oninput = validateEmail;
+    inputPhoneNumber?.addEventListener('input', validPhoneNumber);
+    inputDocumentMail?.addEventListener('input', validateEmail);
 
-    inputDocumentNumber.onkeypress = validDocumentNumber;
-    
-}
+    inputDocumentNumber.forEach((input) => {
+        input.addEventListener('keypress', validDocumentNumber);
+    });
+};
 
 const main = async () => {
     validateInputs();
 };
 
 main();
-
-
