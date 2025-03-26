@@ -5,9 +5,19 @@ const inputDocumentMail = document.getElementById('correo_electronico');
 const inputDocumentNumber = document.getElementById('numero_documento');
 
 const validateInputs = () => {
-    inputPhoneNumber?.addEventListener('keypress', validPhoneNumber);     
-    inputDocumentMail?.addEventListener('input', validateEmail);          
-    inputDocumentNumber?.addEventListener('keypress', validDocumentNumber); 
+    inputPhoneNumber?.addEventListener('keypress', (e) => {
+        if (!validPhoneNumber(e)) {
+            e.preventDefault();
+        }
+    });
+
+    inputDocumentMail?.addEventListener('input', validateEmail);
+
+    inputDocumentNumber?.addEventListener('keypress', (e) => {
+        if (!validDocumentNumber(e)) {
+            e.preventDefault();
+        }
+    });
 };
 
 const main = async () => {
