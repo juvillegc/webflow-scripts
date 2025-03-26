@@ -2,15 +2,12 @@ import { validPhoneNumber, validateEmail, validDocumentNumber } from './shared/u
 
 const inputPhoneNumber = document.getElementById('numero_celular');
 const inputDocumentMail = document.getElementById('correo_electronico');
-const inputDocumentNumber = document.querySelectorAll('.numero_documento');
+const inputDocumentNumber = document.getElementById('numero_documento');
 
 const validateInputs = () => {
-    inputPhoneNumber?.addEventListener('input', validPhoneNumber);
-    inputDocumentMail?.addEventListener('input', validateEmail);
-
-    inputDocumentNumber.forEach((input) => {
-        input.addEventListener('keypress', validDocumentNumber);
-    });
+    inputPhoneNumber?.addEventListener('keypress', validPhoneNumber);     
+    inputDocumentMail?.addEventListener('input', validateEmail);          
+    inputDocumentNumber?.addEventListener('keypress', validDocumentNumber); 
 };
 
 const main = async () => {
