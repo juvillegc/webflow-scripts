@@ -32,7 +32,7 @@ init();
 
 function init() {
     inputValue.value = maskValue(initValue);
-    loanValue = initValue || 0; 
+    loanValue = 0; 
     numberInstallments = 0;
     loanValueCommission = 0;
     sureCalculated = 0;
