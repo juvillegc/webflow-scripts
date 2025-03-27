@@ -31,7 +31,7 @@ configurePhoneInput('phoneNumber'); // Configura el input de teléfono
 init();
 
 function init() {
-    inputValue = 0;
+    inputValue.value = maskValue(initValue);
     loanValue = 0; 
     numberInstallments = 0;
     loanValueCommission = 0;
