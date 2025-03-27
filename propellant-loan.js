@@ -63,7 +63,7 @@ function calculate() {
     // Establece el mensaje de error y detiene la función si el teléfono no cumple
     phoneInput.setCustomValidity("El número es obligatorio y debe tener 10 dígitos.");
     phoneInput.reportValidity();  // Opcional: muestra el mensaje nativo
-    phoneInput.focus();
+  
     return;
   } else {
     phoneInput.setCustomValidity("");
@@ -75,7 +75,7 @@ function calculate() {
     // Establece un mensaje de error en el propio checkbox si no está marcado
     privacyPolicyCheckbox.setCustomValidity("Debes aceptar las políticas de tratamiento de datos.");
     privacyPolicyCheckbox.reportValidity(); // Opcional: muestra el mensaje nativo
-    privacyPolicyCheckbox.focus();
+  
     return;
   } else {
     privacyPolicyCheckbox.setCustomValidity("");
@@ -99,9 +99,9 @@ function calculate() {
 
 
 function printInfo() {
-    document.getElementById('loan-value').innerHTML = `$ ${maskValue(loanValue)}`;
-    document.getElementById('loan-value-commission').innerHTML = `$ ${maskValue(loanValueCommission)}`;
-    document.getElementById('fee-value').innerHTML = `$ ${maskValue(round(feeValue))}`;
+    document.getElementById('loan-value').innerHTML = `$0 ${maskValue(loanValue)}`;
+    document.getElementById('loan-value-commission').innerHTML = `$0 ${maskValue(loanValueCommission)}`;
+    document.getElementById('fee-value').innerHTML = `$0 ${maskValue(round(feeValue))}`;
     document.getElementById('interest').innerHTML = `${interestRateMV} % E.M (${interestRateEA}% E.A)`;
     document.getElementById('number-installments').innerHTML = `${numberInstallments} meses`;
     document.getElementById('sure').innerHTML = `$ ${maskValue(sureCalculated)}`;
