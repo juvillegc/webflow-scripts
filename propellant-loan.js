@@ -99,9 +99,9 @@ function calculate() {
 
 
 function printInfo() {
-    document.getElementById('loan-value').innerHTML = `$0 ${maskValue(loanValue)}`;
-    document.getElementById('loan-value-commission').innerHTML = `$0 ${maskValue(loanValueCommission)}`;
-    document.getElementById('fee-value').innerHTML = `$0 ${maskValue(round(feeValue))}`;
+    document.getElementById('loan-value').innerHTML = `$ ${maskValue(loanValue)}`;
+    document.getElementById('loan-value-commission').innerHTML = `$ ${maskValue(loanValueCommission)}`;
+    document.getElementById('fee-value').innerHTML = `$ ${maskValue(round(feeValue))}`;
     document.getElementById('interest').innerHTML = `${interestRateMV} % E.M (${interestRateEA}% E.A)`;
     document.getElementById('number-installments').innerHTML = `${numberInstallments} meses`;
     document.getElementById('sure').innerHTML = `$ ${maskValue(sureCalculated)}`;
