@@ -65,7 +65,7 @@ function calculate() {
   const phone = phoneInput.value.trim();
   
   if (!phone || !phoneInput.checkValidity()) {
-    phoneInput.setCustomValidity("El número es obligatorio y debe tener 10 dígitos.");
+    phoneInput.setCustomValidity("Para continuar con tu simulación, ingresa tu número.");
     phoneInput.reportValidity();  // Muestra el mensaje nativo
     return;
   } else {
@@ -75,7 +75,7 @@ function calculate() {
 
   const privacyPolicyCheckbox = document.getElementById('privacyPolicy');
   if (!privacyPolicyCheckbox.checked) {
-    privacyPolicyCheckbox.setCustomValidity("Debes aceptar las políticas de tratamiento de datos.");
+    privacyPolicyCheckbox.setCustomValidity("Debes aceptar las políticas de tratamiento de datos para seguir.");
     privacyPolicyCheckbox.reportValidity();
     return;
   } else {
