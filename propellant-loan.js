@@ -47,47 +47,49 @@ function handleClickCalculate() {
 configurePhoneInput('phoneNumber');
 /* --------- function de calcular y enviar datos clevertap ------------ */
 function calculate() {
-  // 1. Validación del teléfono
-  const phoneInput = document.getElementById('phoneNumber');
-  const phone = phoneInput.value.trim();
-  
-  // Si el teléfono está vacío o no cumple la validación (por ejemplo, 10 dígitos)
-  if (!phone || !phoneInput.checkValidity()) {
-    phoneInput.setCustomValidity("El número es obligatorio y debe tener 10 dígitos.");
-    phoneInput.reportValidity(); // Opcional: muestra el mensaje de error nativo
-    phoneInput.focus();
-    return;
-  } else {
-    phoneInput.setCustomValidity("");
-  }
-  
-  // 2. Validación del checkbox de políticas
-  const privacyPolicyCheckbox = document.getElementById('privacyPolicy');
-  // Asumiendo que tienes un elemento para mostrar error, por ejemplo:
-  const privacyPolicyError = document.getElementById('privacyPolicyError');
-  
-  if (!privacyPolicyCheckbox.checked) {
-    // En lugar de alertar, se muestra el mensaje en el elemento de error
-    privacyPolicyError.innerText = "Debes aceptar las políticas de tratamiento de datos para continuar.";
-    privacyPolicyCheckbox.focus();
-    return;
-  } else {
-    privacyPolicyError.innerText = "";
-  }
-  
-  // 3. Obtener y validar los demás valores
-  loanValue = cleanMask(inputValue.value);
-  numberInstallments = document.getElementById('months').value;
-  
-  if (!loanValue || !numberInstallments) return;
-  
-  // 4. Realizar cálculos de la simulación
+  // 1. Obtener y limpiar los valores de monto y plazo. Si están vacíos, se asigna 0.
+  loanValue = cleanMask(inputValue.value) || "0";
+  numberInstallments = document.getElementById('months').value || "0";
+
+  // Convertir a número si es necesario:
+  loanValue = parseFloat(loanValue);
+  numberInstallments = parseInt(numberInstallments, 10);
+
+  // Realiza los cálculos de la simulación
   loanValueCommission = calculateLoanValueCommission();
   sureCalculated = calculateSure();
   feeValue = calculateFeeValue();
   calculateVtua();
-  
-  // 5. Enviar los datos a CleverTap, incluyendo el estado del checkbox (true, ya que se validó)
+
+  // 2. Validar el teléfono SOLO cuando el usuario haga clic en calcular
+  const phoneInput = document.getElementById('phoneNumber');
+  const phone = phoneInput.value.trim();
+
+  // Aquí, si el teléfono está vacío o no es válido, se muestra el mensaje de error
+  if (!phone || !phoneInput.checkValidity()) {
+    // Establece el mensaje de error en este momento (solo al intentar calcular)
+    phoneInput.setCustomValidity("El número es obligatorio y debe tener 10 dígitos.");
+    // Opcional: puedes llamar a reportValidity() para que se muestre el mensaje nativo
+    phoneInput.reportValidity();
+    phoneInput.focus();
+    return;
+  } else {
+    phoneInput.setCustomValidity(""); // Limpia el mensaje si es válido
+  }
+
+  // 3. Validar el checkbox de políticas de tratamiento de datos
+  const privacyPolicyCheckbox = document.getElementById('privacyPolicy');
+  if (!privacyPolicyCheckbox.checked) {
+    // Se establece el mensaje de error en el propio checkbox
+    privacyPolicyCheckbox.setCustomValidity("Debes aceptar las políticas de tratamiento de datos.");
+    privacyPolicyCheckbox.reportValidity();
+    privacyPolicyCheckbox.focus();
+    return;
+  } else {
+    privacyPolicyCheckbox.setCustomValidity("");
+  }
+
+  // 4. Envía los datos a CleverTap
   sendCleverTapEvent('SimuladorDatos', {
     Phone: phone,
     loanValue: loanValue,
