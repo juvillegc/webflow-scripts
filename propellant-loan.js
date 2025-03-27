@@ -47,7 +47,7 @@ function handleClickCalculate() {
 configurePhoneInput('phoneNumber');
 /* --------- function de calcular y enviar datos clevertap ------------ */
 function calculate() {
-  // 1. Obtener y limpiar los valores de monto y plazo. Si están vacíos, se asigna 0.
+  // 1. Obtener y limpiar los valores de monto y plazo. Si están vacíos, se asigna "0".
   loanValue = cleanMask(inputValue.value) || "0";
   numberInstallments = document.getElementById('months').value || "0";
 
@@ -58,24 +58,21 @@ function calculate() {
   // 2. Validar que el campo de teléfono esté lleno y sea válido
   const phoneInput = document.getElementById('phoneNumber');
   const phone = phoneInput.value.trim();
-  
+
   if (!phone || !phoneInput.checkValidity()) {
-    // Establece el mensaje de error y detiene la función si el teléfono no cumple
+    // Establece el mensaje de error pero sin llamar a focus()
     phoneInput.setCustomValidity("El número es obligatorio y debe tener 10 dígitos.");
-    phoneInput.reportValidity();  // Opcional: muestra el mensaje nativo
-  
+    phoneInput.reportValidity(); // Muestra el mensaje nativo (puedes quitarlo si prefieres mostrarlo de otra forma)
     return;
   } else {
-    phoneInput.setCustomValidity("");
+    phoneInput.setCustomValidity(""); // Limpia el mensaje si es válido
   }
   
   // 3. Validar que el checkbox de políticas esté marcado
   const privacyPolicyCheckbox = document.getElementById('privacyPolicy');
   if (!privacyPolicyCheckbox.checked) {
-    // Establece un mensaje de error en el propio checkbox si no está marcado
     privacyPolicyCheckbox.setCustomValidity("Debes aceptar las políticas de tratamiento de datos.");
-    privacyPolicyCheckbox.reportValidity(); // Opcional: muestra el mensaje nativo
-  
+    privacyPolicyCheckbox.reportValidity();
     return;
   } else {
     privacyPolicyCheckbox.setCustomValidity("");
@@ -95,6 +92,7 @@ function calculate() {
     privacyPolicy: privacyPolicyCheckbox.checked
   });
 }
+
 
 
 
