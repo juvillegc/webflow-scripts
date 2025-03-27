@@ -51,45 +51,43 @@ function calculate() {
   loanValue = cleanMask(inputValue.value) || "0";
   numberInstallments = document.getElementById('months').value || "0";
 
-  // Convertir a número si es necesario:
+  // Convertir a números si es necesario
   loanValue = parseFloat(loanValue);
   numberInstallments = parseInt(numberInstallments, 10);
 
-  // Realiza los cálculos de la simulación
-  loanValueCommission = calculateLoanValueCommission();
-  sureCalculated = calculateSure();
-  feeValue = calculateFeeValue();
-  calculateVtua();
-
-  // 2. Validar el teléfono SOLO cuando el usuario haga clic en calcular
+  // 2. Validar que el campo de teléfono esté lleno y sea válido
   const phoneInput = document.getElementById('phoneNumber');
   const phone = phoneInput.value.trim();
-
-  // Aquí, si el teléfono está vacío o no es válido, se muestra el mensaje de error
+  
   if (!phone || !phoneInput.checkValidity()) {
-    // Establece el mensaje de error en este momento (solo al intentar calcular)
+    // Establece el mensaje de error y detiene la función si el teléfono no cumple
     phoneInput.setCustomValidity("El número es obligatorio y debe tener 10 dígitos.");
-    // Opcional: puedes llamar a reportValidity() para que se muestre el mensaje nativo
-    phoneInput.reportValidity();
+    phoneInput.reportValidity();  // Opcional: muestra el mensaje nativo
     phoneInput.focus();
     return;
   } else {
-    phoneInput.setCustomValidity(""); // Limpia el mensaje si es válido
+    phoneInput.setCustomValidity("");
   }
-
-  // 3. Validar el checkbox de políticas de tratamiento de datos
+  
+  // 3. Validar que el checkbox de políticas esté marcado
   const privacyPolicyCheckbox = document.getElementById('privacyPolicy');
   if (!privacyPolicyCheckbox.checked) {
-    // Se establece el mensaje de error en el propio checkbox
+    // Establece un mensaje de error en el propio checkbox si no está marcado
     privacyPolicyCheckbox.setCustomValidity("Debes aceptar las políticas de tratamiento de datos.");
-    privacyPolicyCheckbox.reportValidity();
+    privacyPolicyCheckbox.reportValidity(); // Opcional: muestra el mensaje nativo
     privacyPolicyCheckbox.focus();
     return;
   } else {
     privacyPolicyCheckbox.setCustomValidity("");
   }
+  
+  // 4. Realizar los cálculos de la simulación
+  loanValueCommission = calculateLoanValueCommission();
+  sureCalculated = calculateSure();
+  feeValue = calculateFeeValue();
+  calculateVtua();
 
-  // 4. Envía los datos a CleverTap
+  // 5. Enviar los datos a CleverTap
   sendCleverTapEvent('SimuladorDatos', {
     Phone: phone,
     loanValue: loanValue,
@@ -97,6 +95,7 @@ function calculate() {
     privacyPolicy: privacyPolicyCheckbox.checked
   });
 }
+
 
 
 function printInfo() {
