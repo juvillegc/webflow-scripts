@@ -24,18 +24,25 @@ vtua = {
 const inputValue = document.getElementById('input-value');
 const btnCalculate = document.getElementById('btn-calculate');
 
+
+configurePhoneInput('phoneNumber'); // Configura el input de teléfono
+
+
 init();
 
 function init() {
-    if(!initValue) return;
     inputValue.value = maskValue(initValue);
-    calculate();
+    loanValue = initValue || 0; 
+    numberInstallments = 0;
+    loanValueCommission = 0;
+    sureCalculated = 0;
+    feeValue = 0;
     printInfo();
 }
 
 function handleClickCalculate() {
     inputValue.classList.remove('error-input');
-    if(!inputValue.value){
+    if (!inputValue.value) {
         inputValue.classList.add('error-input');
         return;
     }
@@ -43,11 +50,10 @@ function handleClickCalculate() {
     printInfo();
 }
 
-/* --------- Validar input phoneNumber ------------ */
-configurePhoneInput('phoneNumber');
-/* --------- function de calcular y enviar datos clevertap ------------ */
+/* --------- Función de cálculo y envío de datos a CleverTap ------------ */
+
 function calculate() {
-  // 1. Obtener y limpiar los valores de monto y plazo. Si están vacíos, se asigna "0".
+
   loanValue = cleanMask(inputValue.value) || "0";
   numberInstallments = document.getElementById('months').value || "0";
 
@@ -55,20 +61,18 @@ function calculate() {
   loanValue = parseFloat(loanValue);
   numberInstallments = parseInt(numberInstallments, 10);
 
-  // 2. Validar que el campo de teléfono esté lleno y sea válido
   const phoneInput = document.getElementById('phoneNumber');
   const phone = phoneInput.value.trim();
-
+  
   if (!phone || !phoneInput.checkValidity()) {
-    // Establece el mensaje de error pero sin llamar a focus()
     phoneInput.setCustomValidity("El número es obligatorio y debe tener 10 dígitos.");
-    phoneInput.reportValidity(); // Muestra el mensaje nativo (puedes quitarlo si prefieres mostrarlo de otra forma)
+    phoneInput.reportValidity();  // Muestra el mensaje nativo
     return;
   } else {
-    phoneInput.setCustomValidity(""); // Limpia el mensaje si es válido
+    phoneInput.setCustomValidity(""); 
   }
   
-  // 3. Validar que el checkbox de políticas esté marcado
+
   const privacyPolicyCheckbox = document.getElementById('privacyPolicy');
   if (!privacyPolicyCheckbox.checked) {
     privacyPolicyCheckbox.setCustomValidity("Debes aceptar las políticas de tratamiento de datos.");
@@ -78,13 +82,13 @@ function calculate() {
     privacyPolicyCheckbox.setCustomValidity("");
   }
   
-  // 4. Realizar los cálculos de la simulación
+
   loanValueCommission = calculateLoanValueCommission();
   sureCalculated = calculateSure();
   feeValue = calculateFeeValue();
   calculateVtua();
 
-  // 5. Enviar los datos a CleverTap
+
   sendCleverTapEvent('SimuladorDatos', {
     Phone: phone,
     loanValue: loanValue,
@@ -92,9 +96,6 @@ function calculate() {
     privacyPolicy: privacyPolicyCheckbox.checked
   });
 }
-
-
-
 
 function printInfo() {
     document.getElementById('loan-value').innerHTML = `$ ${maskValue(loanValue)}`;
@@ -116,18 +117,18 @@ function printInfoVtua() {
 
 /* --------- Loan Calculations ------------ */
 function calculateLoanValueCommission() {
-    const loanValueCommission = loanValue * ( 1 + convertToDecimal(commissionFgaIva) );;
+    const loanValueCommission = loanValue * (1 + convertToDecimal(commissionFgaIva));
     return Math.round(loanValueCommission);
 }
 
 function calculateSure() {
-    let numberSures = Math.ceil( loanValueCommission / 1000000 );
+    let numberSures = Math.ceil(loanValueCommission / 1000000);
     return sure * numberSures;
 }
 
 function calculateFeeValue() {
     const interestRateMVDecimal = convertToDecimal(interestRateMV);
-    const feeValueWithoutSure = (loanValueCommission / ((1 - (1 + interestRateMVDecimal) ** (numberInstallments * -1) ) / interestRateMVDecimal));
+    const feeValueWithoutSure = (loanValueCommission / ((1 - (1 + interestRateMVDecimal) ** (numberInstallments * -1)) / interestRateMVDecimal));
     const feeValueWithSure = feeValueWithoutSure + sureCalculated;
     return roundDecimals(feeValueWithSure);
 }
@@ -140,7 +141,7 @@ function calculateVtua() {
 }
 
 /* --------- Initial Calculations ------------ */
-function calculateInterestRateMV (interestRateEA) {
+function calculateInterestRateMV(interestRateEA) {
     const interestRateEADecimal = convertToDecimal(interestRateEA);
     let interestRateMV = (1 + interestRateEADecimal) ** (1 / 12) - 1;
     interestRateMV = convertToPercentage(interestRateMV);
@@ -158,4 +159,3 @@ function calculateCommissionFgaIva(commissionFGA, iva) {
 inputValue.onkeyup = handleKeyUpThousandSeparators;
 inputValue.onkeypress = onlyNumberKey;
 btnCalculate.onclick = handleClickCalculate;
-
