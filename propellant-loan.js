@@ -5,7 +5,7 @@ const interestRateEA = 24.82; // Valor dado en %
 const commissionFGA = 10; // Valor dado en %
 const sure = 1450; // Valor dado en pesos ($) x cada millón
 const iva = 19; // Valor dado en %
-const initValue = 10000; // Valor prestamo inicial (Para que cargue una simulacion por defecto)
+const initValue = 1000000; // Valor prestamo inicial (Para que cargue una simulacion por defecto)
 
 const interestRateMV = calculateInterestRateMV(interestRateEA);
 const commissionFgaIva = calculateCommissionFgaIva(commissionFGA, iva);
