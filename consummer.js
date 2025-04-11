@@ -2,12 +2,12 @@ import { onlyNumberKey, handleKeyUpThousandSeparators, validPhoneNumber, validat
 import { inputEvent } from './shared/date-format.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
-const inputPhoneNumber = document.getElementById('numero_celular');
-const customPrice = document.querySelectorAll('.custom-price');
+const inputDocumentNumber = document.getElementById('numero_documento');
+const inputDocumentMail = document.getElementById('correo_electronico');
+const inputPhoneNumber = document.querySelectorAll('.numero_celula');
 const selDepartments = document.querySelector('#departamentos');
 const selCities = document.querySelector('#ciudades');
-const inputDocumentMail = document.getElementById('correo_electronico');
-const inputDocumentNumber = document.getElementById('numero_documento');
+const customPrice = document.querySelectorAll('.custom-price');
 
 
 const validateInputs = () => {
