@@ -10,8 +10,6 @@ const customPrice = document.querySelectorAll('.custom-price');
 const inputDate = document.querySelector('input[type="date"]');
 const fileInputs = document.querySelectorAll('input[type="file"]');
 
-
-
 const validateInputs = () => {
     
     inputPhoneNumber.onkeypress = validPhoneNumber;
