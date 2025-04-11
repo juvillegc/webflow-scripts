@@ -1,5 +1,4 @@
 import { onlyNumberKey, handleKeyUpThousandSeparators, validPhoneNumber, validateEmail, validDocumentNumber, removeAllOptions, addFirstOption, setTodayAsDefaultDate } from './shared/utils.js';
-import { inputEvent } from './shared/date-format.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
 const inputDocumentNumber = document.getElementById('numero_documento');
