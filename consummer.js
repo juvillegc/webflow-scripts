@@ -18,8 +18,6 @@ const validateInputs = () => {
         input.onkeyup = handleKeyUpThousandSeparators;
         input.onkeypress = onlyNumberKey;
     });
-    
-    inputDateTakeMoney.oninput = inputEvent;
 
     inputDocumentMail.oninput = validateEmail;
     
