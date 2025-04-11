@@ -4,7 +4,7 @@ import { getDepartments, getCities } from './services/location.service.js';
 
 const inputDocumentNumber = document.getElementById('numero_documento');
 const inputDocumentMail = document.getElementById('correo_electronico');
-const inputPhoneNumber = document.querySelectorAll('.numero-celular');
+const inputPhoneNumber = document.getElementById('numero_celular');
 const selDepartments = document.querySelector('#departamentos');
 const selCities = document.querySelector('#ciudades');
 const customPrice = document.querySelectorAll('.custom-price');
@@ -12,9 +12,7 @@ const customPrice = document.querySelectorAll('.custom-price');
 
 const validateInputs = () => {
     
-     inputPhoneNumber.forEach((input) => {
-        input.onkeypress = validPhoneNumber;
-    })
+    inputPhoneNumber.onkeypress = validPhoneNumber;
     
     customPrice.forEach((input) => {
         input.onkeyup = handleKeyUpThousandSeparators;
