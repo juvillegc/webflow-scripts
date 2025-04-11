@@ -12,7 +12,9 @@ const customPrice = document.querySelectorAll('.custom-price');
 
 const validateInputs = () => {
     
-    inputPhoneNumber.onkeypress = validPhoneNumber;
+     inputPhoneNumber.forEach((input) => {
+        input.onkeypress = validPhoneNumber;
+    })
     
     customPrice.forEach((input) => {
         input.onkeyup = handleKeyUpThousandSeparators;
