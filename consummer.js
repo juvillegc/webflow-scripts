@@ -1,15 +1,14 @@
-import { onlyNumberKey, handleKeyUpThousandSeparators, validPhoneNumber, validateEmail, validDocumentNumber, removeAllOptions, addFirstOption, normalizeTex } from './shared/utils.js';
+import { onlyNumberKey, handleKeyUpThousandSeparators, validPhoneNumber, validateEmail, validDocumentNumber, removeAllOptions, addFirstOption } from './shared/utils.js';
 import { inputEvent } from './shared/date-format.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
-const inputPhoneNumber = document.getElementById('numero_cedula_gamer');
+const inputPhoneNumber = document.getElementById('numero_celular');
 const customPrice = document.querySelectorAll('.custom-price');
-const inputDateTakeMoney = document.getElementById('fecha_recarga');
 const selDepartments = document.querySelector('#departamentos');
 const selCities = document.querySelector('#ciudades');
 const inputDocumentMail = document.getElementById('correo_electronico');
-const inputDocumentNumber = document.querySelectorAll('.numero_documento');
-const inputDocumentText = document.querySelectorAll('.input-form-text');
+const inputDocumentNumber = document.getElementById('numero_documento');
+
 
 const validateInputs = () => {
     
@@ -31,15 +30,7 @@ const validateInputs = () => {
     });
 }
 
-// Normaliza el input para no permitir caracteres espaciales.
 
-const handleNormalizeInput = (event) => {
-    event.target.value = normalizeTex(event.target.value);
-};
-
-inputDocumentText.forEach((input) => {
-    input.addEventListener("input", handleNormalizeInput);
-});
 
 const loadDepartments = async () => {
     const { deparments } = await getDepartments();
