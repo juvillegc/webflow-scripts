@@ -154,19 +154,19 @@ export const setTodayAsDefaultDate = (inputElement) => {
   const yyyy = hoy.getFullYear();
   const mm = String(hoy.getMonth() + 1).padStart(2, '0');
   const dd = String(hoy.getDate()).padStart(2, '0');
-
   const fechaActual = `${yyyy}-${mm}-${dd}`;
+
   inputElement.value = fechaActual;
-
-  // 🔒 Hace que el campo no se pueda editar
   inputElement.readOnly = true;
-  inputElement.setAttribute('disabled', true); // <- si no quieres que ni siquiera aparezca en el tabulador
 
-  // 📝 Asegurarse de que el valor se envíe (opcional: con campo oculto)
+  inputElement.addEventListener('keydown', e => e.preventDefault());
+  inputElement.addEventListener('mousedown', e => e.preventDefault());
+
   const hiddenInput = document.createElement('input');
   hiddenInput.type = 'hidden';
   hiddenInput.name = inputElement.name;
   hiddenInput.value = fechaActual;
   inputElement.form?.appendChild(hiddenInput);
 };
+
 
