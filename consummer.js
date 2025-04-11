@@ -20,12 +20,8 @@ const validateInputs = () => {
     });
 
     inputDocumentMail.oninput = validateEmail;
-    
     inputDocumentNumber.onkeypress = validDocumentNumber;
 
-      inputDocumentNumber.forEach((input) => {
-        input.onkeypress = onlyNumberKey;
-    });
 }
 
 
