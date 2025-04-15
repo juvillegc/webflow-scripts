@@ -9,7 +9,8 @@ const selDepartments = document.querySelector('#departamentos');
 const selCities = document.querySelector('#ciudades');
 const inputDocumentMail = document.getElementById('correo_electronico');
 const inputDocumentNumber = document.querySelectorAll('.numero_documento');
-const inputDocumentText = document.getElementById('input_text');
+const inputDocumentText = document.querySelectorAll('.input_text');
+
 
 const validateInputs = () => {
     
