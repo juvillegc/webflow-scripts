@@ -104,6 +104,9 @@ export const normalizeTex = (str) => {
         .replace(/,/g, ''); // Elimina comas
 };
 
+
+/* --------- Special Character Remover ------------ */
+
 export const removeAccents = (str) => {
     return str.normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '') // Elimina tildes
@@ -111,6 +114,7 @@ export const removeAccents = (str) => {
         .replace(/Ñ/g, 'N') // Reemplaza Ñ por N
         .replace(/,/g, ''); // Elimina comas
 };
+
 export const validatePhoneError = (input) => {
     let errorMsg = document.createElement("span");
     errorMsg.classList.add("error-msg");
@@ -153,14 +157,15 @@ export const configurePhoneInput  =  ( inputID = 'phoneNumber') => {
 
 }
 
+/* --------- Automate default date ------------ */
 
 export const setTodayAsDefaultDate = (inputElement) => {
   if (!inputElement) return;
 
-  const hoy = new Date();
-  const yyyy = hoy.getFullYear();
-  const mm = String(hoy.getMonth() + 1).padStart(2, '0');
-  const dd = String(hoy.getDate()).padStart(2, '0');
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
   const fechaActual = `${yyyy}-${mm}-${dd}`;
 
   inputElement.value = fechaActual;
@@ -175,5 +180,29 @@ export const setTodayAsDefaultDate = (inputElement) => {
   hiddenInput.value = fechaActual;
   inputElement.form?.appendChild(hiddenInput);
 };
+
+
+/* --------- Limit text field characters ------------ */
+
+export const setMaxFileSizeListeners = (fileInputs) => {
+  fileInputs.forEach((input) => {
+    const maxSize = parseInt(input.getAttribute("data-max-size")) || 5242880;
+
+    input.addEventListener("change", () => {
+      const file = input.files[0];
+
+      if (file && file.size > maxSize) {
+        input.setCustomValidity(
+          `El archivo excede el tamaño máximo permitido de ${maxSize / 1048576} MB.`
+        );
+        input.reportValidity();
+        input.value = "";
+      } else {
+        input.setCustomValidity("");
+      }
+    });
+  });
+};
+
 
 
