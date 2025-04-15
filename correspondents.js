@@ -9,7 +9,7 @@ const selDepartments = document.querySelector('#departamentos');
 const selCities = document.querySelector('#ciudades');
 const inputDocumentMail = document.getElementById('correo_electronico');
 const inputDocumentNumber = document.querySelectorAll('.numero_documento');
-const inputDocumentText = document.querySelectorAll('.input_text');
+const inputDocumentTexts = document.querySelectorAll('.input_text');
 
 
 const validateInputs = () => {
@@ -36,7 +36,7 @@ const handleNormalizeInput = (event) => {
     event.target.value = removeAccents(event.target.value);
 };
 
-inputDocumentText.forEach((input) => {
+inputDocumentTexts.forEach((input) => {
     input.addEventListener("input", handleNormalizeInput);
 });
 
