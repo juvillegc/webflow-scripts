@@ -104,6 +104,13 @@ export const normalizeTex = (str) => {
         .replace(/,/g, ''); // Elimina comas
 };
 
+export const removeAccents = (str) => {
+    return str.normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // Elimina tildes
+        .replace(/ñ/g, 'n') // Reemplaza ñ por n
+        .replace(/Ñ/g, 'N') // Reemplaza Ñ por N
+        .replace(/,/g, ''); // Elimina comas
+};
 export const validatePhoneError = (input) => {
     let errorMsg = document.createElement("span");
     errorMsg.classList.add("error-msg");
