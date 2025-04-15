@@ -1,6 +1,7 @@
 import { onlyNumberKey, handleKeyUpThousandSeparators, validPhoneNumber, validateEmail, validDocumentNumber, removeAllOptions, addFirstOption, setTodayAsDefaultDate, setMaxFileSizeListeners } from './shared/utils.js';
 import { getDepartments, getCities } from './services/location.service.js';
 
+
 const inputDocumentNumber = document.getElementById('numero_documento');
 const inputDocumentMail = document.getElementById('correo_electronico');
 const inputPhoneNumber = document.getElementById('numero_celular');
