@@ -11,7 +11,6 @@ const inputDocumentMail = document.getElementById('correo_electronico');
 const inputDocumentNumber = document.querySelectorAll('.numero_documento');
 const inputDocumentText = document.getElementById('input_text');
 
-
 const validateInputs = () => {
     
     inputPhoneNumber.onkeypress = validPhoneNumber;
@@ -31,8 +30,6 @@ const validateInputs = () => {
         input.onkeypress = onlyNumberKey;
     });
 }
-
-// Normaliza el input para no permitir caracteres espaciales.
 
 const handleNormalizeInput = (event) => {
     event.target.value = removeAccents(event.target.value);
