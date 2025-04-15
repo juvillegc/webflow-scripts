@@ -26,7 +26,6 @@ const validateInputs = () => {
   setMaxFileSizeListeners(fileInputs);
 };
 
-
 const loadDepartments = async () => {
     const { deparments } = await getDepartments();
     addFirstOption('Seleccione el departamento', selDepartments);
