@@ -163,12 +163,12 @@ export const setTodayAsDefaultDate = (inputElement) => {
   if (!inputElement) return;
 
   const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  const fechaActual = `${yyyy}-${mm}-${dd}`;
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const currentDate = `${year}-${month}-${day}`;
 
-  inputElement.value = fechaActual;
+  inputElement.value = currentDate;
   inputElement.readOnly = true;
 
   inputElement.addEventListener('keydown', e => e.preventDefault());
@@ -177,7 +177,7 @@ export const setTodayAsDefaultDate = (inputElement) => {
   const hiddenInput = document.createElement('input');
   hiddenInput.type = 'hidden';
   hiddenInput.name = inputElement.name;
-  hiddenInput.value = fechaActual;
+  hiddenInput.value = currentDate;
   inputElement.form?.appendChild(hiddenInput);
 };
 
