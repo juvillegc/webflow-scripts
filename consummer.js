@@ -6,7 +6,7 @@ const inputDocumentMail = document.getElementById('correo_electronico');
 const inputPhoneNumber = document.getElementById('numero_celular');
 const selDepartments = document.querySelector('#departamentos');
 const selCities = document.querySelector('#ciudades');
-const customPrice = document.querySelectorAll('.custom-price');
+const customPrice = document.querySelectorAll('.custom_price');
 const inputDate = document.querySelector('input[type="date"]');
 const fileInputs = document.querySelectorAll('input[type="file"]');
 
