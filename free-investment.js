@@ -1,7 +1,7 @@
 import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators, validatePhoneError, configurePhoneInput} from './shared/utils.js';
 import { sendCleverTapEvent } from './services/event.clevertap.js';
 
-const interestRateEA = 24.82; // Valor dado en %
+const interestRateEA = 25.52; // Valor dado en %
 const commissionFGA = 10; // Valor dado en %
 const sure = 1450; // Valor dado en pesos ($) x cada millón
 const iva = 19; // Valor dado en %
