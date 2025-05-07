@@ -89,11 +89,12 @@ function calculate() {
   calculateVtua();
 
 
-  sendCleverTapEvent('SimuladorDatos', {
+  sendCleverTapEvent('simulador_web_exitoso', {
     Phone: phone,
     loanValue: loanValue,
     months: numberInstallments,
-    privacyPolicy: privacyPolicyCheckbox.checked
+    privacyPolicy: privacyPolicyCheckbox.checked,
+      simulatorName: 'libre inversion'
   });
 }
 
