@@ -1,9 +1,9 @@
 import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators, validatePhoneError, configurePhoneInput} from './shared/utils.js';
 import { sendCleverTapEvent } from './services/event.clevertap.js';
 
-const interestRateEA = 24.82; // Valor dado en %
-const commissionFGA = 10; // Valor dado en %
-const sure = 1450; // Valor dado en pesos ($) x cada millón
+const interestRateEA = 56.15; // Valor dado en %
+const commissionFGA = 5; // Valor dado en %
+const sure = 2000; // Valor dado en pesos ($) x cada millón
 const iva = 19; // Valor dado en %
 const initValue = 1000000; // Valor prestamo inicial (Para que cargue una simulacion por defecto)
 
