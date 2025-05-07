@@ -94,7 +94,7 @@ function calculate() {
     loanValue: loanValue,
     months: numberInstallments,
     privacyPolicy: privacyPolicyCheckbox.checked,
-      simulatorName: 'libre inversion'
+      simulatorName: 'credito bajo monto'
   });
 }
 
