@@ -94,7 +94,7 @@ function calculate() {
     loanValue: loanValue,
     months: numberInstallments,
     privacyPolicy: privacyPolicyCheckbox.checked,
-      simulatorName: 'credito bajo monto'
+    simulatorName: 'credito bajo monto'
   });
 }
 
