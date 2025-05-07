@@ -1,6 +1,8 @@
 
 export const sendCleverTapEvent = (eventName, properties = {}) => {
 
+     console.log('[CleverTap] event →', eventName, properties);
+
     if(!eventName || typeof properties !== 'object' || Object.keys(properties).length === 0){
         console.warn("Parámetros inválidos para enviar el evento a CleverTap");
         return;
