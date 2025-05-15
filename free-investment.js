@@ -1,4 +1,5 @@
-import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators, validatePhoneError, configurePhoneInput} from './shared/utils.js';
+import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberKey, cleanMask, maskValue, handleKeyUpThousandSeparators, validatePhoneError, configurePhoneInput, validatePhone,
+  validatePrivacyPolicy } from './shared/utils.js';
 import { sendCleverTapEvent } from './services/event.clevertap.js';
 
 const interestRateEA = 25.52; // Valor dado en %
@@ -52,51 +53,29 @@ function handleClickCalculate() {
 
 /* --------- Función de cálculo y envío de datos a CleverTap ------------ */
 
-function calculate() {
+const calculate = () => {
+  loanValue = parseFloat(cleanMask(inputValue.value) || "0");
+  numberInstallments = parseInt(document.getElementById('months').value || "0", 10);
 
-  loanValue = cleanMask(inputValue.value) || "0";
-  numberInstallments = document.getElementById('months').value || "0";
+  const phone = validatePhone();
+  if (!phone) return;
 
-  // Convertir a números si es necesario
-  loanValue = parseFloat(loanValue);
-  numberInstallments = parseInt(numberInstallments, 10);
-
-  const phoneInput = document.getElementById('phoneNumber');
-  const phone = phoneInput.value.trim();
-  
-  if (!phone || !phoneInput.checkValidity()) {
-    phoneInput.setCustomValidity("Para continuar con tu simulación, ingresa tu número.");
-    phoneInput.reportValidity();  // Muestra el mensaje nativo
-    return;
-  } else {
-    phoneInput.setCustomValidity(""); 
-  }
-  
-
-  const privacyPolicyCheckbox = document.getElementById('privacyPolicy');
-  if (!privacyPolicyCheckbox.checked) {
-    privacyPolicyCheckbox.setCustomValidity("Debes aceptar las políticas de tratamiento de datos para seguir.");
-    privacyPolicyCheckbox.reportValidity();
-    return;
-  } else {
-    privacyPolicyCheckbox.setCustomValidity("");
-  }
-  
+  const isPrivacyAccepted = validatePrivacyPolicy();
+  if (!isPrivacyAccepted) return;
 
   loanValueCommission = calculateLoanValueCommission();
   sureCalculated = calculateSure();
   feeValue = calculateFeeValue();
   calculateVtua();
 
-
   sendCleverTapEvent('simulador_web_exitoso', {
     Phone: phone,
-    loanValue: loanValue,
+    loanValue,
     months: numberInstallments,
-    privacyPolicy: privacyPolicyCheckbox.checked,
+    privacyPolicy: true,
     simulatorName: 'credito libre inversion'
   });
-}
+};
 
 function printInfo() {
     document.getElementById('loan-value').innerHTML = `$ ${maskValue(loanValue)}`;
