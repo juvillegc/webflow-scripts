@@ -2,7 +2,7 @@ import {convertToDecimal, convertToPercentage, round, roundDecimals, onlyNumberK
 import { sendCleverTapEvent } from './services/event.clevertap.js';
 
 const interestRateEA = 56.15; // Valor dado en %
-const commissionFGA = 5; // Valor dado en %
+const commissionFGA = 4; // Valor dado en %
 const sure = 2000; // Valor dado en pesos ($) x cada millón
 const iva = 19; // Valor dado en %
 const initValue = 1000000; // Valor prestamo inicial (Para que cargue una simulacion por defecto)
