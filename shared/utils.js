@@ -204,5 +204,35 @@ export const setMaxFileSizeListeners = (fileInputs) => {
   });
 };
 
+/* ---------Validate phone field and simulator policies------------ */
+
+export const validatePhone = (inputId = 'phoneNumber') => {
+  const phoneInput = document.getElementById(inputId);
+  const phone = phoneInput.value.trim();
+
+  if (!phone || !phoneInput.checkValidity()) {
+    phoneInput.setCustomValidity("Para continuar con tu simulación, ingresa tu número.");
+    phoneInput.reportValidity();
+    return null;
+  }
+
+  phoneInput.setCustomValidity("");
+  return phone;
+};
+
+export const validatePrivacyPolicy = (checkboxId = 'privacyPolicy') => {
+  const checkbox = document.getElementById(checkboxId);
+
+  if (!checkbox.checked) {
+    checkbox.setCustomValidity("Debes aceptar las políticas de tratamiento de datos para seguir.");
+    checkbox.reportValidity();
+    return false;
+  }
+
+  checkbox.setCustomValidity("");
+  return true;
+};
+
+
 
 
