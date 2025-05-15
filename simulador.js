@@ -15,11 +15,11 @@ import {
 
 import { sendCleverTapEvent } from './services/event.clevertap.js';
 
-// 📌 1. Detectar el tipo de simulador desde el atributo HTML
-const simulatorContainer = document.getElementById('simulador');
+
+const simulatorContainer = document.getElementById('simulador'); // Diferenciar el simulador
 const simulatorKey = simulatorContainer?.dataset.simulator || 'lowAmount';
 
-// 📦 2. Configuraciones según el tipo de simulador
+
 const simulatorConfig = {
   lowAmount: {
     interestRateEA: 56.15, // Valor dado en %
