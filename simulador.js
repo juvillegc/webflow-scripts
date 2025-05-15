@@ -22,21 +22,21 @@ const simulatorKey = simulatorContainer?.dataset.simulator || 'lowAmount';
 // 📦 2. Configuraciones según el tipo de simulador
 const simulatorConfig = {
   lowAmount: {
-    interestRateEA: 56.15,
-    commissionFGA: 4,
-    sure: 2000,
-    simulatorName: 'credito bajo monto'
+    interestRateEA: 56.15, // Valor dado en %
+    commissionFGA: 4, // Valor dado en %
+    sure: 2000, // Valor dado en pesos ($) x cada millón
+    simulatorName: 'credito bajo monto' // Nombre del simulador 
   },
   freeInvestment: {
-    interestRateEA: 25.52,
-    commissionFGA: 10,
-    sure: 1450,
-    simulatorName: 'credito libre inversion'
+    interestRateEA: 25.52, // Valor dado en %
+    commissionFGA: 10, // Valor dado en %
+    sure: 1450, // Valor dado en pesos ($) x cada millón
+    simulatorName: 'credito libre inversion' // Nombre del simulador 
   }
 };
 
-const iva = 19;
-const initValue = 1000000;
+const iva = 19; // Valor dado en %
+const initValue = 1000000; // Valor prestamo inicial (Para que cargue una simulacion por defecto)
 
 const {
   interestRateEA,
