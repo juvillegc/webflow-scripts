@@ -2,8 +2,8 @@
 import { validPhoneNumber, validDocumentNumber } from './shared/utils.js';
 
 
-const inputPhoneNumber = document.getElementById('numero_celular');
-const inputDocumentNumber = document.getElementById('numero_documento');
+const inputPhoneNumber = document.getElementById('userPhone');
+const inputDocumentNumber = document.getElementById('userEmail');
 
 
 const validateInputs = () => {
