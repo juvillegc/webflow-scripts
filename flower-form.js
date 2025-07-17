@@ -1,23 +1,37 @@
+import { configurePhoneInput, validateEmail } from './shared/utils.js';
+import { sendCleverTapEvent } from './services/event.clevertap.js';
 
-import { validPhoneNumber, validateEmail } from './shared/utils.js';
+// ✅ Obtenemos referencias directas por ID
+const form = document.getElementById('wf-form-clevertap');
+const inputName = document.getElementById('userName');
+const inputPhone = document.getElementById('userPhone');
+const inputEmail = document.getElementById('userEmail');
 
-const inputPhoneNumber = document.getElementById('userPhone');
-const inputDocumentMail = document.getElementById('userEmail');
+if (form && inputName && inputPhone && inputEmail) {
+  
+  // ✅ 1. Configuramos validaciones desde utils
+  configurePhoneInput('userPhone');          // solo números, máximo 10, bloquea pegar
+  inputEmail.addEventListener('input', validateEmail); // valida formato del email
 
-const validateInputs = () => {
-    // Deshabilitar copiar y pegar en el campo de celular
-    inputPhoneNumber.onpaste = (e) => e.preventDefault();
-    inputPhoneNumber.oncopy = (e) => e.preventDefault();
-    inputPhoneNumber.onkeypress = validPhoneNumber;
-    
-    // Deshabilitar copiar y pegar en el campo de correo electrónico y validar
-    inputDocumentMail.onpaste = (e) => e.preventDefault();
-    inputDocumentMail.oncopy = (e) => e.preventDefault();
-    inputDocumentMail.oninput = validateEmail;
-};
+  // ✅ 2. Submit → manda datos a CleverTap y luego a Webflow
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-const main = async () => {
-    validateInputs();
-};
+    const name = inputName.value.trim();
+    const email = inputEmail.value.trim();
+    const phone = inputPhone.value.trim();
 
-main();
+    sendCleverTapEvent('form_contact_submitted', {
+      Name: name,
+      Email: email,
+      Phone: phone,
+      formName: 'Formulario Contacto Webflow',
+      privacyPolicy: true
+    });
+
+    console.log('✅ Evento form_contact_submitted enviado a CleverTap');
+
+    // ✅ Luego dejamos que Webflow procese el envío normal (reCAPTCHA)
+    form.submit();
+  });
+}
