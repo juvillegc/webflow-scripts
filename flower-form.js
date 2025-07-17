@@ -25,7 +25,7 @@ if (form && inputName && inputPhone && inputEmail) {
       Name: name,
       Email: email,
       Phone: phone,
-      formName: 'Formulario Contacto Webflow',
+      formName: 'Formulario feria de flores',
       privacyPolicy: true
     });
 
