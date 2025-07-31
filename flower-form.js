@@ -1,37 +1,24 @@
-import { configurePhoneInput, validateEmail } from './shared/utils.js';
-import { sendCleverTapEvent } from './services/event.clevertap.js';
+import { validPhoneNumber, validateEmail } from './shared/utils.js';
 
-// ✅ Obtenemos referencias directas por ID
-const form = document.getElementById('wf-form-clevertap');
-const inputName = document.getElementById('userName');
-const inputPhone = document.getElementById('userPhone');
 const inputEmail = document.getElementById('userEmail');
+const phoneInputs = document.querySelectorAll('.userPhone');
 
-if (form && inputName && inputPhone && inputEmail) {
-  
-  // ✅ 1. Configuramos validaciones desde utils
-  configurePhoneInput('userPhone');          // solo números, máximo 10, bloquea pegar
-  inputEmail.addEventListener('input', validateEmail); // valida formato del email
-
-  // ✅ 2. Submit → manda datos a CleverTap y luego a Webflow
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const name = inputName.value.trim();
-    const email = inputEmail.value.trim();
-    const phone = inputPhone.value.trim();
-
-    sendCleverTapEvent('form_contact_submitted', {
-      Name: name,
-      Email: email,
-      Phone: phone,
-      formName: 'Formulario feria de flores',
-      privacyPolicy: true
-    });
-
-    console.log('✅ Evento form_contact_submitted enviado a CleverTap');
-
-    // ✅ Luego dejamos que Webflow procese el envío normal (reCAPTCHA)
-    form.submit();
+const validateInputs = () => {
+  phoneInputs.forEach((input) => {
+    input.onpaste = (e) => e.preventDefault();
+    input.oncopy = (e) => e.preventDefault();
+    input.onkeypress = validPhoneNumber;
   });
-}
+
+  if (inputEmail) {
+    inputEmail.onpaste = (e) => e.preventDefault();
+    inputEmail.oncopy = (e) => e.preventDefault();
+    inputEmail.oninput = validateEmail;
+  }
+};
+
+const main = () => {
+  validateInputs();
+};
+
+main();
