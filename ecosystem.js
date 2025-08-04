@@ -6,7 +6,6 @@ import {
 } from './shared/utils.js';
 
 const main = () => {
-
   configurePhoneInput('numero_celular');
   configureCustomSelects({
     selectSelector: '.input-b2b-select',
