@@ -234,5 +234,76 @@ export const validatePrivacyPolicy = (checkboxId = 'privacyPolicy') => {
 };
 
 
+/* ---------Validate selects personalizados------------ */
+export const configureCustomSelects = ({ selectSelector = 'select', activeClass = 'selected' } = {}) => {
+  const selects = document.querySelectorAll(selectSelector);
 
+  selects.forEach(select => {
+    select.classList.toggle(activeClass, !!select.value);
+    select.addEventListener('change', () => {
+      select.classList.toggle(activeClass, !!select.value);
+    });
+  });
+};
+
+/* ---------Validate grupo de checkboxes obligatorios------------ */
+
+export const validateCheckboxGroup = ({
+  formSelector = 'form',
+  checkboxContainerSelector,
+  errorMessage = 'Selecciona al menos una opción.',
+  focusClass = 'checkbox-focus'
+} = {}) => {
+  const form = document.querySelector(formSelector);
+  const checkContainer = document.querySelector(checkboxContainerSelector);
+  const checkboxes = checkContainer?.querySelectorAll('input[type="checkbox"]');
+
+  if (!form || !checkContainer || !checkboxes.length) return;
+
+  form.addEventListener('submit', (e) => {
+    const oneChecked = Array.from(checkboxes).some(cb => cb.checked);
+
+    if (!oneChecked) {
+      e.preventDefault();
+      alert(errorMessage);
+      checkContainer.classList.add(focusClass);
+      checkContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      setTimeout(() => {
+        checkContainer.classList.remove(focusClass);
+      }, 3000);
+    }
+  });
+};
+/* ---------Validate email corporativos------------ */
+export const validateCorporateEmail = ({
+  inputSelector,
+  errorClass = 'input-class__error',
+  errorMsgClass = 'input-message__error',
+  customMessage = 'Usa un correo corporativo válido',
+  bannedDomains = ['gmail.com', 'hotmail.com', 'yahoo.com', 'outlook.com', 'icloud.com']
+} = {}) => {
+  const input = document.querySelector(inputSelector);
+  if (!input) return;
+
+  const errorId = `error-message-${input.id}`;
+
+  input.addEventListener('input', () => {
+    const email = input.value.trim().toLowerCase();
+    const domain = email.split('@')[1] || '';
+    const elementError = document.getElementById(errorId);
+    const isCorporate = domain && !bannedDomains.includes(domain);
+
+    if (isCorporate) {
+      input.classList.remove(errorClass);
+      elementError?.remove();
+    } else {
+      input.classList.add(errorClass);
+      if (!elementError) {
+        const msg = `<p id="${errorId}" class="${errorMsgClass}">${customMessage}</p>`;
+        input.insertAdjacentHTML('afterend', msg);
+      }
+    }
+  });
+};
 
