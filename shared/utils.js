@@ -296,9 +296,13 @@ export const validateCorporateEmail = ({
 
     if (isCorporate) {
       input.classList.remove(errorClass);
+      input.setCustomValidity('');
       elementError?.remove();
     } else {
       input.classList.add(errorClass);
+      input.setCustomValidity(customMessage);
+      input.reportValidity(); // muestra el mensaje nativo del navegador
+
       if (!elementError) {
         const msg = `<p id="${errorId}" class="${errorMsgClass}">${customMessage}</p>`;
         input.insertAdjacentHTML('afterend', msg);
@@ -306,4 +310,5 @@ export const validateCorporateEmail = ({
     }
   });
 };
+
 
