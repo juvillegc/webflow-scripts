@@ -261,11 +261,14 @@ export const validateCheckboxGroup = ({
   if (!form || !checkContainer || !checkboxes.length) return;
 
   form.addEventListener('submit', (e) => {
-    const oneChecked = Array.from(checkboxes).some(cb => cb.checked);
+    const atLeastOneChecked = Array.from(checkboxes).some(cb => cb.checked);
 
-    if (!oneChecked) {
+    if (!atLeastOneChecked) {
       e.preventDefault();
-      alert(errorMessage);
+      e.stopPropagation();
+
+      alert(errorMessage); // Igual que antes
+
       checkContainer.classList.add(focusClass);
       checkContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
@@ -275,6 +278,7 @@ export const validateCheckboxGroup = ({
     }
   });
 };
+
 /* ---------Validate email corporativos------------ */
 export const validateCorporateEmail = ({
   inputSelector,
