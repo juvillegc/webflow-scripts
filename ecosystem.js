@@ -1,22 +1,34 @@
-import { validPhoneNumber, validateEmail } from './shared/utils.js';
+import {
+  configurePhoneInput,
+  configureCustomSelects,
+  validateCheckboxGroup,
+  validateCorporateEmail
+} from './shared/utils.js';
 
-const inputPhoneNumber = document.getElementById('numero_celular');
-const inputDocumentMail = document.getElementById('correo_electronico');
+const main = () => {
+  // 📱 Validación de número celular (ya existente en utils)
+  configurePhoneInput('numero_celular');
 
-const validateInputs = () => {
-    // Deshabilitar copiar y pegar en el campo de celular
-    inputPhoneNumber.onpaste = (e) => e.preventDefault();
-    inputPhoneNumber.oncopy = (e) => e.preventDefault();
-    inputPhoneNumber.onkeypress = validPhoneNumber;
-    
-    // Deshabilitar copiar y pegar en el campo de correo electrónico y validar
-    inputDocumentMail.onpaste = (e) => e.preventDefault();
-    inputDocumentMail.oncopy = (e) => e.preventDefault();
-    inputDocumentMail.oninput = validateEmail;
-};
+  // 🔽 Validación visual del <select>
+  configureCustomSelects({
+    selectSelector: '.input-b2b-select',
+    activeClass: 'selected'
+  });
 
-const main = async () => {
-    validateInputs();
+  // ☑️ Al menos un checkbox debe estar seleccionado
+  validateCheckboxGroup({
+    formSelector: 'form',
+    checkboxContainerSelector: '.check-w',
+    errorMessage: 'Selecciona al menos un canal antes de enviar.',
+    focusClass: 'checkbox-focus'
+  });
+
+  // 📧 Solo correos corporativos (no Gmail, Hotmail, etc.)
+  validateCorporateEmail({
+    inputSelector: '#correo_electronico',
+    customMessage: 'Por favor, usa un correo corporativo válido.'
+  });
 };
 
 main();
+
