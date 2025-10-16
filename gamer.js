@@ -3,49 +3,53 @@ import { validPhoneNumber, validDocumentNumber } from './shared/utils.js';
 // ==========================
 //   Campos del formulario
 // ==========================
-const inputPhoneNumber = document.getElementById('numero_celular');
 const inputDocumentNumber = document.getElementById('numero_documento');
 const selectRRSS = document.getElementById('select-rrss');
 const inputURL = document.getElementById('url-rrss');
 
-// Nuevos elementos
 const divRRSS = document.getElementById('div-rrss');
 const divWhatsapp = document.getElementById('div-whatsaap');
-const phoneInputs = document.querySelectorAll('.numero_celular'); // Los dos inputs de cel
+const phoneInputs = document.querySelectorAll('.numero_celular');
 
 // ==========================
-//   Validación celular (mismo comportamiento)
+//   Validación celular global
 // ==========================
-const phoneError = document.createElement('small');
-phoneError.classList.add('error-message');
-phoneError.textContent = '';
+const setupPhoneValidation = (input) => {
+  // Crear mensaje de error si no existe
+  if (!input.parentNode.querySelector('.error-message')) {
+    const phoneError = document.createElement('small');
+    phoneError.classList.add('error-message');
+    phoneError.textContent = '';
 
-const wrapper = document.createElement('div');
-wrapper.classList.add('input-wrapper');
-inputPhoneNumber.parentNode.insertBefore(wrapper, inputPhoneNumber);
-wrapper.appendChild(inputPhoneNumber);
-wrapper.appendChild(phoneError);
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('input-wrapper');
 
-const checkPhoneLength = (input) => {
-  const phone = input.value.trim();
-
-  // Limpia errores previos
-  const errorMsg = input.parentNode.querySelector('.error-message');
-  if (!errorMsg) return;
-
-  if (phone.length === 0) {
-    errorMsg.textContent = '';
-    input.classList.remove('input-error');
-    return;
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.appendChild(input);
+    wrapper.appendChild(phoneError);
   }
 
-  if (phone.length !== 10) {
-    errorMsg.textContent = 'Debe tener exactamente 10 dígitos.';
-    input.classList.add('input-error');
-  } else {
-    errorMsg.textContent = '';
-    input.classList.remove('input-error');
-  }
+  // Asignar validaciones
+  input.addEventListener('input', () => {
+    const phoneError = input.parentNode.querySelector('.error-message');
+    const phone = input.value.trim();
+
+    if (phone.length === 0) {
+      phoneError.textContent = '';
+      input.classList.remove('input-error');
+      return;
+    }
+
+    if (phone.length !== 10) {
+      phoneError.textContent = 'Debe tener exactamente 10 dígitos.';
+      input.classList.add('input-error');
+    } else {
+      phoneError.textContent = '';
+      input.classList.remove('input-error');
+    }
+  });
+
+  input.onkeypress = validPhoneNumber;
 };
 
 // ==========================
@@ -54,28 +58,36 @@ const checkPhoneLength = (input) => {
 const handleRRSSChange = (event) => {
   const selectedValue = event.target.value.trim().toLowerCase();
 
+  const rrssInput = divRRSS ? divRRSS.querySelector('.numero_celular') : null;
+  const whatsappInput = divWhatsapp ? divWhatsapp.querySelector('.numero_celular') : null;
+
+  // --- Caso: WhatsApp ---
   if (selectedValue === 'whatsapp') {
-    // Mostrar campo de WhatsApp
-    divRRSS.style.display = 'none';
-    divWhatsapp.style.display = 'block';
+    if (divRRSS) divRRSS.style.display = 'none';
+    if (divWhatsapp) divWhatsapp.style.display = 'block';
 
-    // Hacer obligatorio el input dentro de div-whatsaap
-    const whatsappInput = divWhatsapp.querySelector('.numero_celular');
     if (whatsappInput) whatsappInput.required = true;
-
-    // Desactivar obligatoriedad del otro campo
-    const rrssInput = divRRSS.querySelector('.numero_celular');
     if (rrssInput) rrssInput.required = false;
+
+    // 👇 URL no aplica, quitamos el required
+    if (inputURL) inputURL.required = false;
+    if (inputURL) inputURL.value = 'N/A';
+    inputURL.setAttribute('readonly', true);
+
   } else {
-    // Volver al modo normal
-    divRRSS.style.display = 'block';
-    divWhatsapp.style.display = 'none';
+    // --- Caso: otra red ---
+    if (divRRSS) divRRSS.style.display = 'block';
+    if (divWhatsapp) divWhatsapp.style.display = 'none';
 
-    const rrssInput = divRRSS.querySelector('.numero_celular');
     if (rrssInput) rrssInput.required = true;
-
-    const whatsappInput = divWhatsapp.querySelector('.numero_celular');
     if (whatsappInput) whatsappInput.required = false;
+
+    // 👇 Volvemos a activar el campo URL
+    if (inputURL) {
+      inputURL.required = true;
+      inputURL.removeAttribute('readonly');
+      inputURL.value = '';
+    }
   }
 };
 
@@ -83,22 +95,18 @@ const handleRRSSChange = (event) => {
 //   Inicialización
 // ==========================
 const validateInputs = () => {
-  inputPhoneNumber.onkeypress = validPhoneNumber;
-  inputDocumentNumber.onkeypress = validDocumentNumber;
+  // Validar documento
+  if (inputDocumentNumber) inputDocumentNumber.onkeypress = validDocumentNumber;
 
-  // Validar ambos inputs de celular
-  phoneInputs.forEach((input) => {
-    input.addEventListener('input', () => checkPhoneLength(input));
-  });
+  // Configurar validación en todos los inputs de celular
+  phoneInputs.forEach((input) => setupPhoneValidation(input));
 
   // Controlar el cambio del select
-  if (selectRRSS) {
-    selectRRSS.addEventListener('change', handleRRSSChange);
-  }
+  if (selectRRSS) selectRRSS.addEventListener('change', handleRRSSChange);
 
-  // Estado inicial → mostrar RRSS y ocultar WhatsApp
-  divRRSS.style.display = 'block';
-  divWhatsapp.style.display = 'none';
+  // Estado inicial
+  if (divRRSS) divRRSS.style.display = 'block';
+  if (divWhatsapp) divWhatsapp.style.display = 'none';
 };
 
 const main = async () => {
