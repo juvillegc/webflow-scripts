@@ -8,56 +8,74 @@ const inputDocumentNumber = document.getElementById('numero_documento');
 const selectRRSS = document.getElementById('select-rrss');
 const inputURL = document.getElementById('url-rrss');
 
-// ==========================
-//   Validación celular
-// ==========================
+// Nuevos elementos
+const divRRSS = document.getElementById('div-rrss');
+const divWhatsapp = document.getElementById('div-whatsaap');
+const phoneInputs = document.querySelectorAll('.numero_celular'); // Los dos inputs de cel
 
-// Creamos el mensaje de error
+// ==========================
+//   Validación celular (mismo comportamiento)
+// ==========================
 const phoneError = document.createElement('small');
 phoneError.classList.add('error-message');
-phoneError.textContent = ''; // empieza oculto
+phoneError.textContent = '';
 
-// Envolvemos el input en un contenedor para controlar mejor el layout
 const wrapper = document.createElement('div');
 wrapper.classList.add('input-wrapper');
 inputPhoneNumber.parentNode.insertBefore(wrapper, inputPhoneNumber);
 wrapper.appendChild(inputPhoneNumber);
 wrapper.appendChild(phoneError);
 
-const checkPhoneLength = () => {
-  const phone = inputPhoneNumber.value.trim();
+const checkPhoneLength = (input) => {
+  const phone = input.value.trim();
+
+  // Limpia errores previos
+  const errorMsg = input.parentNode.querySelector('.error-message');
+  if (!errorMsg) return;
 
   if (phone.length === 0) {
-    phoneError.textContent = '';
-    inputPhoneNumber.classList.remove('input-error');
+    errorMsg.textContent = '';
+    input.classList.remove('input-error');
     return;
   }
 
   if (phone.length !== 10) {
-    phoneError.textContent = 'Debe tener exactamente 10 dígitos.';
-    inputPhoneNumber.classList.add('input-error');
+    errorMsg.textContent = 'Debe tener exactamente 10 dígitos.';
+    input.classList.add('input-error');
   } else {
-    phoneError.textContent = '';
-    inputPhoneNumber.classList.remove('input-error');
+    errorMsg.textContent = '';
+    input.classList.remove('input-error');
   }
 };
 
 // ==========================
-//   Autocompletar red social
+//   Control de visibilidad y obligatoriedad
 // ==========================
 const handleRRSSChange = (event) => {
   const selectedValue = event.target.value.trim().toLowerCase();
 
   if (selectedValue === 'whatsapp') {
-    inputURL.value = 'N/A';
-    inputURL.setAttribute('readonly', true);
+    // Mostrar campo de WhatsApp
+    divRRSS.style.display = 'none';
+    divWhatsapp.style.display = 'block';
 
-    //Fuerza a Webflow a reconocer el cambio como válido
-    const inputEvent = new Event('input', { bubbles: true });
-    inputURL.dispatchEvent(inputEvent);
+    // Hacer obligatorio el input dentro de div-whatsaap
+    const whatsappInput = divWhatsapp.querySelector('.numero_celular');
+    if (whatsappInput) whatsappInput.required = true;
+
+    // Desactivar obligatoriedad del otro campo
+    const rrssInput = divRRSS.querySelector('.numero_celular');
+    if (rrssInput) rrssInput.required = false;
   } else {
-    inputURL.value = '';
-    inputURL.removeAttribute('readonly');
+    // Volver al modo normal
+    divRRSS.style.display = 'block';
+    divWhatsapp.style.display = 'none';
+
+    const rrssInput = divRRSS.querySelector('.numero_celular');
+    if (rrssInput) rrssInput.required = true;
+
+    const whatsappInput = divWhatsapp.querySelector('.numero_celular');
+    if (whatsappInput) whatsappInput.required = false;
   }
 };
 
@@ -68,11 +86,19 @@ const validateInputs = () => {
   inputPhoneNumber.onkeypress = validPhoneNumber;
   inputDocumentNumber.onkeypress = validDocumentNumber;
 
-  inputPhoneNumber.addEventListener('input', checkPhoneLength);
+  // Validar ambos inputs de celular
+  phoneInputs.forEach((input) => {
+    input.addEventListener('input', () => checkPhoneLength(input));
+  });
 
-  if (selectRRSS && inputURL) {
+  // Controlar el cambio del select
+  if (selectRRSS) {
     selectRRSS.addEventListener('change', handleRRSSChange);
   }
+
+  // Estado inicial → mostrar RRSS y ocultar WhatsApp
+  divRRSS.style.display = 'block';
+  divWhatsapp.style.display = 'none';
 };
 
 const main = async () => {
