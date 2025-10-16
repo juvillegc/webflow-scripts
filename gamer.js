@@ -3,10 +3,17 @@ import { validPhoneNumber, validDocumentNumber } from './shared/utils.js';
 const inputPhoneNumber = document.getElementById('numero_celular');
 const inputDocumentNumber = document.getElementById('numero_documento');
 
-// Creamos un <small> para mostrar errores visuales
+// Creamos el mensaje de error
 const phoneError = document.createElement('small');
 phoneError.classList.add('error-message');
-inputPhoneNumber.insertAdjacentElement('afterend', phoneError);
+phoneError.textContent = ''; // empieza oculto
+
+// Envolvemos el input en un contenedor para controlar mejor el layout
+const wrapper = document.createElement('div');
+wrapper.classList.add('input-wrapper');
+inputPhoneNumber.parentNode.insertBefore(wrapper, inputPhoneNumber);
+wrapper.appendChild(inputPhoneNumber);
+wrapper.appendChild(phoneError);
 
 const checkPhoneLength = () => {
   const phone = inputPhoneNumber.value.trim();
@@ -18,7 +25,7 @@ const checkPhoneLength = () => {
   }
 
   if (phone.length !== 10) {
-    phoneError.textContent = '📱 El número debe tener exactamente 10 dígitos.';
+    phoneError.textContent = 'Debe tener exactamente 10 dígitos.';
     inputPhoneNumber.classList.add('input-error');
   } else {
     phoneError.textContent = '';
