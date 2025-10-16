@@ -3,29 +3,36 @@ import { validPhoneNumber, validDocumentNumber } from './shared/utils.js';
 const inputPhoneNumber = document.getElementById('numero_celular');
 const inputDocumentNumber = document.getElementById('numero_documento');
 
-// --- Función para validar longitud del número ---
+// Creamos un <small> para mostrar errores visuales
+const phoneError = document.createElement('small');
+phoneError.classList.add('error-message');
+inputPhoneNumber.insertAdjacentElement('afterend', phoneError);
+
 const checkPhoneLength = () => {
   const phone = inputPhoneNumber.value.trim();
 
-  if (phone.length !== 10) {
-    alert('📱 El número de celular debe tener exactamente 10 dígitos.');
-    inputPhoneNumber.focus();
-    return false;
+  if (phone.length === 0) {
+    phoneError.textContent = '';
+    inputPhoneNumber.classList.remove('input-error');
+    return;
   }
 
-  return true;
+  if (phone.length !== 10) {
+    phoneError.textContent = '📱 El número debe tener exactamente 10 dígitos.';
+    inputPhoneNumber.classList.add('input-error');
+  } else {
+    phoneError.textContent = '';
+    inputPhoneNumber.classList.remove('input-error');
+  }
 };
 
-// --- Inicializa validaciones de campos ---
 const validateInputs = () => {
   inputPhoneNumber.onkeypress = validPhoneNumber;
   inputDocumentNumber.onkeypress = validDocumentNumber;
 
-  // Al salir del campo o enviar formulario, validamos
-  inputPhoneNumber.addEventListener('blur', checkPhoneLength);
+  inputPhoneNumber.addEventListener('input', checkPhoneLength);
 };
 
-// --- Punto de entrada principal ---
 const main = async () => {
   validateInputs();
 };
