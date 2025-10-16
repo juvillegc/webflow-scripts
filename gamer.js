@@ -1,7 +1,16 @@
 import { validPhoneNumber, validDocumentNumber } from './shared/utils.js';
 
+// ==========================
+//   Campos del formulario
+// ==========================
 const inputPhoneNumber = document.getElementById('numero_celular');
 const inputDocumentNumber = document.getElementById('numero_documento');
+const selectRRSS = document.getElementById('select-rrss');
+const inputURL = document.getElementById('url-rrss');
+
+// ==========================
+//   Validación celular
+// ==========================
 
 // Creamos el mensaje de error
 const phoneError = document.createElement('small');
@@ -33,11 +42,33 @@ const checkPhoneLength = () => {
   }
 };
 
+// ==========================
+//   Autocompletar red social
+// ==========================
+const handleRRSSChange = (event) => {
+  const selectedValue = event.target.value.trim().toLowerCase();
+
+  if (selectedValue === 'whatsapp') {
+    inputURL.value = 'N/A';
+    inputURL.setAttribute('readonly', true);
+  } else {
+    inputURL.value = '';
+    inputURL.removeAttribute('readonly');
+  }
+};
+
+// ==========================
+//   Inicialización
+// ==========================
 const validateInputs = () => {
   inputPhoneNumber.onkeypress = validPhoneNumber;
   inputDocumentNumber.onkeypress = validDocumentNumber;
 
   inputPhoneNumber.addEventListener('input', checkPhoneLength);
+
+  if (selectRRSS && inputURL) {
+    selectRRSS.addEventListener('change', handleRRSSChange);
+  }
 };
 
 const main = async () => {
