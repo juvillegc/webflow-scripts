@@ -51,6 +51,10 @@ const handleRRSSChange = (event) => {
   if (selectedValue === 'whatsapp') {
     inputURL.value = 'N/A';
     inputURL.setAttribute('readonly', true);
+
+    //Fuerza a Webflow a reconocer el cambio como válido
+    const inputEvent = new Event('input', { bubbles: true });
+    inputURL.dispatchEvent(inputEvent);
   } else {
     inputURL.value = '';
     inputURL.removeAttribute('readonly');
