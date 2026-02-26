@@ -316,3 +316,38 @@ export const validateCorporateEmail = ({
 };
 
 
+/* --------- Textarea max length + live counter (0/500) ------------ */
+export const setupTextareaCounter = ({
+  textareaId,
+  maxCharacters = 500,
+  counterId = null,
+} = {}) => {
+  const textarea = document.getElementById(textareaId);
+  if (!textarea) return null;
+
+  // Limita caracteres desde HTML
+  textarea.setAttribute("maxlength", String(maxCharacters));
+
+  // Si existe un contador ya creado, úsalo. Si no, créalo debajo.
+  let counter = counterId ? document.getElementById(counterId) : null;
+
+  if (!counter) {
+    counter = document.createElement("div");
+    counter.id = counterId || `${textareaId}-counter`;
+    counter.style.fontSize = "12px";
+    counter.style.marginTop = "6px";
+    counter.style.opacity = "0.8";
+    textarea.insertAdjacentElement("afterend", counter);
+  }
+
+  // Actualiza contador (ej: 120/500)
+  const updateCounter = () => {
+    counter.textContent = `${textarea.value.length}/${maxCharacters}`;
+  };
+
+  textarea.addEventListener("input", updateCounter);
+  updateCounter();
+
+  return { textarea, counter };
+};
+
