@@ -5,7 +5,8 @@ import {
   setupTextareaCounter,
 } from "./shared/utils.js";
 
-import { sendCleverTapEventEventOnly } from "./services/event.clevertap.eventOnly.js";
+import { sendCleverTapEventEventOnly } from "./services/event.clevertap.eventOnly.js";  // clevertap
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const formElement = document.querySelector("#form_usd form");
@@ -47,3 +48,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   formElement?.addEventListener("submit", handleSubmit);
 });
+
