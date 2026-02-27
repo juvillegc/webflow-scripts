@@ -5,7 +5,7 @@ import {
   setupTextareaCounter,
 } from "./shared/utils.js";
 
-import { sendCleverTapEvent } from "./services/event.clevertap.js";
+import { sendCleverTapEventEventOnly } from "./services/event.clevertap.eventOnly.js";
 
 const formElement = document.querySelector("#form_usd form");
 const nameInputElement = document.getElementById("full_name");
@@ -29,12 +29,12 @@ const handleSubmit = (submitEvent) => {
     return;
   }
 
-  sendCleverTapEvent("USD_lista_de_espera_web", {
-    Phone: phone, // el wrapper agrega +57
-    full_name: String(nameInputElement?.value || "").trim(),
-    purpose: String(purposeTextAreaElement?.value || "").trim(),
-    privacyPolicy: true,
-  });
+sendCleverTapEventEventOnly("USD_lista_de_espera_web", {
+  Phone: phone,
+  full_name: String(nameInputElement?.value || "").trim(),
+  purpose: String(purposeTextAreaElement?.value || "").trim(),
+  privacyPolicy: true,
+});
 };
 
 formElement?.addEventListener("submit", handleSubmit);
