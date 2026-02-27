@@ -12,7 +12,7 @@ const nameInputElement = document.getElementById("full_name");
 const purposeTextAreaElement = document.getElementById("text_area");
 
 configurePhoneInput("cell_phone");
-setupTextareaCounter({ textareaId: "text_area", maxCharacters: 500 });
+setupTextareaCounter({ textareaId: "text_area", maxCharacters: 100 });
 
 const handleSubmit = (submitEvent) => {
   const phone = validatePhone("cell_phone");
