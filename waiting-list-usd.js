@@ -5,8 +5,7 @@ import {
   setupTextareaCounter,
 } from "./shared/utils.js";
 
-import { sendCleverTapEventEventOnly } from "./services/event.clevertap.eventOnly.js";  // clevertap
-
+import { sendCleverTapEventEventOnly } from "./services/event.clevertap.eventOnly.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const formElement = document.querySelector("#form_usd form");
@@ -31,9 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    submitEvent.preventDefault();
-    submitEvent.stopPropagation();
-
     sendCleverTapEventEventOnly("USD_lista_de_espera_web", {
       Phone: phone,
       full_name: String(nameInputElement?.value || "").trim(),
@@ -41,11 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
       privacyPolicy: true,
     });
 
-    setTimeout(() => {
-      formElement?.submit();
-    }, 150);
   };
 
   formElement?.addEventListener("submit", handleSubmit);
 });
-
