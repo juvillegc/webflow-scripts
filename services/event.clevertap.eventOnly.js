@@ -1,11 +1,7 @@
+/* --------- CleverTap: Identify only (Phone) + Event properties ------------ */
 export const sendCleverTapEventEventOnly = (eventName, properties = {}) => {
   if (!eventName || typeof properties !== "object" || Object.keys(properties).length === 0) {
     console.warn("Parámetros inválidos para enviar el evento a CleverTap");
-    return;
-  }
-
-  if (typeof window === "undefined" || !window.clevertap) {
-    console.warn("CleverTap no está disponible en window");
     return;
   }
 
@@ -15,11 +11,13 @@ export const sendCleverTapEventEventOnly = (eventName, properties = {}) => {
     eventProps.Phone = "+57" + eventProps.Phone;
   }
 
+  // ✅ Identifica SOLO con Phone
   if (eventProps.Phone) {
-    window.clevertap.onUserLogin.push({
+    clevertap.onUserLogin.push({
       Site: { Phone: eventProps.Phone },
     });
   }
 
-  window.clevertap.event.push(eventName, eventProps);
+  // ✅ Evento con datos (esto es lo que ves en Activity)
+  clevertap.event.push(eventName, eventProps);
 };
