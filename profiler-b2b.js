@@ -5,23 +5,22 @@
  * - Muestra/oculta steps
  * - Lee respuestas del usuario
  * - Calcula resultado final
- * - Pinta Success (result / result-multi)
+ * - Pinta Success (solo #result con 1 o 2 CTAs)
  * - Envía evento a CleverTap (identificación SOLO por Phone)
  */
 
 import {
-  // ✅ utilidades existentes en tu shared/utils.js
+  // utilidades existentes
   configurePhoneInput,
   validatePhone,
   validatePrivacyPolicy,
 
-  // ✅ helpers nuevos que agregaste a shared/utils.js
+  // helpers b2b (stepper)
   createDisplayCache,
   showOnlyStep,
   requireRadio,
   readInputValue,
   requireAtLeastOneCheckbox,
-  readCheckboxChecked,
   showStepError,
 } from "./shared/utils.js";
 
@@ -69,23 +68,14 @@ const PAY_CHECKBOX_IDS = Object.freeze({
   suppliersEmployees: "pay_type_suppliers_employees_beneficiaries",
 });
 
+// Success (solo result)
 const RESULT_IDS = Object.freeze({
-  single: "result",
-  multi: "result-multi",
-
   resTitle: "res-title",
   resOption: "res-option",
   resDesc: "res-desc",
   resLegal: "res-legal",
-  resCta: "res-cta",
-
-  // multi (si existen en el DOM)
-  res1Option: "res1-option",
-  res1Desc: "res1-desc",
-  res1Cta: "res1-cta",
-  res2Option: "res2-option",
-  res2Desc: "res2-desc",
-  res2Cta: "res2-cta",
+  cta1: "res-cta",
+  cta2: "res-cta-2", // ← debes crearlo en Webflow y dejarlo display:none
 });
 
 const CLEVERTAP_EVENT_NAME = "b2b_perfilador_web";
@@ -95,11 +85,13 @@ const CLEVERTAP_EVENT_NAME = "b2b_perfilador_web";
 // ---------------------------------------------------------------------------
 
 const state = {
+  // datos
   firstName: "",
   lastName: "",
   email: "",
-  phone: "", // ✅ se guarda el value que retorna validatePhone (tu utils)
+  phone: "",
 
+  // Q1 objetivo
   goal: "",
 
   // Cobrar
@@ -125,7 +117,7 @@ const state = {
 window.__b2bProfilerState = state;
 
 // ---------------------------------------------------------------------------
-// 3) Validación email (ligera, solo para bloquear Next)
+// 3) Validación email (ligera)
 // ---------------------------------------------------------------------------
 const isValidEmail = (value = "") =>
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
@@ -133,7 +125,7 @@ const isValidEmail = (value = "") =>
   );
 
 // ---------------------------------------------------------------------------
-// 4) Compute results (según seudocódigo)
+// 4) Compute results (según tu seudocódigo)
 // ---------------------------------------------------------------------------
 function computeResults() {
   const results = [];
@@ -208,6 +200,7 @@ function computeResults() {
 
   // PAGAR
   if (state.goal === "pay") {
+    // Individual → App Negocios
     if (state.pay_mode === "individual") {
       results.push({
         option: "App Nequi Negocios",
@@ -218,9 +211,12 @@ function computeResults() {
       return results;
     }
 
+    // Masivo → 1 o 2 resultados según checkboxes
     if (state.pay_mode === "massive_automated") {
       const hasSocial = state.pay_types.includes("social_security_services");
-      const hasSuppliers = state.pay_types.includes("suppliers_employees_beneficiaries");
+      const hasSuppliers = state.pay_types.includes(
+        "suppliers_employees_beneficiaries"
+      );
 
       if (hasSocial) {
         results.push({
@@ -248,52 +244,63 @@ function computeResults() {
 }
 
 // ---------------------------------------------------------------------------
-// 5) Pintar resultado (Success)
+// 5) Pintar Success (1 o 2 CTAs) dentro de #result
 // ---------------------------------------------------------------------------
-function paintSingleResult(result) {
+
+function setLink(el, { text, href }) {
+  if (!el) return;
+  if (typeof text === "string") el.textContent = text;
+  el.setAttribute("href", href || "#");
+  el.setAttribute("rel", "noopener");
+}
+
+function toggleDisplay(el, show, display = "inline-block") {
+  if (!el) return;
+  el.style.display = show ? display : "none";
+}
+
+function paintResult(results) {
   const titleEl = document.getElementById(RESULT_IDS.resTitle);
   const optionEl = document.getElementById(RESULT_IDS.resOption);
   const descEl = document.getElementById(RESULT_IDS.resDesc);
   const legalEl = document.getElementById(RESULT_IDS.resLegal);
-  const ctaEl = document.getElementById(RESULT_IDS.resCta);
 
-  if (titleEl) titleEl.textContent = "Tu mejor opción es:";
-  if (optionEl) optionEl.textContent = result?.option || "—";
-  if (descEl) descEl.textContent = result?.desc || "";
-  if (legalEl) legalEl.textContent = result?.legal || "";
+  const cta1 = document.getElementById(RESULT_IDS.cta1);
+  const cta2 = document.getElementById(RESULT_IDS.cta2);
 
-  if (ctaEl) {
-    ctaEl.setAttribute("href", result?.href || "#");
-    ctaEl.setAttribute("rel", "noopener");
+  const primary = results?.[0] || null;
+  const secondary = results?.[1] || null;
+
+  // 1 resultado
+  if (!secondary) {
+    if (titleEl) titleEl.textContent = "Tu mejor opción es:";
+    if (optionEl) optionEl.textContent = primary?.option || "—";
+    if (descEl) descEl.textContent = primary?.desc || "";
+    if (legalEl) legalEl.textContent = primary?.legal || "";
+
+    setLink(cta1, { text: "Conocer más", href: primary?.href });
+    toggleDisplay(cta2, false);
+    return;
   }
-}
 
-function paintMultiResults(results) {
-  const [r1, r2] = results;
+  // 2 resultados (sin duplicar layout)
+  if (titleEl) titleEl.textContent = "Tus mejores opciones son:";
+  if (optionEl) optionEl.textContent = ""; // opcional: evita “repetir”
+  if (descEl) descEl.textContent = "Elige la opción que más se ajuste a tu necesidad.";
+  if (legalEl) legalEl.textContent = "";
 
-  const opt1 = document.getElementById(RESULT_IDS.res1Option);
-  const desc1 = document.getElementById(RESULT_IDS.res1Desc);
-  const cta1 = document.getElementById(RESULT_IDS.res1Cta);
+  // CTA1 = resultado 1
+  setLink(cta1, {
+    text: primary?.option ? `Conocer ${primary.option}` : "Conocer opción 1",
+    href: primary?.href,
+  });
 
-  const opt2 = document.getElementById(RESULT_IDS.res2Option);
-  const desc2 = document.getElementById(RESULT_IDS.res2Desc);
-  const cta2 = document.getElementById(RESULT_IDS.res2Cta);
-
-  if (opt1) opt1.textContent = r1?.option || "—";
-  if (desc1) desc1.textContent = r1?.desc || "";
-  if (cta1) cta1.setAttribute("href", r1?.href || "#");
-
-  if (opt2) opt2.textContent = r2?.option || "—";
-  if (desc2) desc2.textContent = r2?.desc || "";
-  if (cta2) cta2.setAttribute("href", r2?.href || "#");
-}
-
-function toggleResultView(isMulti) {
-  const single = document.getElementById(RESULT_IDS.single);
-  const multi = document.getElementById(RESULT_IDS.multi);
-
-  if (single) single.style.display = isMulti ? "none" : "block";
-  if (multi) multi.style.display = isMulti ? "block" : "none";
+  // CTA2 = resultado 2
+  toggleDisplay(cta2, true);
+  setLink(cta2, {
+    text: secondary?.option ? `Conocer ${secondary.option}` : "Conocer opción 2",
+    href: secondary?.href,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -301,7 +308,7 @@ function toggleResultView(isMulti) {
 // ---------------------------------------------------------------------------
 function buildCleverTapPayload() {
   return {
-    Phone: state.phone,
+    Phone: state.phone, // importante: tu service identifica SOLO con Phone
 
     full_name: state.firstName,
     last_name: state.lastName,
@@ -345,13 +352,14 @@ function handleNext(stepId) {
     const lastName = readInputValue(INPUT_IDS.lastName);
     const email = readInputValue(INPUT_IDS.email);
 
-    // ✅ Aquí usamos tu validatePhone (muestra reportValidity si falla)
+    // ✅ reusa validatePhone del utils (reportValidity + return phone o null)
     const phone = validatePhone(INPUT_IDS.phone);
     if (!phone) return;
 
     if (!firstName) return showStepError("Ingresa tu nombre.", stepEl);
     if (!lastName) return showStepError("Ingresa tus apellidos.", stepEl);
-    if (!email || !isValidEmail(email)) return showStepError("Ingresa un correo válido.", stepEl);
+    if (!email || !isValidEmail(email))
+      return showStepError("Ingresa un correo válido.", stepEl);
 
     state.firstName = firstName;
     state.lastName = lastName;
@@ -361,10 +369,11 @@ function handleNext(stepId) {
     return go("step_1");
   }
 
-  // STEP 1
+  // STEP 1: objetivo
   if (stepId === "step_1") {
     const goal = requireRadio("goal", stepEl, "Selecciona un objetivo.");
     if (!goal) return;
+
     state.goal = goal;
 
     if (goal === "collect") return go("step_2_collect_channel");
@@ -373,7 +382,7 @@ function handleNext(stepId) {
     return;
   }
 
-  // COBRAR
+  // COBRAR: canal
   if (stepId === "step_2_collect_channel") {
     const channel = requireRadio("collect_channel", stepEl, "Selecciona un medio de cobro.");
     if (!channel) return;
@@ -382,6 +391,7 @@ function handleNext(stepId) {
     return channel === "website" ? go("step_collect_web_method") : go("step_volume");
   }
 
+  // COBRAR: método web
   if (stepId === "step_collect_web_method") {
     const method = requireRadio("website_collect_method", stepEl, "Selecciona cómo quieres cobrar.");
     if (!method) return;
@@ -390,25 +400,24 @@ function handleNext(stepId) {
     return go("step_volume");
   }
 
-  // PAGAR: types (checkboxes)
+  // PAGAR: tipos (checkbox)
   if (stepId === "step_2_pay_types") {
     const selected = requireAtLeastOneCheckbox(
       [PAY_CHECKBOX_IDS.socialServices, PAY_CHECKBOX_IDS.suppliersEmployees],
       stepEl,
-      "Selecciona al menos un tipo de pago."
+      "Selecciona al menos un tipo de pago.",
+      {
+        [PAY_CHECKBOX_IDS.socialServices]: "social_security_services",
+        [PAY_CHECKBOX_IDS.suppliersEmployees]: "suppliers_employees_beneficiaries",
+      }
     );
     if (!selected) return;
 
-    // Convertimos a keys de negocio (no IDs)
-    state.pay_types = selected.map((id) => {
-      if (id === PAY_CHECKBOX_IDS.socialServices) return "social_security_services";
-      if (id === PAY_CHECKBOX_IDS.suppliersEmployees) return "suppliers_employees_beneficiaries";
-      return id;
-    });
-
+    state.pay_types = selected;
     return go("step_pay_mode");
   }
 
+  // PAGAR: modo
   if (stepId === "step_pay_mode") {
     const mode = requireRadio("pay_mode", stepEl, "Selecciona si los pagos son individuales o masivos.");
     if (!mode) return;
@@ -417,6 +426,7 @@ function handleNext(stepId) {
     return mode === "individual" ? go("step_volume") : go("step_integration_team");
   }
 
+  // PAGAR: equipo
   if (stepId === "step_integration_team") {
     const team = requireRadio("integration_team", stepEl, "Selecciona tu tipo de equipo.");
     if (!team) return;
@@ -462,11 +472,13 @@ function handlePrev(stepId) {
         ? go("step_collect_web_method")
         : go("step_2_collect_channel");
     }
+
     if (state.goal === "pay") {
       return state.pay_mode === "massive_automated"
         ? go("step_integration_team")
         : go("step_pay_mode");
     }
+
     if (state.goal === "marketing") return go("step_2_marketing_channel");
     return go("step_1");
   }
@@ -478,7 +490,7 @@ function handlePrev(stepId) {
 // 8) Submit Webflow
 // ---------------------------------------------------------------------------
 function handleSubmit(event) {
-  // ✅ Reusa tu función: validatePrivacyPolicy
+  // ✅ reusa validatePrivacyPolicy del utils
   const accepted = validatePrivacyPolicy(PRIVACY_CHECKBOX_ID);
   if (!accepted) {
     event.preventDefault();
@@ -487,14 +499,12 @@ function handleSubmit(event) {
   }
 
   state.privacyAccepted = true;
+
+  // Calcula y pinta resultado
   state.results = computeResults();
+  paintResult(state.results);
 
-  const isMulti = state.results.length > 1;
-  toggleResultView(isMulti);
-
-  if (isMulti) paintMultiResults(state.results);
-  else paintSingleResult(state.results[0]);
-
+  // Evento CleverTap
   sendCleverTapEventEventOnly(CLEVERTAP_EVENT_NAME, buildCleverTapPayload());
 }
 
@@ -502,10 +512,10 @@ function handleSubmit(event) {
 // 9) Bootstrap
 // ---------------------------------------------------------------------------
 function boot() {
-  // ✅ UX/limitaciones del input phone (pegar, max 10, etc)
+  // Phone UX (max 10, bloquear paste, error message, etc)
   configurePhoneInput(INPUT_IDS.phone);
 
-  // Delegación next/prev
+  // Delegación Next/Prev
   document.addEventListener("click", (event) => {
     const nextBtn = event.target.closest(NEXT_SELECTOR);
     const prevBtn = event.target.closest(PREV_SELECTOR);
@@ -521,13 +531,13 @@ function boot() {
     if (prevBtn) handlePrev(stepId);
   });
 
-  // Submit Webflow
+  // Hook submit del form
   const formElement = document.querySelector("form");
   formElement?.addEventListener("submit", handleSubmit);
 
-  // Primer step visible
+  // Init
   go("step_0");
   console.info("[b2b-profiler] booted");
 }
 
-document.addEventListener("DOMContentLoaded", boot);
+document.addEventListener("DOMContentLoaded", boot, { once: true });
