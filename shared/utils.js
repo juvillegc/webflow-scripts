@@ -352,10 +352,13 @@ export const setupTextareaCounter = ({
 };
 
 
-/* --------- Perfilador b2b (Stepper helpers) --------- */
+
+
+/* ---------Perfilador b2b------------ */
 
 /** Selecciona un elemento (alias legible) */
-export const selectElement = (selector, context = document) => context.querySelector(selector);
+export const selectElement = (selector, context = document) =>
+  context.querySelector(selector);
 
 /** Selecciona varios elementos y retorna array */
 export const selectAllElements = (selector, context = document) =>
@@ -365,11 +368,11 @@ export const selectAllElements = (selector, context = document) =>
  * Cachea el display “real” de cada step para restaurarlo al mostrarlo.
  * Útil si algunos steps son flex y otros grid. Si todos son flex, igual funciona.
  */
-export const createDisplayCache = (stepIds, { defaultDisplay = 'flex' } = {}) => {
+export const createDisplayCache = (stepIds, { defaultDisplay = "flex" } = {}) => {
   const cache = {};
   const baseStep = document.getElementById(stepIds?.[0]);
   const baseDisplay = baseStep
-    ? (getComputedStyle(baseStep).display || defaultDisplay)
+    ? getComputedStyle(baseStep).display || defaultDisplay
     : defaultDisplay;
 
   stepIds.forEach((id) => {
@@ -379,7 +382,7 @@ export const createDisplayCache = (stepIds, { defaultDisplay = 'flex' } = {}) =>
     const hinted = el.dataset?.display; // opcional: data-display="grid"
     const css = getComputedStyle(el).display;
 
-    cache[id] = hinted || (css && css !== 'none' ? css : baseDisplay);
+    cache[id] = hinted || (css && css !== "none" ? css : baseDisplay);
   });
 
   return cache;
@@ -393,21 +396,23 @@ export const showOnlyStep = (
   stepIdToShow,
   stepIds,
   displayCache = {},
-  fallbackDisplay = 'flex'
+  fallbackDisplay = "flex"
 ) => {
   stepIds.forEach((id) => {
     const el = document.getElementById(id);
     if (!el) return;
 
     const show = id === stepIdToShow;
-    el.style.display = show ? (displayCache[id] || fallbackDisplay) : 'none';
+    el.style.display = show ? displayCache[id] || fallbackDisplay : "none";
   });
 };
 
 /** Lee el value del radio seleccionado dentro del step */
 export const readRadioValue = (groupName, stepEl = document) => {
-  const el = stepEl.querySelector(`input[type="radio"][name="${groupName}"]:checked`);
-  return el ? String(el.value || '').trim() : '';
+  const el = stepEl.querySelector(
+    `input[type="radio"][name="${groupName}"]:checked`
+  );
+  return el ? String(el.value || "").trim() : "";
 };
 
 /** Lee si un checkbox por id está checked */
@@ -419,15 +424,15 @@ export const readCheckboxChecked = (checkboxId) => {
 /** Lee el value (trim) de un input por id */
 export const readInputValue = (inputId) => {
   const el = document.getElementById(inputId);
-  return el ? String(el.value || '').trim() : '';
+  return el ? String(el.value || "").trim() : "";
 };
 
 /** Limpia el error del step si existe */
 export const clearStepError = (stepEl) => {
-  const errorBox = stepEl?.querySelector('.form-error');
+  const errorBox = stepEl?.querySelector(".form-error");
   if (!errorBox) return;
-  errorBox.textContent = '';
-  errorBox.style.display = 'none';
+  errorBox.textContent = "";
+  errorBox.style.display = "none";
 };
 
 /**
@@ -437,12 +442,15 @@ export const clearStepError = (stepEl) => {
 export const showStepError = (message, stepEl) => {
   clearStepError(stepEl);
 
-  const errorBox = stepEl?.querySelector('.form-error') || document.querySelector('.form-error');
+  const errorBox =
+    stepEl?.querySelector(".form-error") || document.querySelector(".form-error");
+
   if (errorBox) {
     errorBox.textContent = message;
-    errorBox.style.display = 'block';
+    errorBox.style.display = "block";
     return;
   }
+
   alert(message);
 };
 
@@ -453,7 +461,7 @@ export const showStepError = (message, stepEl) => {
 export const requireRadio = (
   groupName,
   stepEl,
-  errorMessage = 'Selecciona una opción.'
+  errorMessage = "Selecciona una opción."
 ) => {
   clearStepError(stepEl);
 
@@ -477,7 +485,7 @@ export const requireRadio = (
 export const requireAtLeastOneCheckbox = (
   checkboxIds = [],
   stepEl,
-  errorMessage = 'Selecciona al menos una opción.',
+  errorMessage = "Selecciona al menos una opción.",
   idToValueMap = null
 ) => {
   clearStepError(stepEl);
@@ -488,12 +496,7 @@ export const requireAtLeastOneCheckbox = (
     return null;
   }
 
-  // Si no hay map, devolvemos ids
   if (!idToValueMap) return checkedIds;
 
-  // Si hay map, devolvemos valores de negocio
   return checkedIds.map((id) => idToValueMap[id]).filter(Boolean);
 };
-
-
-
