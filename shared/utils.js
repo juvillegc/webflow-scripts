@@ -351,3 +351,101 @@ export const setupTextareaCounter = ({
   return { textarea, counter };
 };
 
+
+/* ---------Perfilador b2b------------ */
+
+
+/** Selecciona un elemento (alias legible) */
+export const selectElement = (selector, context = document) => context.querySelector(selector);
+
+/** Selecciona varios elementos y retorna array */
+export const selectAllElements = (selector, context = document) => Array.from(context.querySelectorAll(selector));
+
+export const createDisplayCache = (stepIds, { defaultDisplay = 'flex' } = {}) => {
+  const cache = {};
+  const baseStep = document.getElementById(stepIds?.[0]);
+  const baseDisplay = baseStep ? (getComputedStyle(baseStep).display || defaultDisplay) : defaultDisplay;
+
+  stepIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const hinted = el.dataset?.display;             // opcional: data-display="grid"
+    const css = getComputedStyle(el).display;
+    cache[id] = hinted || (css && css !== 'none' ? css : baseDisplay);
+  });
+
+  return cache;
+};
+
+
+export const showOnlyStep = (stepIdToShow, stepIds, displayCache, fallbackDisplay = 'flex') => {
+  stepIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const show = id === stepIdToShow;
+    el.style.display = show ? (displayCache?.[id] || fallbackDisplay) : 'none';
+  });
+};
+
+
+export const readRadioValue = (groupName, stepEl = document) => {
+  const el = stepEl.querySelector(`input[type="radio"][name="${groupName}"]:checked`);
+  return el ? String(el.value || '').trim() : '';
+};
+
+
+export const readCheckboxChecked = (checkboxId) => {
+  const el = document.getElementById(checkboxId);
+  return Boolean(el?.checked);
+};
+
+
+export const readInputValue = (inputId) => {
+  const el = document.getElementById(inputId);
+  return el ? String(el.value || '').trim() : '';
+};
+
+export const showStepError = (message, stepEl) => {
+  const errorBox = stepEl?.querySelector('.form-error') || document.querySelector('.form-error');
+  if (errorBox) {
+    errorBox.textContent = message;
+    errorBox.style.display = 'block';
+    return;
+  }
+  alert(message);
+};
+
+/** Limpia el error del step si existe */
+export const clearStepError = (stepEl) => {
+  const errorBox = stepEl?.querySelector('.form-error');
+  if (!errorBox) return;
+  errorBox.textContent = '';
+  errorBox.style.display = 'none';
+};
+
+
+export const requireRadio = (groupName, stepEl, errorMessage = 'Selecciona una opción.') => {
+  clearStepError(stepEl);
+  const value = readRadioValue(groupName, stepEl);
+  if (!value) {
+    showStepError(errorMessage, stepEl);
+    return null;
+  }
+  return value;
+};
+
+
+export const requireAtLeastOneCheckbox = (checkboxIds = [], stepEl, errorMessage = 'Selecciona al menos una opción.') => {
+  clearStepError(stepEl);
+  const checked = checkboxIds.filter((id) => readCheckboxChecked(id));
+  if (!checked.length) {
+    showStepError(errorMessage, stepEl);
+    return null;
+  }
+  return checked;
+};
+
+
+
+
