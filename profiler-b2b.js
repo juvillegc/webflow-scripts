@@ -204,7 +204,7 @@ function computeResults() {
       },
       ads: {
         option: "Nequi Ads",
-        desc: "Impulsa tu alcance con pauta dentro del ecosistema.",
+        desc: "Impulsa tu alcance con pauta dentro del ecosistema Nequi.",
         legal: "",
         href: "/negocios/publicidad-en-app-nequi",
       },
