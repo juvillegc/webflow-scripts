@@ -75,7 +75,7 @@ const RESULT_IDS = Object.freeze({
   resDesc: "res-desc",
   resLegal: "res-legal",
   cta1: "res-cta",
-  cta2: "res-cta-2", // ← debes crearlo en Webflow y dejarlo display:none
+  cta2: "res-cta-2", // debe existir en Webflow y estar display:none
 });
 
 const CLEVERTAP_EVENT_NAME = "b2b_perfilador_web";
@@ -85,13 +85,11 @@ const CLEVERTAP_EVENT_NAME = "b2b_perfilador_web";
 // ---------------------------------------------------------------------------
 
 const state = {
-  // datos
   firstName: "",
   lastName: "",
   email: "",
   phone: "",
 
-  // Q1 objetivo
   goal: "",
 
   // Cobrar
@@ -107,10 +105,9 @@ const state = {
   marketing_channel: "",
 
   // Reutilizables
-  transaction_volume: "",
+  transaction_volume: "", // menos_10000 | entre_10000_100000 | mas_100000
   privacyAccepted: false,
 
-  // Resultado final (1 o 2)
   results: [],
 };
 
@@ -119,6 +116,7 @@ window.__b2bProfilerState = state;
 // ---------------------------------------------------------------------------
 // 3) Validación email (ligera)
 // ---------------------------------------------------------------------------
+
 const isValidEmail = (value = "") =>
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
     String(value).toLowerCase()
@@ -127,75 +125,75 @@ const isValidEmail = (value = "") =>
 // ---------------------------------------------------------------------------
 // 4) Compute results (según tu seudocódigo)
 // ---------------------------------------------------------------------------
+
 function computeResults() {
   const results = [];
 
- // COBRAR
-if (state.goal === "collect") {
-  // Mapa para canales que NO son website
-  const collectChannelMap = {
-    physical_store: {
-      option: "API Suscripciones",
-      desc: "Automatiza cobros recurrentes para tus clientes.",
-      legal: "",
-      href: "/negocios/api-suscripciones",
-    },
-    internal_systems: {
-      option: "API Dispersiones",
-      desc: "Automatiza pagos y dispersión desde tus sistemas internos.",
-      legal: "",
-      href: "/negocios/api-dispersiones",
-    },
-    social_media: {
-      option: "App Nequi Negocios",
-      desc: "Recibe pagos en tu negocio de forma simple y segura.",
-      legal: "",
-      href: "/negocios/app-nequi-negocios",
-    },
-    app: {
-      option: "App Nequi Negocios",
-      desc: "Recibe pagos en tu negocio de forma simple y segura.",
-      legal: "",
-      href: "/negocios/app-nequi-negocios",
-    },
-  };
-
-  // Si NO es website, resolvemos directo por mapa
-  if (state.collect_channel && state.collect_channel !== "website") {
-    const conf = collectChannelMap[state.collect_channel];
-    if (conf) results.push(conf);
-    return results;
-  }
-
-  // Si es website → depende del método
-  if (state.collect_channel === "website") {
-    const webMethodMap = {
-      subscriptions: {
+  // -------------------- COBRAR --------------------
+  if (state.goal === "collect") {
+    // NOTA: estos keys deben coincidir con los radio "value" de Webflow
+    const collectChannelMap = {
+      physical_store: {
         option: "API Suscripciones",
         desc: "Automatiza cobros recurrentes para tus clientes.",
         legal: "",
         href: "/negocios/api-suscripciones",
       },
-      nequi_button: {
-        option: "API Botón Nequi",
-        desc: "Recibe pagos con un botón de cobro.",
+      internal_systems: {
+        option: "API Dispersiones",
+        desc: "Automatiza pagos y dispersión desde tus sistemas internos.",
         legal: "",
-        href: "/negocios/api-boton-nequi",
+        href: "/negocios/api-dispersiones",
       },
-      bnpl_credit: {
-        option: "API Crédito BNPL",
-        desc: "Ofrece pagos a crédito a tus clientes.",
+      social_media: {
+        option: "App Nequi Negocios",
+        desc: "Recibe pagos en tu negocio de forma simple y segura.",
         legal: "",
-        href: "/negocios/api-credito-bnpl",
+        href: "/negocios/app-nequi-negocios",
+      },
+      app: {
+        option: "App Nequi Negocios",
+        desc: "Recibe pagos en tu negocio de forma simple y segura.",
+        legal: "",
+        href: "/negocios/app-nequi-negocios",
       },
     };
 
-    const conf = webMethodMap[state.website_collect_method];
-    if (conf) results.push(conf);
-    return results;
+    if (state.collect_channel && state.collect_channel !== "website") {
+      const conf = collectChannelMap[state.collect_channel];
+      if (conf) results.push(conf);
+      return results;
+    }
+
+    if (state.collect_channel === "website") {
+      const webMethodMap = {
+        subscriptions: {
+          option: "API Suscripciones",
+          desc: "Automatiza cobros recurrentes para tus clientes.",
+          legal: "",
+          href: "/negocios/api-suscripciones",
+        },
+        nequi_button: {
+          option: "API Botón Nequi",
+          desc: "Recibe pagos con un botón de cobro.",
+          legal: "",
+          href: "/negocios/api-boton-nequi",
+        },
+        bnpl_credit: {
+          option: "API Crédito BNPL",
+          desc: "Ofrece pagos a crédito a tus clientes.",
+          legal: "",
+          href: "/negocios/api-credito-bnpl",
+        },
+      };
+
+      const conf = webMethodMap[state.website_collect_method];
+      if (conf) results.push(conf);
+      return results;
+    }
   }
-}
-  // MARKETING
+
+  // -------------------- MARKETING --------------------
   if (state.goal === "marketing") {
     const map = {
       btl: {
@@ -223,7 +221,7 @@ if (state.goal === "collect") {
     return results;
   }
 
-  // PAGAR
+  // -------------------- PAGAR --------------------
   if (state.goal === "pay") {
     // Individual → App Negocios
     if (state.pay_mode === "individual") {
@@ -239,9 +237,7 @@ if (state.goal === "collect") {
     // Masivo → 1 o 2 resultados según checkboxes
     if (state.pay_mode === "massive_automated") {
       const hasSocial = state.pay_types.includes("social_security_services");
-      const hasSuppliers = state.pay_types.includes(
-        "suppliers_employees_beneficiaries"
-      );
+      const hasSuppliers = state.pay_types.includes("suppliers_employees_beneficiaries");
 
       if (hasSocial) {
         results.push({
@@ -308,19 +304,17 @@ function paintResult(results) {
     return;
   }
 
-  // 2 resultados (sin duplicar layout)
+  // 2 resultados
   if (titleEl) titleEl.textContent = "Tus mejores opciones son:";
-  if (optionEl) optionEl.textContent = ""; // opcional: evita “repetir”
+  if (optionEl) optionEl.textContent = ""; // evitamos repetir
   if (descEl) descEl.textContent = "Elige la opción que más se ajuste a tu necesidad.";
   if (legalEl) legalEl.textContent = "";
 
-  // CTA1 = resultado 1
   setLink(cta1, {
     text: primary?.option ? `Conocer ${primary.option}` : "Conocer opción 1",
     href: primary?.href,
   });
 
-  // CTA2 = resultado 2
   toggleDisplay(cta2, true);
   setLink(cta2, {
     text: secondary?.option ? `Conocer ${secondary.option}` : "Conocer opción 2",
@@ -331,9 +325,10 @@ function paintResult(results) {
 // ---------------------------------------------------------------------------
 // 6) Payload CleverTap (event-only)
 // ---------------------------------------------------------------------------
+
 function buildCleverTapPayload() {
   return {
-    Phone: state.phone, // importante: tu service identifica SOLO con Phone
+    Phone: state.phone,
 
     full_name: state.firstName,
     last_name: state.lastName,
@@ -362,6 +357,7 @@ function buildCleverTapPayload() {
 // ---------------------------------------------------------------------------
 // 7) Stepper (Next / Prev)
 // ---------------------------------------------------------------------------
+
 const displayCache = createDisplayCache(STEP_IDS);
 
 function go(stepId) {
@@ -377,14 +373,12 @@ function handleNext(stepId) {
     const lastName = readInputValue(INPUT_IDS.lastName);
     const email = readInputValue(INPUT_IDS.email);
 
-    // ✅ reusa validatePhone del utils (reportValidity + return phone o null)
     const phone = validatePhone(INPUT_IDS.phone);
     if (!phone) return;
 
     if (!firstName) return showStepError("Ingresa tu nombre.", stepEl);
     if (!lastName) return showStepError("Ingresa tus apellidos.", stepEl);
-    if (!email || !isValidEmail(email))
-      return showStepError("Ingresa un correo válido.", stepEl);
+    if (!email || !isValidEmail(email)) return showStepError("Ingresa un correo válido.", stepEl);
 
     state.firstName = firstName;
     state.lastName = lastName;
@@ -469,12 +463,12 @@ function handleNext(stepId) {
     return go("step_volume");
   }
 
-  // VOLUMEN
+  // VOLUMEN (3 opciones, guardamos el value explícito)
   if (stepId === "step_volume") {
     const volume = requireRadio("transaction_volume", stepEl, "Selecciona tu volumen transaccional.");
     if (!volume) return;
 
-    state.transaction_volume = volume;
+    state.transaction_volume = volume; // menos_10000 | entre_10000_100000 | mas_100000
     return go("legal");
   }
 }
@@ -514,8 +508,24 @@ function handlePrev(stepId) {
 // ---------------------------------------------------------------------------
 // 8) Submit Webflow
 // ---------------------------------------------------------------------------
+
+let didSubmitLogicRun = false;
+
+function runSubmitLogic() {
+  // evita duplicar si Webflow dispara submit + success
+  if (didSubmitLogicRun) return;
+  didSubmitLogicRun = true;
+
+  state.privacyAccepted = true;
+
+  state.results = computeResults();
+  paintResult(state.results);
+
+  sendCleverTapEventEventOnly(CLEVERTAP_EVENT_NAME, buildCleverTapPayload());
+}
+
 function handleSubmit(event) {
-  // ✅ reusa validatePrivacyPolicy del utils
+  // reusa validatePrivacyPolicy del utils (si no acepta, bloquea submit)
   const accepted = validatePrivacyPolicy(PRIVACY_CHECKBOX_ID);
   if (!accepted) {
     event.preventDefault();
@@ -523,21 +533,15 @@ function handleSubmit(event) {
     return;
   }
 
-  state.privacyAccepted = true;
-
-  // Calcula y pinta resultado
-  state.results = computeResults();
-  paintResult(state.results);
-
-  // Evento CleverTap
-  sendCleverTapEventEventOnly(CLEVERTAP_EVENT_NAME, buildCleverTapPayload());
+  // ✅ corre lógica (pintar + evento). Dejamos que Webflow siga.
+  runSubmitLogic();
 }
 
 // ---------------------------------------------------------------------------
 // 9) Bootstrap
 // ---------------------------------------------------------------------------
+
 function boot() {
-  // Phone UX (max 10, bloquear paste, error message, etc)
   configurePhoneInput(INPUT_IDS.phone);
 
   // Delegación Next/Prev
@@ -556,11 +560,28 @@ function boot() {
     if (prevBtn) handlePrev(stepId);
   });
 
-  // Hook submit del form
+  // Hook submit del form + observer del success
   const formElement = document.querySelector("form");
-  formElement?.addEventListener("submit", handleSubmit);
+  if (formElement) {
+    formElement.addEventListener("submit", handleSubmit);
 
-  // Init
+    // repinta cuando Webflow muestre el success
+    const done = formElement.parentElement?.querySelector(".w-form-done");
+    if (done) {
+      const obs = new MutationObserver(() => {
+        const visible =
+          getComputedStyle(done).display !== "none" &&
+          done.offsetParent !== null;
+
+        if (visible) {
+          // si por timing Webflow mostró antes, igual pintamos acá
+          runSubmitLogic();
+        }
+      });
+      obs.observe(done, { attributes: true, attributeFilter: ["style", "class"] });
+    }
+  }
+
   go("step_0");
   console.info("[b2b-profiler] booted");
 }
