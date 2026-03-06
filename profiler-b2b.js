@@ -137,25 +137,25 @@ function computeResults() {
         option: "API Suscripciones",
         desc: "Automatiza cobros recurrentes para tus clientes.",
         legal: "",
-        href: "/negocios/api-suscripciones",
+        href: "/negocios/pagos-recurrentes",
       },
       internal_systems: {
         option: "API Dispersiones",
         desc: "Automatiza pagos y dispersión desde tus sistemas internos.",
         legal: "",
-        href: "/negocios/api-dispersiones",
+        href: "/negocios/dispersiones-de-plata",
       },
       social_media: {
         option: "App Nequi Negocios",
         desc: "Recibe pagos en tu negocio de forma simple y segura.",
         legal: "",
-        href: "/negocios/app-nequi-negocios",
+        href: "/negocios/app-negocios#descarga-app-negocios",
       },
       app: {
         option: "App Nequi Negocios",
         desc: "Recibe pagos en tu negocio de forma simple y segura.",
         legal: "",
-        href: "/negocios/app-nequi-negocios",
+        href: "/negocios/app-negocios#descarga-app-negocios",
       },
     };
 
@@ -171,19 +171,19 @@ function computeResults() {
           option: "API Suscripciones",
           desc: "Automatiza cobros recurrentes para tus clientes.",
           legal: "",
-          href: "/negocios/api-suscripciones",
+          href: "/negocios/pagos-recurrentes",
         },
         nequi_button: {
           option: "API Botón Nequi",
           desc: "Recibe pagos con un botón de cobro.",
           legal: "",
-          href: "/negocios/api-boton-nequi",
+          href: "/negocios/pago-en-linea",
         },
         bnpl_credit: {
           option: "API Crédito BNPL",
           desc: "Ofrece pagos a crédito a tus clientes.",
           legal: "",
-          href: "/negocios/api-credito-bnpl",
+          href: "/negocios",
         },
       };
 
@@ -203,16 +203,16 @@ function computeResults() {
         href: "/negocios/codigos-por-plata",
       },
       ads: {
-        option: "Medios",
+        option: "Nequi Ads",
         desc: "Impulsa tu alcance con pauta dentro del ecosistema.",
         legal: "",
-        href: "/negocios/medios",
+        href: "/negocios/publicidad-en-app-nequi",
       },
       cashback: {
         option: "Tienda",
         desc: "Incentiva compras con beneficios tipo cashback.",
         legal: "",
-        href: "/negocios/tienda",
+        href: "/negocios/tienda-virtual",
       },
     };
 
@@ -229,7 +229,7 @@ function computeResults() {
         option: "App Nequi Negocios",
         desc: "Gestiona pagos individuales a terceros desde la app.",
         legal: "",
-        href: "/negocios/app-nequi-negocios",
+        href: "/negocios/app-negocios#descarga-app-negocios",
       });
       return results;
     }
@@ -241,10 +241,10 @@ function computeResults() {
 
       if (hasSocial) {
         results.push({
-          option: "App Nequi",
+          option: "App Nequi Negocios",
           desc: "Para pagos de seguridad social y servicios.",
           legal: "",
-          href: "/personas/descarga-app",
+          href: "/negocios/app-negocios#descarga-app-negocios",
         });
       }
 
@@ -253,7 +253,7 @@ function computeResults() {
           option: "API Dispersiones",
           desc: "Automatiza pagos masivos a proveedores/empleados/beneficiarios.",
           legal: "",
-          href: "/negocios/api-dispersiones",
+          href: "/negocios/dispersiones-de-plata",
         });
       }
 
