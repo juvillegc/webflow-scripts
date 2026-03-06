@@ -130,46 +130,71 @@ const isValidEmail = (value = "") =>
 function computeResults() {
   const results = [];
 
-  // COBRAR
-  if (state.goal === "collect") {
-    if (state.collect_channel && state.collect_channel !== "website") {
-      results.push({
-        option: "App Nequi Negocios",
-        desc: "Recibe pagos en tu negocio de forma simple y segura.",
-        legal: "",
-        href: "/negocios/app-nequi-negocios",
-      });
-      return results;
-    }
+ // COBRAR
+if (state.goal === "collect") {
+  // Mapa para canales que NO son website
+  const collectChannelMap = {
+    physical_store: {
+      option: "API Suscripciones",
+      desc: "Automatiza cobros recurrentes para tus clientes.",
+      legal: "",
+      href: "/negocios/api-suscripciones",
+    },
+    internal_systems: {
+      option: "API Dispersiones",
+      desc: "Automatiza pagos y dispersión desde tus sistemas internos.",
+      legal: "",
+      href: "/negocios/api-dispersiones",
+    },
+    social_media: {
+      option: "App Nequi Negocios",
+      desc: "Recibe pagos en tu negocio de forma simple y segura.",
+      legal: "",
+      href: "/negocios/app-nequi-negocios",
+    },
+    app: {
+      option: "App Nequi Negocios",
+      desc: "Recibe pagos en tu negocio de forma simple y segura.",
+      legal: "",
+      href: "/negocios/app-nequi-negocios",
+    },
+  };
 
-    if (state.collect_channel === "website") {
-      const map = {
-        subscriptions: {
-          option: "API Suscripciones",
-          desc: "Automatiza cobros recurrentes para tus clientes.",
-          legal: "",
-          href: "/negocios/api-suscripciones",
-        },
-        nequi_button: {
-          option: "API Botón Nequi",
-          desc: "Recibe pagos con un botón de cobro.",
-          legal: "",
-          href: "/negocios/api-boton-nequi",
-        },
-        bnpl_credit: {
-          option: "API Crédito BNPL",
-          desc: "Ofrece pagos a crédito a tus clientes.",
-          legal: "",
-          href: "/negocios/api-credito-bnpl",
-        },
-      };
-
-      const conf = map[state.website_collect_method];
-      if (conf) results.push(conf);
-      return results;
-    }
+  // Si NO es website, resolvemos directo por mapa
+  if (state.collect_channel && state.collect_channel !== "website") {
+    const conf = collectChannelMap[state.collect_channel];
+    if (conf) results.push(conf);
+    return results;
   }
 
+  // Si es website → depende del método
+  if (state.collect_channel === "website") {
+    const webMethodMap = {
+      subscriptions: {
+        option: "API Suscripciones",
+        desc: "Automatiza cobros recurrentes para tus clientes.",
+        legal: "",
+        href: "/negocios/api-suscripciones",
+      },
+      nequi_button: {
+        option: "API Botón Nequi",
+        desc: "Recibe pagos con un botón de cobro.",
+        legal: "",
+        href: "/negocios/api-boton-nequi",
+      },
+      bnpl_credit: {
+        option: "API Crédito BNPL",
+        desc: "Ofrece pagos a crédito a tus clientes.",
+        legal: "",
+        href: "/negocios/api-credito-bnpl",
+      },
+    };
+
+    const conf = webMethodMap[state.website_collect_method];
+    if (conf) results.push(conf);
+    return results;
+  }
+}
   // MARKETING
   if (state.goal === "marketing") {
     const map = {
