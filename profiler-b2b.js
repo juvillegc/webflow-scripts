@@ -131,7 +131,6 @@ function computeResults() {
 
   // -------------------- COBRAR --------------------
   if (state.goal === "collect") {
-    // NOTA: estos keys deben coincidir con los radio "value" de Webflow
     const collectChannelMap = {
       physical_store: {
         option: "API Suscripciones",
@@ -141,7 +140,7 @@ function computeResults() {
       },
       internal_systems: {
         option: "API Dispersiones",
-        desc: "Automatiza pagos y dispersión desde tus sistemas internos.",
+        desc: "Automatiza pagos y dispersiones desde tus sistemas internos.",
         legal: "",
         href: "/negocios/dispersiones-de-plata",
       },
@@ -210,7 +209,7 @@ function computeResults() {
       },
       cashback: {
         option: "Tienda",
-        desc: "Incentiva compras con beneficios tipo cashback.",
+        desc: "Incentiva compras en tu neegocio con beneficios tipo cashback.",
         legal: "",
         href: "/negocios/tienda-virtual",
       },
@@ -251,7 +250,7 @@ function computeResults() {
       if (hasSuppliers) {
         results.push({
           option: "API Dispersiones",
-          desc: "Automatiza pagos masivos a proveedores/empleados/beneficiarios.",
+          desc: "Automatiza pagos masivos a proveedores / empleados / beneficiarios.",
           legal: "",
           href: "/negocios/dispersiones-de-plata",
         });
