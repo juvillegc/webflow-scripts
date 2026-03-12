@@ -5,22 +5,19 @@
  * - Muestra/oculta steps
  * - Lee respuestas del usuario
  * - Calcula resultado final
- * - Pinta Success (solo #result con 1 o 2 CTAs)
+ * - Pinta Success (solo #result con 1 CTA)
  * - Envía evento a CleverTap (identificación SOLO por Phone)
  */
 
 import {
-  // utilidades existentes
   configurePhoneInput,
   validatePhone,
   validatePrivacyPolicy,
 
-  // helpers b2b (stepper)
   createDisplayCache,
   showOnlyStep,
   requireRadio,
   readInputValue,
-  requireAtLeastOneCheckbox,
   showStepError,
 } from "./shared/utils.js";
 
@@ -39,7 +36,7 @@ const STEP_IDS = [
   "step_collect_web_method",
 
   // Pagar
-  "step_2_pay_types",
+  "step_2_pay_types",      // ahora es RADIO pay_type
   "step_pay_mode",
   "step_integration_team",
 
@@ -63,11 +60,6 @@ const PRIVACY_CHECKBOX_ID = "privacy_policy";
 const NEXT_SELECTOR = ".next-btn";
 const PREV_SELECTOR = ".btn-prev";
 
-const PAY_CHECKBOX_IDS = Object.freeze({
-  socialServices: "pay_type_social_security_services",
-  suppliersEmployees: "pay_type_suppliers_employees_beneficiaries",
-});
-
 // Success (solo result)
 const RESULT_IDS = Object.freeze({
   resTitle: "res-title",
@@ -75,7 +67,6 @@ const RESULT_IDS = Object.freeze({
   resDesc: "res-desc",
   resLegal: "res-legal",
   cta1: "res-cta",
-  cta2: "res-cta-2", // debe existir en Webflow y estar display:none
 });
 
 const CLEVERTAP_EVENT_NAME = "b2b_perfilador_web";
@@ -97,7 +88,7 @@ const state = {
   website_collect_method: "",
 
   // Pagar
-  pay_types: [],
+  pay_type: "",            // ✅ NUEVO (radio)
   pay_mode: "",
   integration_team: "",
 
@@ -105,10 +96,10 @@ const state = {
   marketing_channel: "",
 
   // Reutilizables
-  transaction_volume: "", // menos_10000 | entre_10000_100000 | mas_100000
+  transaction_volume: "",  // menos_10000 | entre_10000_100000 | mas_100000
   privacyAccepted: false,
 
-  results: [],
+  results: [],             // ahora siempre 1
 };
 
 window.__b2bProfilerState = state;
@@ -123,7 +114,7 @@ const isValidEmail = (value = "") =>
   );
 
 // ---------------------------------------------------------------------------
-// 4) Compute results (según tu seudocódigo)
+// 4) Compute results (tu lógica nueva)
 // ---------------------------------------------------------------------------
 
 function computeResults() {
@@ -131,18 +122,13 @@ function computeResults() {
 
   // -------------------- COBRAR --------------------
   if (state.goal === "collect") {
+    // Directo por canal (NO website)
     const collectChannelMap = {
       physical_store: {
-        option: "API Suscripciones",
-        desc: "Automatiza cobros recurrentes para tus clientes.",
+        option: "App Nequi Negocios",
+        desc: "Recibe pagos en tu negocio de forma simple y segura.",
         legal: "",
-        href: "/negocios/pagos-recurrentes",
-      },
-      internal_systems: {
-        option: "API Dispersiones",
-        desc: "Automatiza pagos y dispersiones desde tus sistemas internos.",
-        legal: "",
-        href: "/negocios/dispersiones-de-plata",
+        href: "/negocios/app-negocios#descarga-app-negocios",
       },
       social_media: {
         option: "App Nequi Negocios",
@@ -151,10 +137,16 @@ function computeResults() {
         href: "/negocios/app-negocios#descarga-app-negocios",
       },
       app: {
-        option: "App Nequi Negocios",
-        desc: "Recibe pagos en tu negocio de forma simple y segura.",
+        option: "API Suscripciones",
+        desc: "Automatiza cobros recurrentes para tus clientes.",
         legal: "",
-        href: "/negocios/app-negocios#descarga-app-negocios",
+        href: "/negocios/pagos-recurrentes",
+      },
+      internal_systems: {
+        option: "API Botón Nequi",
+        desc: "Integra un botón de pago desde tus sistemas internos.",
+        legal: "",
+        href: "/negocios/pago-en-linea",
       },
     };
 
@@ -164,6 +156,7 @@ function computeResults() {
       return results;
     }
 
+    // Website → método
     if (state.collect_channel === "website") {
       const webMethodMap = {
         subscriptions: {
@@ -179,10 +172,11 @@ function computeResults() {
           href: "/negocios/pago-en-linea",
         },
         bnpl_credit: {
-          option: "API Crédito BNPL",
-          desc: "Ofrece pagos a crédito a tus clientes.",
+          option: "API Botón Nequi",
+          // 👇 párrafo especial SOLO para esta opción
+          desc: "Con la posibilidad de cobrar a tus clientes con Crédito Nequi.",
           legal: "",
-          href: "/negocios",
+          href: "/negocios/pago-en-linea",
         },
       };
 
@@ -195,9 +189,9 @@ function computeResults() {
   // -------------------- MARKETING --------------------
   if (state.goal === "marketing") {
     const map = {
-      btl: {
+      incentives: {
         option: "Códigos por plata",
-        desc: "Activa campañas BTL con códigos para tus usuarios.",
+        desc: "Activa campañas, entrega incentivos o premios entregando plata a través de Códigos QR",
         legal: "",
         href: "/negocios/codigos-por-plata",
       },
@@ -209,7 +203,7 @@ function computeResults() {
       },
       cashback: {
         option: "Tienda",
-        desc: "Incentiva compras en tu neegocio con beneficios tipo cashback.",
+        desc: "Incentiva compras en tu negocio con beneficios tipo cashback.",
         legal: "",
         href: "/negocios/tienda-virtual",
       },
@@ -220,43 +214,42 @@ function computeResults() {
     return results;
   }
 
-  // -------------------- PAGAR --------------------
+  // -------------------- PAGAR A TERCEROS --------------------
   if (state.goal === "pay") {
-    // Individual → App Negocios
-    if (state.pay_mode === "individual") {
+    // Caso: seguridad social/servicios → App Negocios descarga
+    if (state.pay_type === "social_security_services") {
       results.push({
         option: "App Nequi Negocios",
-        desc: "Gestiona pagos individuales a terceros desde la app.",
+        desc: "Gestiona pagos de seguridad social y servicios desde la app.",
         legal: "",
         href: "/negocios/app-negocios#descarga-app-negocios",
       });
       return results;
     }
 
-    // Masivo → 1 o 2 resultados según checkboxes
-    if (state.pay_mode === "massive_automated") {
-      const hasSocial = state.pay_types.includes("social_security_services");
-      const hasSuppliers = state.pay_types.includes("suppliers_employees_beneficiaries");
-
-      if (hasSocial) {
+    // Caso: proveedores/empleados/beneficiarios
+    if (state.pay_type === "suppliers_employees_beneficiaries") {
+      // Individual → App Negocios descarga
+      if (state.pay_mode === "individual") {
         results.push({
           option: "App Nequi Negocios",
-          desc: "Para pagos de seguridad social y servicios.",
+          desc: "Gestiona pagos individuales a terceros desde la app.",
           legal: "",
           href: "/negocios/app-negocios#descarga-app-negocios",
         });
+        return results;
       }
 
-      if (hasSuppliers) {
+      // Masivo → API Dispersiones
+      if (state.pay_mode === "massive_automated") {
         results.push({
           option: "API Dispersiones",
-          desc: "Automatiza pagos masivos a proveedores / empleados / beneficiarios.",
+          desc: "Automatiza pagos masivos a proveedores, empleados y beneficiarios.",
           legal: "",
           href: "/negocios/dispersiones-de-plata",
         });
+        return results;
       }
-
-      return results;
     }
   }
 
@@ -264,7 +257,7 @@ function computeResults() {
 }
 
 // ---------------------------------------------------------------------------
-// 5) Pintar Success (1 o 2 CTAs) dentro de #result
+// 5) Pintar Success (1 CTA)
 // ---------------------------------------------------------------------------
 
 function setLink(el, { text, href }) {
@@ -274,51 +267,21 @@ function setLink(el, { text, href }) {
   el.setAttribute("rel", "noopener");
 }
 
-function toggleDisplay(el, show, display = "inline-block") {
-  if (!el) return;
-  el.style.display = show ? display : "none";
-}
-
 function paintResult(results) {
   const titleEl = document.getElementById(RESULT_IDS.resTitle);
   const optionEl = document.getElementById(RESULT_IDS.resOption);
   const descEl = document.getElementById(RESULT_IDS.resDesc);
   const legalEl = document.getElementById(RESULT_IDS.resLegal);
-
   const cta1 = document.getElementById(RESULT_IDS.cta1);
-  const cta2 = document.getElementById(RESULT_IDS.cta2);
 
   const primary = results?.[0] || null;
-  const secondary = results?.[1] || null;
 
-  // 1 resultado
-  if (!secondary) {
-    if (titleEl) titleEl.textContent = "Tu mejor opción es:";
-    if (optionEl) optionEl.textContent = primary?.option || "—";
-    if (descEl) descEl.textContent = primary?.desc || "";
-    if (legalEl) legalEl.textContent = primary?.legal || "";
+  if (titleEl) titleEl.textContent = "Tu mejor opción es:";
+  if (optionEl) optionEl.textContent = primary?.option || "—";
+  if (descEl) descEl.textContent = primary?.desc || "";
+  if (legalEl) legalEl.textContent = primary?.legal || "";
 
-    setLink(cta1, { text: "Conocer más", href: primary?.href });
-    toggleDisplay(cta2, false);
-    return;
-  }
-
-  // 2 resultados
-  if (titleEl) titleEl.textContent = "Tus mejores opciones son:";
-  if (optionEl) optionEl.textContent = ""; // evitamos repetir
-  if (descEl) descEl.textContent = "Elige la opción que más se ajuste a tu necesidad.";
-  if (legalEl) legalEl.textContent = "";
-
-  setLink(cta1, {
-    text: primary?.option ? `Conocer ${primary.option}` : "Conocer opción 1",
-    href: primary?.href,
-  });
-
-  toggleDisplay(cta2, true);
-  setLink(cta2, {
-    text: secondary?.option ? `Conocer ${secondary.option}` : "Conocer opción 2",
-    href: secondary?.href,
-  });
+  setLink(cta1, { text: "Conocer más", href: primary?.href });
 }
 
 // ---------------------------------------------------------------------------
@@ -338,7 +301,7 @@ function buildCleverTapPayload() {
     collect_channel: state.collect_channel,
     website_collect_method: state.website_collect_method,
 
-    pay_types: state.pay_types.join(","),
+    pay_type: state.pay_type,
     pay_mode: state.pay_mode,
     integration_team: state.integration_team,
 
@@ -347,9 +310,7 @@ function buildCleverTapPayload() {
 
     privacy_accepted: Boolean(state.privacyAccepted),
 
-    result_count: state.results.length,
     result_1: state.results[0]?.option || "",
-    result_2: state.results[1]?.option || "",
   };
 }
 
@@ -400,7 +361,7 @@ function handleNext(stepId) {
     return;
   }
 
-  // COBRAR: canal
+  // ---------------- COBRAR ----------------
   if (stepId === "step_2_collect_channel") {
     const channel = requireRadio("collect_channel", stepEl, "Selecciona un medio de cobro.");
     if (!channel) return;
@@ -409,7 +370,6 @@ function handleNext(stepId) {
     return channel === "website" ? go("step_collect_web_method") : go("step_volume");
   }
 
-  // COBRAR: método web
   if (stepId === "step_collect_web_method") {
     const method = requireRadio("website_collect_method", stepEl, "Selecciona cómo quieres cobrar.");
     if (!method) return;
@@ -418,33 +378,33 @@ function handleNext(stepId) {
     return go("step_volume");
   }
 
-  // PAGAR: tipos (checkbox)
+  // ---------------- PAGAR A TERCEROS ----------------
   if (stepId === "step_2_pay_types") {
-    const selected = requireAtLeastOneCheckbox(
-      [PAY_CHECKBOX_IDS.socialServices, PAY_CHECKBOX_IDS.suppliersEmployees],
-      stepEl,
-      "Selecciona al menos un tipo de pago.",
-      {
-        [PAY_CHECKBOX_IDS.socialServices]: "social_security_services",
-        [PAY_CHECKBOX_IDS.suppliersEmployees]: "suppliers_employees_beneficiaries",
-      }
-    );
-    if (!selected) return;
+    const payType = requireRadio("pay_type", stepEl, "Selecciona un tipo de pago.");
+    if (!payType) return;
 
-    state.pay_types = selected;
+    state.pay_type = payType;
+
+    // seguridad/servicios → directo a volumen
+    if (payType === "social_security_services") return go("step_volume");
+
+    // proveedores/empleados/beneficiarios → decide modo
     return go("step_pay_mode");
   }
 
-  // PAGAR: modo
   if (stepId === "step_pay_mode") {
     const mode = requireRadio("pay_mode", stepEl, "Selecciona si los pagos son individuales o masivos.");
     if (!mode) return;
 
     state.pay_mode = mode;
-    return mode === "individual" ? go("step_volume") : go("step_integration_team");
+
+    // individuales → volumen
+    if (mode === "individual") return go("step_volume");
+
+    // masivos → equipo integración
+    return go("step_integration_team");
   }
 
-  // PAGAR: equipo
   if (stepId === "step_integration_team") {
     const team = requireRadio("integration_team", stepEl, "Selecciona tu tipo de equipo.");
     if (!team) return;
@@ -453,7 +413,7 @@ function handleNext(stepId) {
     return go("step_volume");
   }
 
-  // MARKETING
+  // ---------------- MARKETING ----------------
   if (stepId === "step_2_marketing_channel") {
     const channel = requireRadio("marketing_channel", stepEl, "Selecciona una opción.");
     if (!channel) return;
@@ -462,12 +422,12 @@ function handleNext(stepId) {
     return go("step_volume");
   }
 
-  // VOLUMEN (3 opciones, guardamos el value explícito)
+  // ---------------- VOLUMEN ----------------
   if (stepId === "step_volume") {
     const volume = requireRadio("transaction_volume", stepEl, "Selecciona tu volumen transaccional.");
     if (!volume) return;
 
-    state.transaction_volume = volume; // menos_10000 | entre_10000_100000 | mas_100000
+    state.transaction_volume = volume;
     return go("legal");
   }
 }
@@ -475,15 +435,19 @@ function handleNext(stepId) {
 function handlePrev(stepId) {
   if (stepId === "step_1") return go("step_0");
 
+  // Cobrar back
   if (stepId === "step_2_collect_channel") return go("step_1");
   if (stepId === "step_collect_web_method") return go("step_2_collect_channel");
 
+  // Pagar back
   if (stepId === "step_2_pay_types") return go("step_1");
   if (stepId === "step_pay_mode") return go("step_2_pay_types");
   if (stepId === "step_integration_team") return go("step_pay_mode");
 
+  // Marketing back
   if (stepId === "step_2_marketing_channel") return go("step_1");
 
+  // Volumen back (depende del objetivo)
   if (stepId === "step_volume") {
     if (state.goal === "collect") {
       return state.collect_channel === "website"
@@ -491,13 +455,17 @@ function handlePrev(stepId) {
         : go("step_2_collect_channel");
     }
 
+    if (state.goal === "marketing") return go("step_2_marketing_channel");
+
     if (state.goal === "pay") {
-      return state.pay_mode === "massive_automated"
-        ? go("step_integration_team")
-        : go("step_pay_mode");
+      // si venimos de seguridad/servicios → vuelve a pay_types
+      if (state.pay_type === "social_security_services") return go("step_2_pay_types");
+
+      // si venimos de proveedores...
+      if (state.pay_mode === "massive_automated") return go("step_integration_team");
+      return go("step_pay_mode");
     }
 
-    if (state.goal === "marketing") return go("step_2_marketing_channel");
     return go("step_1");
   }
 
@@ -511,7 +479,6 @@ function handlePrev(stepId) {
 let didSubmitLogicRun = false;
 
 function runSubmitLogic() {
-  // evita duplicar si Webflow dispara submit + success
   if (didSubmitLogicRun) return;
   didSubmitLogicRun = true;
 
@@ -524,7 +491,6 @@ function runSubmitLogic() {
 }
 
 function handleSubmit(event) {
-  // reusa validatePrivacyPolicy del utils (si no acepta, bloquea submit)
   const accepted = validatePrivacyPolicy(PRIVACY_CHECKBOX_ID);
   if (!accepted) {
     event.preventDefault();
@@ -532,7 +498,6 @@ function handleSubmit(event) {
     return;
   }
 
-  // ✅ corre lógica (pintar + evento). Dejamos que Webflow siga.
   runSubmitLogic();
 }
 
@@ -543,7 +508,6 @@ function handleSubmit(event) {
 function boot() {
   configurePhoneInput(INPUT_IDS.phone);
 
-  // Delegación Next/Prev
   document.addEventListener("click", (event) => {
     const nextBtn = event.target.closest(NEXT_SELECTOR);
     const prevBtn = event.target.closest(PREV_SELECTOR);
@@ -559,23 +523,17 @@ function boot() {
     if (prevBtn) handlePrev(stepId);
   });
 
-  // Hook submit del form + observer del success
   const formElement = document.querySelector("form");
   if (formElement) {
     formElement.addEventListener("submit", handleSubmit);
 
-    // repinta cuando Webflow muestre el success
     const done = formElement.parentElement?.querySelector(".w-form-done");
     if (done) {
       const obs = new MutationObserver(() => {
         const visible =
-          getComputedStyle(done).display !== "none" &&
-          done.offsetParent !== null;
+          getComputedStyle(done).display !== "none" && done.offsetParent !== null;
 
-        if (visible) {
-          // si por timing Webflow mostró antes, igual pintamos acá
-          runSubmitLogic();
-        }
+        if (visible) runSubmitLogic();
       });
       obs.observe(done, { attributes: true, attributeFilter: ["style", "class"] });
     }
