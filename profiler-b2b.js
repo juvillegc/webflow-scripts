@@ -88,7 +88,7 @@ const state = {
   website_collect_method: "",
 
   // Pagar
-  pay_type: "",            // ✅ NUEVO (radio)
+  pay_type: "",         
   pay_mode: "",
   integration_team: "",
 
@@ -202,10 +202,10 @@ function computeResults() {
         href: "/negocios/publicidad-en-app-nequi",
       },
       cashback: {
-        option: "Tienda",
+        option: "Tienda Virtual",
         desc: "Incentiva compras en tu negocio con beneficios tipo cashback.",
         legal: "",
-        href: "/negocios/tienda-virtual",
+        href: "/tienda/explora",
       },
     };
 
