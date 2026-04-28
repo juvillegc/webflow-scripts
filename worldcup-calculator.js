@@ -1,4 +1,4 @@
-import { sendCleverTapEventEventOnly } from '../services/event.clevertap.eventOnly.js';
+import { sendCleverTapEventEventOnly } from "./services/event.clevertap.eventOnly.js";
 
 const EVENT_NAME = 'wf_calculadora_mundial_web';
 
