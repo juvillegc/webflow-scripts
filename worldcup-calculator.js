@@ -25,6 +25,13 @@ const SELECTORS = {
     actualGoals: "wc-actual-away",
   },
 
+    labels: {
+  predictedTeamA: "wc-predicted-home-label",
+  predictedTeamB: "wc-predicted-away-label",
+  actualTeamA: "wc-actual-home-label",
+  actualTeamB: "wc-actual-away-label",
+},
+
   result: {
     wrapper: "wc-result",
     predictionPoints: "wc-prediction-points",
@@ -37,6 +44,8 @@ const SELECTORS = {
     calculate: "wc-calculate-btn",
     reset: "wc-reset-btn",
   },
+  
+
 };
 
 /* =========================================================
@@ -200,6 +209,29 @@ function updateTeamFlag(selectId, imageId) {
   image.alt = `Bandera de ${selectedTeam.name}`;
 }
 
+function updateDynamicLabels() {
+  const teamACode = getValue(SELECTORS.teamA.select);
+  const teamBCode = getValue(SELECTORS.teamB.select);
+
+  const teamA = getTeamByCode(teamACode);
+  const teamB = getTeamByCode(teamBCode);
+
+  const teamAName = teamA?.name || "equipo A";
+  const teamBName = teamB?.name || "equipo B";
+
+  getElement(SELECTORS.labels.predictedTeamA).textContent =
+    `Pronóstico para ${teamAName}`;
+
+  getElement(SELECTORS.labels.predictedTeamB).textContent =
+    `Pronóstico para ${teamBName}`;
+
+  getElement(SELECTORS.labels.actualTeamA).textContent =
+    `Resultado real de ${teamAName}`;
+
+  getElement(SELECTORS.labels.actualTeamB).textContent =
+    `Resultado real de ${teamBName}`;
+}
+
 function renderResult({
   predictionPoints,
   missionPoints,
@@ -350,6 +382,8 @@ function handleReset() {
     SELECTORS.teamB.flag
   );
 
+  updateDynamicLabels();
+
   hideResult();
 }
 
@@ -374,21 +408,19 @@ function initTeamSelectors() {
     SELECTORS.teamB.flag
   );
 
-  getElement(SELECTORS.teamA.select)
-    .addEventListener("change", () => {
-      updateTeamFlag(
-        SELECTORS.teamA.select,
-        SELECTORS.teamA.flag
-      );
-    });
+  updateDynamicLabels();
 
-  getElement(SELECTORS.teamB.select)
-    .addEventListener("change", () => {
-      updateTeamFlag(
-        SELECTORS.teamB.select,
-        SELECTORS.teamB.flag
-      );
-    });
+ getElement(SELECTORS.teamA.select)
+  .addEventListener("change", () => {
+    updateTeamFlag(SELECTORS.teamA.select, SELECTORS.teamA.flag);
+    updateDynamicLabels();
+  });
+
+getElement(SELECTORS.teamB.select)
+  .addEventListener("change", () => {
+    updateTeamFlag(SELECTORS.teamB.select, SELECTORS.teamB.flag);
+    updateDynamicLabels();
+  });
 }
 
 function initWorldCupCalculator() {
