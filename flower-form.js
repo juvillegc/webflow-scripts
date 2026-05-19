@@ -1,6 +1,6 @@
 import { validPhoneNumber, validatePhoneError } from './shared/utils.js';
 
-const phoneInputs = document.querySelectorAll('.flower-form-input-phone');
+const phoneInputs = document.querySelectorAll('.input-member-phone');
 
 const validatePhoneInputs = () => {
   phoneInputs.forEach((input) => {
