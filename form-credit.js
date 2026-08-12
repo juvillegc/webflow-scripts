@@ -16,10 +16,11 @@ import {
 
 
 /* ==================================================
-   FORM ELEMENTS
+   FORM
 ================================================== */
 
-const form = document.getElementById("credit_form");
+const formBlock = document.getElementById("credit_form");
+const form = formBlock?.querySelector("form");
 
 const inputPhoneNumber = document.getElementById("phone_number");
 
@@ -35,7 +36,7 @@ const selectImpactDuration =
 ================================================== */
 
 /**
- * Retorna el texto visible de la opción seleccionada.
+ * Retorna el texto visible del select.
  *
  * @param {HTMLSelectElement|null} select
  * @returns {string}
@@ -43,21 +44,21 @@ const selectImpactDuration =
 const getSelectedText = (select) => {
   if (!select || !select.value) return "";
 
-  const selectedOption = select.options[select.selectedIndex];
+  const selectedOption =
+    select.options[select.selectedIndex];
 
   return selectedOption?.textContent?.trim() || "";
 };
 
 
 /**
- * Normaliza valores de radios.
+ * Normaliza el valor de los radio buttons.
  *
  * @param {string} value
  * @returns {string}
  */
-const normalizeRadioValue = (value) => {
-  return String(value || "").trim().toLowerCase();
-};
+const normalizeRadioValue = (value) =>
+  String(value || "").trim().toLowerCase();
 
 
 /* ==================================================
@@ -65,7 +66,7 @@ const normalizeRadioValue = (value) => {
 ================================================== */
 
 /**
- * Carga los departamentos disponibles.
+ * Carga los departamentos.
  *
  * @returns {Promise<void>}
  */
@@ -105,8 +106,7 @@ const loadDepartments = async () => {
 ================================================== */
 
 /**
- * Carga las ciudades correspondientes
- * al departamento seleccionado.
+ * Carga las ciudades según el departamento.
  *
  * @param {string} departmentKey
  * @returns {Promise<void>}
@@ -146,8 +146,7 @@ const loadCities = async (departmentKey) => {
 
 
 /**
- * Obtiene el departamento seleccionado
- * y carga sus ciudades.
+ * Maneja el cambio de departamento.
  *
  * @returns {Promise<void>}
  */
@@ -180,36 +179,17 @@ const handleDepartmentChange = async () => {
 
 
 /* ==================================================
-   CLEVERTAP EVENT PROPERTIES
+   CLEVERTAP
 ================================================== */
 
 /**
- * Construye las propiedades del evento
- * form_credito_sismo.
+ * Construye las propiedades del evento.
  *
  * @returns {Object}
  */
 const buildEventProperties = () => {
   const phoneNumber =
     inputPhoneNumber?.value.trim() || "";
-
-  const activeNequiCredit = normalizeRadioValue(
-    readRadioValue("active_nequi_credit")
-  );
-
-  const paymentCapacityAffected =
-    normalizeRadioValue(
-      readRadioValue(
-        "payment_capacity_affected"
-      )
-    );
-
-  const incomeSourceAffected =
-    normalizeRadioValue(
-      readRadioValue(
-        "income_source_affected"
-      )
-    );
 
   return {
     Phone: phoneNumber,
@@ -221,13 +201,19 @@ const buildEventProperties = () => {
       getSelectedText(selectCity),
 
     ActiveNequiCredit:
-      activeNequiCredit,
+      normalizeRadioValue(
+        readRadioValue("active_nequi_credit")
+      ),
 
     PaymentCapacityAffected:
-      paymentCapacityAffected,
+      normalizeRadioValue(
+        readRadioValue("payment_capacity_affected")
+      ),
 
     IncomeSourceAffected:
-      incomeSourceAffected,
+      normalizeRadioValue(
+        readRadioValue("income_source_affected")
+      ),
 
     ImpactDuration:
       selectImpactDuration?.value || "",
@@ -235,15 +221,8 @@ const buildEventProperties = () => {
 };
 
 
-/* ==================================================
-   SUBMIT
-================================================== */
-
 /**
- * Envía las respuestas a CleverTap cuando
- * el formulario es válido.
- *
- * El submit nativo de Webflow continúa normalmente.
+ * Envía el evento a CleverTap.
  *
  * @param {SubmitEvent} event
  * @returns {void}
@@ -252,15 +231,23 @@ const handleSubmit = (event) => {
   if (!form) return;
 
   /*
-   * Si Webflow / navegador detecta campos
-   * inválidos, no enviamos CleverTap.
+   * Si el formulario no es válido,
+   * dejamos que el navegador/Webflow
+   * muestre sus validaciones.
    */
   if (!form.checkValidity()) {
+    form.reportValidity();
     return;
   }
 
   const eventProperties =
     buildEventProperties();
+
+  console.log(
+    "CleverTap event:",
+    "form_credito_sismo",
+    eventProperties
+  );
 
   sendCleverTapEventEventOnly(
     "form_credito_sismo",
@@ -273,16 +260,18 @@ const handleSubmit = (event) => {
    INITIALIZATION
 ================================================== */
 
-/**
- * Inicializa todas las funcionalidades
- * del formulario.
- *
- * @returns {Promise<void>}
- */
 const main = async () => {
+  if (!formBlock) {
+    console.warn(
+      "No se encontró #credit_form"
+    );
+
+    return;
+  }
+
   if (!form) {
     console.warn(
-      "No se encontró el formulario #credit_form"
+      "No se encontró el <form> dentro de #credit_form"
     );
 
     return;
@@ -291,15 +280,14 @@ const main = async () => {
   /*
    * Teléfono:
    * - Solo números
-   * - Máximo 10 dígitos
-   * - No permite pegar
-   * - Muestra error si no tiene 10 dígitos
+   * - Máximo 10
+   * - Bloquea pegar
+   * - Valida longitud
    */
   configurePhoneInput("phone_number");
 
   /*
-   * Ciudad inicia deshabilitada hasta
-   * seleccionar departamento.
+   * Ciudad inicia deshabilitada.
    */
   if (selectCity) {
     removeAllOptions(selectCity);
@@ -313,7 +301,7 @@ const main = async () => {
   }
 
   /*
-   * Carga inicial de departamentos.
+   * Carga departamentos.
    */
   await loadDepartments();
 
