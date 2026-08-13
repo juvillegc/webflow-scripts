@@ -22,13 +22,20 @@ import {
 const formBlock = document.getElementById("credit_form");
 const form = formBlock?.querySelector("form");
 
-const inputPhoneNumber = document.getElementById("phone_number");
+const inputPhoneNumber =
+  document.getElementById("phone_number");
 
-const selectDepartment = document.getElementById("department");
-const selectCity = document.getElementById("city");
+const selectDepartment =
+  document.getElementById("department");
+
+const selectCity =
+  document.getElementById("city");
 
 const selectImpactDuration =
   document.getElementById("impact_duration");
+
+const selectPreferredAlternative =
+  document.getElementById("preferred_alternative");
 
 
 /* ==================================================
@@ -36,7 +43,7 @@ const selectImpactDuration =
 ================================================== */
 
 /**
- * Retorna el texto visible del select.
+ * Retorna el texto visible de una opción seleccionada.
  *
  * @param {HTMLSelectElement|null} select
  * @returns {string}
@@ -52,13 +59,16 @@ const getSelectedText = (select) => {
 
 
 /**
- * Normaliza el valor de los radio buttons.
+ * Normaliza valores de radio buttons.
  *
  * @param {string} value
  * @returns {string}
  */
-const normalizeRadioValue = (value) =>
-  String(value || "").trim().toLowerCase();
+const normalizeRadioValue = (value) => {
+  return String(value || "")
+    .trim()
+    .toLowerCase();
+};
 
 
 /* ==================================================
@@ -66,7 +76,7 @@ const normalizeRadioValue = (value) =>
 ================================================== */
 
 /**
- * Carga los departamentos.
+ * Carga departamentos.
  *
  * @returns {Promise<void>}
  */
@@ -81,16 +91,25 @@ const loadDepartments = async () => {
       selectDepartment
     );
 
-    const { deparments } = await getDepartments();
+    const { deparments } =
+      await getDepartments();
 
     deparments.forEach((department) => {
-      const option = document.createElement("option");
+      const option =
+        document.createElement("option");
 
       option.value = department.id;
-      option.setAttribute("key", department.key);
-      option.textContent = department.label;
+      option.setAttribute(
+        "key",
+        department.key
+      );
 
-      selectDepartment.appendChild(option);
+      option.textContent =
+        department.label;
+
+      selectDepartment.appendChild(
+        option
+      );
     });
   } catch (error) {
     console.error(
@@ -106,13 +125,20 @@ const loadDepartments = async () => {
 ================================================== */
 
 /**
- * Carga las ciudades según el departamento.
+ * Carga ciudades según el departamento.
  *
  * @param {string} departmentKey
  * @returns {Promise<void>}
  */
-const loadCities = async (departmentKey) => {
-  if (!selectCity || !departmentKey) return;
+const loadCities = async (
+  departmentKey
+) => {
+  if (
+    !selectCity ||
+    !departmentKey
+  ) {
+    return;
+  }
 
   try {
     selectCity.disabled = true;
@@ -124,15 +150,19 @@ const loadCities = async (departmentKey) => {
       selectCity
     );
 
-    const cities = await getCities(departmentKey);
+    const cities =
+      await getCities(departmentKey);
 
     cities.forEach((city) => {
-      const option = document.createElement("option");
+      const option =
+        document.createElement("option");
 
       option.value = city.id;
       option.textContent = city.label;
 
-      selectCity.appendChild(option);
+      selectCity.appendChild(
+        option
+      );
     });
 
     selectCity.disabled = false;
@@ -146,95 +176,133 @@ const loadCities = async (departmentKey) => {
 
 
 /**
- * Maneja el cambio de departamento.
+ * Maneja cambio de departamento.
  *
  * @returns {Promise<void>}
  */
-const handleDepartmentChange = async () => {
-  if (!selectDepartment || !selectCity) return;
+const handleDepartmentChange =
+  async () => {
+    if (
+      !selectDepartment ||
+      !selectCity
+    ) {
+      return;
+    }
 
-  const selectedOption =
-    selectDepartment.options[
-      selectDepartment.selectedIndex
-    ];
+    const selectedOption =
+      selectDepartment.options[
+        selectDepartment.selectedIndex
+      ];
 
-  const departmentKey =
-    selectedOption?.getAttribute("key");
+    const departmentKey =
+      selectedOption?.getAttribute(
+        "key"
+      );
 
-  if (!departmentKey) {
-    removeAllOptions(selectCity);
+    if (!departmentKey) {
+      removeAllOptions(selectCity);
 
-    addFirstOption(
-      "Selecciona primero un departamento",
-      selectCity
+      addFirstOption(
+        "Selecciona primero un departamento",
+        selectCity
+      );
+
+      selectCity.disabled = true;
+
+      return;
+    }
+
+    await loadCities(
+      departmentKey
     );
-
-    selectCity.disabled = true;
-
-    return;
-  }
-
-  await loadCities(departmentKey);
-};
+  };
 
 
 /* ==================================================
-   CLEVERTAP
+   CLEVERTAP EVENT
 ================================================== */
 
 /**
- * Construye las propiedades del evento.
+ * Construye las propiedades del evento
+ * form_credito_sismo.
  *
  * @returns {Object}
  */
 const buildEventProperties = () => {
   const phoneNumber =
-    inputPhoneNumber?.value.trim() || "";
+    inputPhoneNumber?.value.trim() ||
+    "";
+
+  const activeNequiCredit =
+    normalizeRadioValue(
+      readRadioValue(
+        "active_nequi_credit"
+      )
+    );
+
+  const paymentCapacityAffected =
+    normalizeRadioValue(
+      readRadioValue(
+        "payment_capacity_affected"
+      )
+    );
+
+  const incomeSourceAffected =
+    normalizeRadioValue(
+      readRadioValue(
+        "income_source_affected"
+      )
+    );
 
   return {
     Phone: phoneNumber,
 
     Department:
-      getSelectedText(selectDepartment),
+      getSelectedText(
+        selectDepartment
+      ),
 
     City:
-      getSelectedText(selectCity),
+      getSelectedText(
+        selectCity
+      ),
 
     ActiveNequiCredit:
-      normalizeRadioValue(
-        readRadioValue("active_nequi_credit")
-      ),
+      activeNequiCredit,
 
     PaymentCapacityAffected:
-      normalizeRadioValue(
-        readRadioValue("payment_capacity_affected")
-      ),
+      paymentCapacityAffected,
 
     IncomeSourceAffected:
-      normalizeRadioValue(
-        readRadioValue("income_source_affected")
-      ),
+      incomeSourceAffected,
 
     ImpactDuration:
-      selectImpactDuration?.value || "",
+      selectImpactDuration?.value ||
+      "",
+
+    PreferredAlternative:
+      selectPreferredAlternative?.value ||
+      "",
   };
 };
 
 
+/* ==================================================
+   SUBMIT
+================================================== */
+
 /**
- * Envía el evento a CleverTap.
+ * Envía evento a CleverTap
+ * si el formulario es válido.
  *
- * @param {SubmitEvent} event
+ * El submit nativo de Webflow
+ * continúa normalmente.
+ *
  * @returns {void}
  */
-const handleSubmit = (event) => {
+const handleSubmit = () => {
   if (!form) return;
 
-  /*
-   * Si el formulario no es válido,
-   * dejamos que el navegador/Webflow
-   * muestre sus validaciones.
-   */
   if (!form.checkValidity()) {
     form.reportValidity();
     return;
@@ -244,7 +312,7 @@ const handleSubmit = (event) => {
     buildEventProperties();
 
   console.log(
-    "CleverTap event:",
+    "CleverTap Event:",
     "form_credito_sismo",
     eventProperties
   );
@@ -280,14 +348,17 @@ const main = async () => {
   /*
    * Teléfono:
    * - Solo números
-   * - Máximo 10
+   * - Máximo 10 dígitos
    * - Bloquea pegar
-   * - Valida longitud
+   * - Validación visual
    */
-  configurePhoneInput("phone_number");
+  configurePhoneInput(
+    "phone_number"
+  );
 
   /*
-   * Ciudad inicia deshabilitada.
+   * Ciudad inicia bloqueada
+   * hasta seleccionar departamento.
    */
   if (selectCity) {
     removeAllOptions(selectCity);
