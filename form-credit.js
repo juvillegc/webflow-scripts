@@ -31,9 +31,6 @@ const selectDepartment =
 const selectCity =
   document.getElementById("city");
 
-const selectImpactDuration =
-  document.getElementById("impact_duration");
-
 const selectPreferredAlternative =
   document.getElementById("preferred_alternative");
 
@@ -275,10 +272,6 @@ const buildEventProperties = () => {
 
     IncomeSourceAffected:
       incomeSourceAffected,
-
-    ImpactDuration:
-      selectImpactDuration?.value ||
-      "",
 
     PreferredAlternative:
       selectPreferredAlternative?.value ||
