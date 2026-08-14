@@ -3,6 +3,7 @@ import {
   removeAllOptions,
   addFirstOption,
   readRadioValue,
+  setupTextareaCounter,
 } from "./shared/utils.js";
 
 import {
@@ -34,8 +35,11 @@ const selectCity =
 const selectImpactDuration =
   document.getElementById("impact_duration");
 
-const selectPreferredAlternative =
-  document.getElementById("preferred_alternative");
+const creditImpactFields =
+  document.getElementById("credit_impact_fields");
+
+const textareaAdditionalComments =
+  document.getElementById("additional_comments");
 
 
 /* ==================================================
@@ -59,7 +63,7 @@ const getSelectedText = (select) => {
 
 
 /**
- * Normaliza valores de radio buttons.
+ * Normaliza los valores de radio.
  *
  * @param {string} value
  * @returns {string}
@@ -71,15 +75,154 @@ const normalizeRadioValue = (value) => {
 };
 
 
+/**
+ * Activa o desactiva required de los campos
+ * contenidos dentro de un elemento.
+ *
+ * Conserva cuáles campos originalmente
+ * eran obligatorios.
+ *
+ * @param {HTMLElement|null} container
+ * @param {boolean} enabled
+ * @returns {void}
+ */
+const toggleRequiredFields = (
+  container,
+  enabled
+) => {
+  if (!container) return;
+
+  const fields = container.querySelectorAll(
+    "input, select, textarea"
+  );
+
+  fields.forEach((field) => {
+    /*
+     * Guardamos una sola vez si el campo
+     * era required originalmente.
+     */
+    if (
+      field.dataset.wasRequired === undefined
+    ) {
+      field.dataset.wasRequired =
+        field.required ? "true" : "false";
+    }
+
+    if (enabled) {
+      field.required =
+        field.dataset.wasRequired === "true";
+    } else {
+      field.required = false;
+
+      /*
+       * Elimina posibles errores nativos
+       * mientras el campo está oculto.
+       */
+      field.setCustomValidity("");
+    }
+  });
+};
+
+
+/**
+ * Limpia los campos que quedan ocultos
+ * para no enviar respuestas antiguas.
+ *
+ * @param {HTMLElement|null} container
+ * @returns {void}
+ */
+const clearHiddenFields = (container) => {
+  if (!container) return;
+
+  const fields = container.querySelectorAll(
+    "input, select, textarea"
+  );
+
+  fields.forEach((field) => {
+    if (
+      field.type === "radio" ||
+      field.type === "checkbox"
+    ) {
+      field.checked = false;
+      return;
+    }
+
+    field.value = "";
+  });
+};
+
+
+/* ==================================================
+   CONDITIONAL CREDIT QUESTIONS
+================================================== */
+
+/**
+ * Muestra u oculta las preguntas relacionadas
+ * con afectación del crédito.
+ *
+ * YES:
+ * - Muestra preguntas
+ * - Restablece required
+ *
+ * NO:
+ * - Oculta preguntas
+ * - Quita required
+ * - Limpia respuestas anteriores
+ *
+ * @param {boolean} show
+ * @returns {void}
+ */
+const toggleCreditImpactFields = (show) => {
+  if (!creditImpactFields) return;
+
+  if (show) {
+    creditImpactFields.style.display = "";
+
+    toggleRequiredFields(
+      creditImpactFields,
+      true
+    );
+
+    return;
+  }
+
+  toggleRequiredFields(
+    creditImpactFields,
+    false
+  );
+
+  clearHiddenFields(
+    creditImpactFields
+  );
+
+  creditImpactFields.style.display = "none";
+};
+
+
+/**
+ * Reacciona a Sí / No en:
+ * active_nequi_credit
+ *
+ * @returns {void}
+ */
+const handleActiveCreditChange = () => {
+  const activeCredit =
+    normalizeRadioValue(
+      readRadioValue(
+        "active_nequi_credit"
+      )
+    );
+
+  toggleCreditImpactFields(
+    activeCredit === "yes"
+  );
+};
+
+
 /* ==================================================
    DEPARTMENTS
 ================================================== */
 
-/**
- * Carga departamentos.
- *
- * @returns {Promise<void>}
- */
 const loadDepartments = async () => {
   if (!selectDepartment) return;
 
@@ -108,9 +251,7 @@ const loadDepartments = async () => {
       option.textContent =
         department.label;
 
-      selectDepartment.appendChild(
-        option
-      );
+      selectDepartment.appendChild(option);
     });
   } catch (error) {
     console.error(
@@ -125,12 +266,6 @@ const loadDepartments = async () => {
    CITIES
 ================================================== */
 
-/**
- * Carga ciudades según el departamento.
- *
- * @param {string} departmentKey
- * @returns {Promise<void>}
- */
 const loadCities = async (departmentKey) => {
   if (!selectCity || !departmentKey) return;
 
@@ -167,13 +302,10 @@ const loadCities = async (departmentKey) => {
 };
 
 
-/**
- * Maneja el cambio de departamento.
- *
- * @returns {Promise<void>}
- */
 const handleDepartmentChange = async () => {
-  if (!selectDepartment || !selectCity) return;
+  if (!selectDepartment || !selectCity) {
+    return;
+  }
 
   const selectedOption =
     selectDepartment.options[
@@ -204,12 +336,6 @@ const handleDepartmentChange = async () => {
    CLEVERTAP EVENT
 ================================================== */
 
-/**
- * Construye las propiedades del evento
- * form_credito_sismo.
- *
- * @returns {Object}
- */
 const buildEventProperties = () => {
   const phoneNumber =
     inputPhoneNumber?.value.trim() || "";
@@ -221,19 +347,12 @@ const buildEventProperties = () => {
       )
     );
 
-  const paymentCapacityAffected =
-    normalizeRadioValue(
-      readRadioValue(
-        "payment_capacity_affected"
-      )
-    );
-
-  const incomeSourceAffected =
-    normalizeRadioValue(
-      readRadioValue(
-        "income_source_affected"
-      )
-    );
+  /*
+   * Solo tomamos estas respuestas
+   * cuando tiene crédito activo.
+   */
+  const hasActiveCredit =
+    activeNequiCredit === "yes";
 
   return {
     Phone: phoneNumber,
@@ -248,16 +367,31 @@ const buildEventProperties = () => {
       activeNequiCredit,
 
     PaymentCapacityAffected:
-      paymentCapacityAffected,
+      hasActiveCredit
+        ? normalizeRadioValue(
+            readRadioValue(
+              "payment_capacity_affected"
+            )
+          )
+        : "",
 
     IncomeSourceAffected:
-      incomeSourceAffected,
+      hasActiveCredit
+        ? normalizeRadioValue(
+            readRadioValue(
+              "income_source_affected"
+            )
+          )
+        : "",
 
     ImpactDuration:
-      selectImpactDuration?.value || "",
+      hasActiveCredit
+        ? selectImpactDuration?.value || ""
+        : "",
 
-    PreferredAlternative:
-      selectPreferredAlternative?.value || "",
+    AdditionalComments:
+      textareaAdditionalComments?.value
+        .trim() || "",
   };
 };
 
@@ -266,21 +400,14 @@ const buildEventProperties = () => {
    SUBMIT
 ================================================== */
 
-/**
- * Envía el evento a CleverTap
- * si el formulario es válido.
- *
- * El submit nativo de Webflow continúa normalmente.
- *
- * @param {SubmitEvent} event
- * @returns {void}
- */
 const handleSubmit = (event) => {
   if (!form) return;
 
   if (!form.checkValidity()) {
     event.preventDefault();
+
     form.reportValidity();
+
     return;
   }
 
@@ -322,19 +449,29 @@ const main = async () => {
   }
 
   /*
-   * Teléfono:
-   * - Solo números
-   * - Máximo 10 dígitos
-   * - Bloquea pegar
-   * - Validación visual
+   * Teléfono
    */
   configurePhoneInput(
     "phone_number"
   );
 
   /*
-   * Ciudad inicia bloqueada
-   * hasta seleccionar departamento.
+   * Textarea:
+   * máximo 200 caracteres
+   * contador automático 0/200
+   */
+  setupTextareaCounter({
+    textareaId:
+      "additional_comments",
+
+    maxCharacters: 200,
+
+    counterId:
+      "additional_comments_counter",
+  });
+
+  /*
+   * Ciudad inicia deshabilitada.
    */
   if (selectCity) {
     removeAllOptions(selectCity);
@@ -348,18 +485,41 @@ const main = async () => {
   }
 
   /*
-   * Carga departamentos.
+   * Inicialmente ocultamos las preguntas
+   * dependientes hasta que seleccione Sí.
+   */
+  toggleCreditImpactFields(false);
+
+  /*
+   * Departamentos.
    */
   await loadDepartments();
 
   /*
-   * Eventos.
+   * Departamento → ciudad
    */
   selectDepartment?.addEventListener(
     "change",
     handleDepartmentChange
   );
 
+  /*
+   * Crédito activo Sí / No
+   */
+  document
+    .querySelectorAll(
+      'input[name="active_nequi_credit"]'
+    )
+    .forEach((radio) => {
+      radio.addEventListener(
+        "change",
+        handleActiveCreditChange
+      );
+    });
+
+  /*
+   * Submit.
+   */
   form.addEventListener(
     "submit",
     handleSubmit
