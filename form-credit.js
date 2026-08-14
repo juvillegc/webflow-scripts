@@ -31,6 +31,9 @@ const selectDepartment =
 const selectCity =
   document.getElementById("city");
 
+const selectImpactDuration =
+  document.getElementById("impact_duration");
+
 const selectPreferredAlternative =
   document.getElementById("preferred_alternative");
 
@@ -96,6 +99,7 @@ const loadDepartments = async () => {
         document.createElement("option");
 
       option.value = department.id;
+
       option.setAttribute(
         "key",
         department.key
@@ -127,15 +131,8 @@ const loadDepartments = async () => {
  * @param {string} departmentKey
  * @returns {Promise<void>}
  */
-const loadCities = async (
-  departmentKey
-) => {
-  if (
-    !selectCity ||
-    !departmentKey
-  ) {
-    return;
-  }
+const loadCities = async (departmentKey) => {
+  if (!selectCity || !departmentKey) return;
 
   try {
     selectCity.disabled = true;
@@ -157,9 +154,7 @@ const loadCities = async (
       option.value = city.id;
       option.textContent = city.label;
 
-      selectCity.appendChild(
-        option
-      );
+      selectCity.appendChild(option);
     });
 
     selectCity.disabled = false;
@@ -173,46 +168,36 @@ const loadCities = async (
 
 
 /**
- * Maneja cambio de departamento.
+ * Maneja el cambio de departamento.
  *
  * @returns {Promise<void>}
  */
-const handleDepartmentChange =
-  async () => {
-    if (
-      !selectDepartment ||
-      !selectCity
-    ) {
-      return;
-    }
+const handleDepartmentChange = async () => {
+  if (!selectDepartment || !selectCity) return;
 
-    const selectedOption =
-      selectDepartment.options[
-        selectDepartment.selectedIndex
-      ];
+  const selectedOption =
+    selectDepartment.options[
+      selectDepartment.selectedIndex
+    ];
 
-    const departmentKey =
-      selectedOption?.getAttribute(
-        "key"
-      );
+  const departmentKey =
+    selectedOption?.getAttribute("key");
 
-    if (!departmentKey) {
-      removeAllOptions(selectCity);
+  if (!departmentKey) {
+    removeAllOptions(selectCity);
 
-      addFirstOption(
-        "Selecciona primero un departamento",
-        selectCity
-      );
-
-      selectCity.disabled = true;
-
-      return;
-    }
-
-    await loadCities(
-      departmentKey
+    addFirstOption(
+      "Selecciona primero un departamento",
+      selectCity
     );
-  };
+
+    selectCity.disabled = true;
+
+    return;
+  }
+
+  await loadCities(departmentKey);
+};
 
 
 /* ==================================================
@@ -227,8 +212,7 @@ const handleDepartmentChange =
  */
 const buildEventProperties = () => {
   const phoneNumber =
-    inputPhoneNumber?.value.trim() ||
-    "";
+    inputPhoneNumber?.value.trim() || "";
 
   const activeNequiCredit =
     normalizeRadioValue(
@@ -255,14 +239,10 @@ const buildEventProperties = () => {
     Phone: phoneNumber,
 
     Department:
-      getSelectedText(
-        selectDepartment
-      ),
+      getSelectedText(selectDepartment),
 
     City:
-      getSelectedText(
-        selectCity
-      ),
+      getSelectedText(selectCity),
 
     ActiveNequiCredit:
       activeNequiCredit,
@@ -273,9 +253,11 @@ const buildEventProperties = () => {
     IncomeSourceAffected:
       incomeSourceAffected,
 
+    ImpactDuration:
+      selectImpactDuration?.value || "",
+
     PreferredAlternative:
-      selectPreferredAlternative?.value ||
-      "",
+      selectPreferredAlternative?.value || "",
   };
 };
 
@@ -285,18 +267,19 @@ const buildEventProperties = () => {
 ================================================== */
 
 /**
- * Envía evento a CleverTap
+ * Envía el evento a CleverTap
  * si el formulario es válido.
  *
- * El submit nativo de Webflow
- * continúa normalmente.
+ * El submit nativo de Webflow continúa normalmente.
  *
+ * @param {SubmitEvent} event
  * @returns {void}
  */
-const handleSubmit = () => {
+const handleSubmit = (event) => {
   if (!form) return;
 
   if (!form.checkValidity()) {
+    event.preventDefault();
     form.reportValidity();
     return;
   }
