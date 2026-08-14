@@ -15,11 +15,6 @@ import {
   sendCleverTapEventEventOnly,
 } from "./services/event.clevertap.eventOnly.js";
 
-
-/* ==================================================
-   FORM
-================================================== */
-
 const formBlock = document.getElementById("credit_form");
 const form = formBlock?.querySelector("form");
 
@@ -32,56 +27,36 @@ const selectDepartment =
 const selectCity =
   document.getElementById("city");
 
-const selectImpactDuration =
-  document.getElementById("impact_duration");
-
 const creditImpactFields =
   document.getElementById("credit_impact_fields");
 
 const textareaAdditionalComments =
   document.getElementById("additional_comments");
 
-
-/* ==================================================
-   HELPERS
-================================================== */
-
 /**
- * Retorna el texto visible de una opción seleccionada.
- *
  * @param {HTMLSelectElement|null} select
  * @returns {string}
  */
 const getSelectedText = (select) => {
   if (!select || !select.value) return "";
 
-  const selectedOption =
-    select.options[select.selectedIndex];
-
-  return selectedOption?.textContent?.trim() || "";
+  return (
+    select.options[
+      select.selectedIndex
+    ]?.textContent?.trim() || ""
+  );
 };
 
-
 /**
- * Normaliza los valores de radio.
- *
  * @param {string} value
  * @returns {string}
  */
-const normalizeRadioValue = (value) => {
-  return String(value || "")
+const normalizeRadioValue = (value) =>
+  String(value || "")
     .trim()
     .toLowerCase();
-};
-
 
 /**
- * Activa o desactiva required de los campos
- * contenidos dentro de un elemento.
- *
- * Conserva cuáles campos originalmente
- * eran obligatorios.
- *
  * @param {HTMLElement|null} container
  * @param {boolean} enabled
  * @returns {void}
@@ -97,10 +72,6 @@ const toggleRequiredFields = (
   );
 
   fields.forEach((field) => {
-    /*
-     * Guardamos una sola vez si el campo
-     * era required originalmente.
-     */
     if (
       field.dataset.wasRequired === undefined
     ) {
@@ -108,26 +79,17 @@ const toggleRequiredFields = (
         field.required ? "true" : "false";
     }
 
-    if (enabled) {
-      field.required =
-        field.dataset.wasRequired === "true";
-    } else {
-      field.required = false;
+    field.required = enabled
+      ? field.dataset.wasRequired === "true"
+      : false;
 
-      /*
-       * Elimina posibles errores nativos
-       * mientras el campo está oculto.
-       */
+    if (!enabled) {
       field.setCustomValidity("");
     }
   });
 };
 
-
 /**
- * Limpia los campos que quedan ocultos
- * para no enviar respuestas antiguas.
- *
  * @param {HTMLElement|null} container
  * @returns {void}
  */
@@ -151,24 +113,7 @@ const clearHiddenFields = (container) => {
   });
 };
 
-
-/* ==================================================
-   CONDITIONAL CREDIT QUESTIONS
-================================================== */
-
 /**
- * Muestra u oculta las preguntas relacionadas
- * con afectación del crédito.
- *
- * YES:
- * - Muestra preguntas
- * - Restablece required
- *
- * NO:
- * - Oculta preguntas
- * - Quita required
- * - Limpia respuestas anteriores
- *
  * @param {boolean} show
  * @returns {void}
  */
@@ -177,12 +122,10 @@ const toggleCreditImpactFields = (show) => {
 
   if (show) {
     creditImpactFields.style.display = "";
-
     toggleRequiredFields(
       creditImpactFields,
       true
     );
-
     return;
   }
 
@@ -198,11 +141,7 @@ const toggleCreditImpactFields = (show) => {
   creditImpactFields.style.display = "none";
 };
 
-
 /**
- * Reacciona a Sí / No en:
- * active_nequi_credit
- *
  * @returns {void}
  */
 const handleActiveCreditChange = () => {
@@ -218,11 +157,9 @@ const handleActiveCreditChange = () => {
   );
 };
 
-
-/* ==================================================
-   DEPARTMENTS
-================================================== */
-
+/**
+ * @returns {Promise<void>}
+ */
 const loadDepartments = async () => {
   if (!selectDepartment) return;
 
@@ -242,12 +179,10 @@ const loadDepartments = async () => {
         document.createElement("option");
 
       option.value = department.id;
-
       option.setAttribute(
         "key",
         department.key
       );
-
       option.textContent =
         department.label;
 
@@ -261,11 +196,10 @@ const loadDepartments = async () => {
   }
 };
 
-
-/* ==================================================
-   CITIES
-================================================== */
-
+/**
+ * @param {string} departmentKey
+ * @returns {Promise<void>}
+ */
 const loadCities = async (departmentKey) => {
   if (!selectCity || !departmentKey) return;
 
@@ -301,7 +235,9 @@ const loadCities = async (departmentKey) => {
   }
 };
 
-
+/**
+ * @returns {Promise<void>}
+ */
 const handleDepartmentChange = async () => {
   if (!selectDepartment || !selectCity) {
     return;
@@ -324,18 +260,15 @@ const handleDepartmentChange = async () => {
     );
 
     selectCity.disabled = true;
-
     return;
   }
 
   await loadCities(departmentKey);
 };
 
-
-/* ==================================================
-   CLEVERTAP EVENT
-================================================== */
-
+/**
+ * @returns {Object}
+ */
 const buildEventProperties = () => {
   const phoneNumber =
     inputPhoneNumber?.value.trim() || "";
@@ -347,10 +280,6 @@ const buildEventProperties = () => {
       )
     );
 
-  /*
-   * Solo tomamos estas respuestas
-   * cuando tiene crédito activo.
-   */
   const hasActiveCredit =
     activeNequiCredit === "yes";
 
@@ -384,30 +313,22 @@ const buildEventProperties = () => {
           )
         : "",
 
-    ImpactDuration:
-      hasActiveCredit
-        ? selectImpactDuration?.value || ""
-        : "",
-
     AdditionalComments:
       textareaAdditionalComments?.value
         .trim() || "",
   };
 };
 
-
-/* ==================================================
-   SUBMIT
-================================================== */
-
+/**
+ * @param {SubmitEvent} event
+ * @returns {void}
+ */
 const handleSubmit = (event) => {
   if (!form) return;
 
   if (!form.checkValidity()) {
     event.preventDefault();
-
     form.reportValidity();
-
     return;
   }
 
@@ -426,17 +347,14 @@ const handleSubmit = (event) => {
   );
 };
 
-
-/* ==================================================
-   INITIALIZATION
-================================================== */
-
+/**
+ * @returns {Promise<void>}
+ */
 const main = async () => {
   if (!formBlock) {
     console.warn(
       "No se encontró #credit_form"
     );
-
     return;
   }
 
@@ -444,35 +362,21 @@ const main = async () => {
     console.warn(
       "No se encontró el <form> dentro de #credit_form"
     );
-
     return;
   }
 
-  /*
-   * Teléfono
-   */
   configurePhoneInput(
     "phone_number"
   );
 
-  /*
-   * Textarea:
-   * máximo 200 caracteres
-   * contador automático 0/200
-   */
   setupTextareaCounter({
     textareaId:
       "additional_comments",
-
     maxCharacters: 200,
-
     counterId:
       "additional_comments_counter",
   });
 
-  /*
-   * Ciudad inicia deshabilitada.
-   */
   if (selectCity) {
     removeAllOptions(selectCity);
 
@@ -484,28 +388,15 @@ const main = async () => {
     selectCity.disabled = true;
   }
 
-  /*
-   * Inicialmente ocultamos las preguntas
-   * dependientes hasta que seleccione Sí.
-   */
   toggleCreditImpactFields(false);
 
-  /*
-   * Departamentos.
-   */
   await loadDepartments();
 
-  /*
-   * Departamento → ciudad
-   */
   selectDepartment?.addEventListener(
     "change",
     handleDepartmentChange
   );
 
-  /*
-   * Crédito activo Sí / No
-   */
   document
     .querySelectorAll(
       'input[name="active_nequi_credit"]'
@@ -517,14 +408,10 @@ const main = async () => {
       );
     });
 
-  /*
-   * Submit.
-   */
   form.addEventListener(
     "submit",
     handleSubmit
   );
 };
-
 
 main();
