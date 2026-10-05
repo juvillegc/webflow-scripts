@@ -1,8 +1,8 @@
 import {
   configurePhoneInput,
-  validateEmail,
   readRadioValue,
   setupTextareaCounter,
+  validateEmail,
 } from "./shared/utils.js";
 
 import {
@@ -11,23 +11,43 @@ import {
 
 const EVENT_NAME = "form_datafono_web";
 
+const formBlock =
+  document.getElementById("datafono_form");
+
+const form =
+  formBlock?.querySelector("form");
+
 const inputPhoneNumber =
   document.getElementById("phone_number");
 
 const inputEmail =
   document.getElementById("email");
 
-const textareaDataphoneReason =
-  document.getElementById("dataphone_reason");
+const textareaDatafonoReason =
+  document.getElementById("datafono_reason");
 
 const selectMonthlyCardSales =
   document.getElementById("monthly_card_sales");
 
 const selectCardRequestsLast24h =
-  document.getElementById("card_requests_last_24h");
+  document.getElementById(
+    "card_requests_last_24h"
+  );
+
+const monthlyCardSalesField =
+  document.getElementById(
+    "monthly_card_sales_field"
+  );
+
+const cardRequestsLast24hField =
+  document.getElementById(
+    "card_requests_last_24h_field"
+  );
 
 const checkboxTerms =
-  document.getElementById("tyc");
+  document.getElementById(
+    "acepto_tratamiento_datos"
+  );
 
 /**
  * @param {string} value
@@ -49,52 +69,129 @@ const getSelectedText = (select) => {
   }
 
   const selectedOption =
-    select.options[select.selectedIndex];
+    select.options[
+      select.selectedIndex
+    ];
 
-  return selectedOption?.textContent?.trim() || "";
+  return (
+    selectedOption?.textContent?.trim() ||
+    ""
+  );
 };
 
 /**
- * @returns {{
- *   Phone: string,
- *   Email: string,
- *   DataphoneReason: string,
- *   ReceivesCardPayments: string,
- *   MonthlyCardSales: string,
- *   CardRequestsLast24h: string,
- *   AcceptedTerms: boolean
- * }}
+ * @param {HTMLElement|null} container
+ * @param {HTMLSelectElement|null} select
+ * @param {boolean} show
+ * @returns {void}
+ */
+const toggleConditionalField = (
+  container,
+  select,
+  show
+) => {
+  if (!container || !select) {
+    return;
+  }
+
+  container.style.display =
+    show ? "" : "none";
+
+  select.required = show;
+
+  if (!show) {
+    select.value = "";
+    select.setCustomValidity("");
+  }
+};
+
+/**
+ * @returns {void}
+ */
+const handleCardPaymentsChange = () => {
+  const receivesCardPayments =
+    normalizeRadioValue(
+      readRadioValue(
+        "receives_card_payments"
+      )
+    );
+
+  const answeredYes =
+    receivesCardPayments === "yes";
+
+  const answeredNo =
+    receivesCardPayments === "no";
+
+  toggleConditionalField(
+    monthlyCardSalesField,
+    selectMonthlyCardSales,
+    answeredYes
+  );
+
+  toggleConditionalField(
+    cardRequestsLast24hField,
+    selectCardRequestsLast24h,
+    answeredNo
+  );
+};
+
+/**
+ * @returns {Object}
  */
 const buildEventProperties = () => {
+  const phoneNumber =
+    inputPhoneNumber?.value.trim() ||
+    "";
+
+  const email =
+    inputEmail?.value.trim() ||
+    "";
+
+  const datafonoReason =
+    textareaDatafonoReason?.value
+      .trim() || "";
+
+  const receivesCardPayments =
+    normalizeRadioValue(
+      readRadioValue(
+        "receives_card_payments"
+      )
+    );
+
+  const answeredYes =
+    receivesCardPayments === "yes";
+
+  const answeredNo =
+    receivesCardPayments === "no";
+
   return {
-    Phone:
-      inputPhoneNumber?.value.trim() || "",
+    Phone: phoneNumber,
 
-    Email:
-      inputEmail?.value.trim() || "",
+    Email: email,
 
-    DataphoneReason:
-      textareaDataphoneReason?.value.trim() || "",
+    DatafonoReason:
+      datafonoReason,
 
     ReceivesCardPayments:
-      normalizeRadioValue(
-        readRadioValue(
-          "receives_card_payments"
-        )
-      ),
+      receivesCardPayments,
 
     MonthlyCardSales:
-      getSelectedText(
-        selectMonthlyCardSales
-      ),
+      answeredYes
+        ? getSelectedText(
+            selectMonthlyCardSales
+          )
+        : "",
 
     CardRequestsLast24h:
-      getSelectedText(
-        selectCardRequestsLast24h
-      ),
+      answeredNo
+        ? getSelectedText(
+            selectCardRequestsLast24h
+          )
+        : "",
 
-    AcceptedTerms:
-      checkboxTerms?.checked ?? false,
+    AcceptTerms:
+      checkboxTerms?.checked ||
+      false,
   };
 };
 
@@ -103,15 +200,15 @@ const buildEventProperties = () => {
  * @returns {void}
  */
 const handleSubmit = (event) => {
-  const form = event.currentTarget;
-
-  if (!(form instanceof HTMLFormElement)) {
+  if (!form) {
     return;
   }
 
   if (!form.checkValidity()) {
     event.preventDefault();
+
     form.reportValidity();
+
     return;
   }
 
@@ -133,32 +230,80 @@ const handleSubmit = (event) => {
 /**
  * @returns {void}
  */
-const main = () => {
-  configurePhoneInput(
-    "phone_number"
-  );
-
-  if (inputEmail) {
-    inputEmail.oninput =
-      validateEmail;
+const configureEmailInput = () => {
+  if (!inputEmail) {
+    return;
   }
 
-  setupTextareaCounter({
-    textareaId: "dataphone_reason",
-    maxCharacters: 300,
-    counterId: "dataphone_reason_counter",
-  });
+  inputEmail.oninput =
+    validateEmail;
+};
 
-  const form =
-    inputPhoneNumber?.closest("form");
+/**
+ * @returns {void}
+ */
+const configureConditionalFields = () => {
+  toggleConditionalField(
+    monthlyCardSalesField,
+    selectMonthlyCardSales,
+    false
+  );
 
-  if (!form) {
+  toggleConditionalField(
+    cardRequestsLast24hField,
+    selectCardRequestsLast24h,
+    false
+  );
+
+  document
+    .querySelectorAll(
+      'input[name="receives_card_payments"]'
+    )
+    .forEach((radio) => {
+      radio.addEventListener(
+        "change",
+        handleCardPaymentsChange
+      );
+    });
+};
+
+/**
+ * @returns {Promise<void>}
+ */
+const main = async () => {
+  if (!formBlock) {
     console.warn(
-      "No se encontró el formulario del datáfono"
+      "No se encontró #datafono_form"
     );
 
     return;
   }
+
+  if (!form) {
+    console.warn(
+      "No se encontró el <form> dentro de #datafono_form"
+    );
+
+    return;
+  }
+
+  configurePhoneInput(
+    "phone_number"
+  );
+
+  configureEmailInput();
+
+  setupTextareaCounter({
+    textareaId:
+      "datafono_reason",
+
+    maxCharacters: 300,
+
+    counterId:
+      "datafono_reason_counter",
+  });
+
+  configureConditionalFields();
 
   form.addEventListener(
     "submit",
