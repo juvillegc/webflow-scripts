@@ -1,24 +1,49 @@
 import {
   configurePhoneInput,
+  validDocumentNumber,
+  removeAllOptions,
+  addFirstOption,
   readRadioValue,
   setupTextareaCounter,
 } from "./shared/utils.js";
 
 import {
+  getDepartments,
+  getCities,
+} from "./services/location.service.js";
+
+import {
   sendCleverTapEventEventOnly,
 } from "./services/event.clevertap.eventOnly.js";
 
-const formBlock = document.getElementById("reactivation_form");
-const form = formBlock?.querySelector("form");
+const EVENT_NAME = "form_reactivacion_web";
+
+const formBlock =
+  document.getElementById("reactivation_form");
+
+const form =
+  formBlock?.querySelector("form");
 
 const inputPhoneNumber =
   document.getElementById("phone_number");
+
+const selectDocumentType =
+  document.getElementById("document_type");
+
+const inputDocumentNumber =
+  document.getElementById("document_number");
 
 const inputBusinessName =
   document.getElementById("business_name");
 
 const inputEmail =
   document.getElementById("email");
+
+const selectDepartment =
+  document.getElementById("department");
+
+const selectCity =
+  document.getElementById("city");
 
 const inputSocialNetwork =
   document.getElementById("social_network");
@@ -61,6 +86,24 @@ const getSelectValue = (select) => {
 };
 
 /**
+ * @param {HTMLSelectElement|null} select
+ * @returns {string}
+ */
+const getSelectedText = (select) => {
+  if (!select || !select.value) {
+    return "";
+  }
+
+  const selectedOption =
+    select.options[select.selectedIndex];
+
+  return (
+    selectedOption?.textContent?.trim() ||
+    ""
+  );
+};
+
+/**
  * @param {string} value
  * @returns {string}
  */
@@ -71,15 +114,154 @@ const normalizeRadioValue = (value) => {
 };
 
 /**
+ * @returns {Promise<void>}
+ */
+const loadDepartments = async () => {
+  if (!selectDepartment) return;
+
+  try {
+    removeAllOptions(selectDepartment);
+
+    addFirstOption(
+      "Selecciona el departamento",
+      selectDepartment
+    );
+
+    const { deparments } =
+      await getDepartments();
+
+    deparments.forEach((department) => {
+      const option =
+        document.createElement("option");
+
+      option.value = department.id;
+
+      option.setAttribute(
+        "key",
+        department.key
+      );
+
+      option.textContent =
+        department.label;
+
+      selectDepartment.appendChild(
+        option
+      );
+    });
+  } catch (error) {
+    console.error(
+      "Error cargando departamentos:",
+      error
+    );
+  }
+};
+
+/**
+ * @param {string} departmentKey
+ * @returns {Promise<void>}
+ */
+const loadCities = async (
+  departmentKey
+) => {
+  if (
+    !selectCity ||
+    !departmentKey
+  ) {
+    return;
+  }
+
+  try {
+    selectCity.disabled = true;
+
+    removeAllOptions(selectCity);
+
+    addFirstOption(
+      "Selecciona la ciudad",
+      selectCity
+    );
+
+    const cities =
+      await getCities(departmentKey);
+
+    cities.forEach((city) => {
+      const option =
+        document.createElement("option");
+
+      option.value = city.id;
+      option.textContent = city.label;
+
+      selectCity.appendChild(
+        option
+      );
+    });
+
+    selectCity.disabled = false;
+  } catch (error) {
+    console.error(
+      "Error cargando ciudades:",
+      error
+    );
+
+    selectCity.disabled = true;
+  }
+};
+
+/**
+ * @returns {Promise<void>}
+ */
+const handleDepartmentChange =
+  async () => {
+    if (
+      !selectDepartment ||
+      !selectCity
+    ) {
+      return;
+    }
+
+    const selectedOption =
+      selectDepartment.options[
+        selectDepartment.selectedIndex
+      ];
+
+    const departmentKey =
+      selectedOption?.getAttribute(
+        "key"
+      );
+
+    if (!departmentKey) {
+      removeAllOptions(selectCity);
+
+      addFirstOption(
+        "Selecciona primero un departamento",
+        selectCity
+      );
+
+      selectCity.disabled = true;
+
+      return;
+    }
+
+    await loadCities(
+      departmentKey
+    );
+  };
+
+/**
  * @returns {boolean}
  */
 const validateBusinessLogo = () => {
-  if (!inputBusinessLogo) return true;
+  if (!inputBusinessLogo) {
+    return true;
+  }
 
-  const file = inputBusinessLogo.files?.[0];
+  const file =
+    inputBusinessLogo.files?.[0];
 
   if (!file) {
-    inputBusinessLogo.setCustomValidity("");
+    inputBusinessLogo.setCustomValidity(
+      ""
+    );
+
     return true;
   }
 
@@ -89,7 +271,9 @@ const validateBusinessLogo = () => {
     "image/svg+xml",
   ];
 
-  if (!allowedTypes.includes(file.type)) {
+  if (
+    !allowedTypes.includes(file.type)
+  ) {
     inputBusinessLogo.setCustomValidity(
       "Adjunta tu logo en formato JPG, PNG o SVG."
     );
@@ -97,54 +281,108 @@ const validateBusinessLogo = () => {
     return false;
   }
 
-  inputBusinessLogo.setCustomValidity("");
+  inputBusinessLogo.setCustomValidity(
+    ""
+  );
 
   return true;
 };
 
 /**
- * @returns {Object}
+ * @returns {{
+ *   Phone: string,
+ *   DocumentType: string,
+ *   DocumentNumber: string,
+ *   BusinessName: string,
+ *   Email: string,
+ *   Department: string,
+ *   City: string,
+ *   SocialNetwork: string,
+ *   Website: string,
+ *   GoogleMapsUrl: string,
+ *   BusinessCategory: string,
+ *   BusinessDescription: string,
+ *   SalesScope: string,
+ *   SalesChannel: string,
+ *   AcceptTerms: boolean
+ * }}
  */
 const buildEventProperties = () => {
-  const salesScope =
-    normalizeRadioValue(
-      readRadioValue("sales_scope")
-    );
-
   return {
     Phone:
-      getInputValue(inputPhoneNumber),
+      getInputValue(
+        inputPhoneNumber
+      ),
+
+    DocumentType:
+      getSelectValue(
+        selectDocumentType
+      ),
+
+    DocumentNumber:
+      getInputValue(
+        inputDocumentNumber
+      ),
 
     BusinessName:
-      getInputValue(inputBusinessName),
+      getInputValue(
+        inputBusinessName
+      ),
 
     Email:
-      getInputValue(inputEmail),
+      getInputValue(
+        inputEmail
+      ),
+
+    Department:
+      getSelectedText(
+        selectDepartment
+      ),
+
+    City:
+      getSelectedText(
+        selectCity
+      ),
 
     SocialNetwork:
-      getInputValue(inputSocialNetwork),
+      getInputValue(
+        inputSocialNetwork
+      ),
 
     Website:
-      getInputValue(inputWebsite),
+      getInputValue(
+        inputWebsite
+      ),
 
     GoogleMapsUrl:
-      getInputValue(inputGoogleMapsUrl),
+      getInputValue(
+        inputGoogleMapsUrl
+      ),
 
     BusinessCategory:
-      getSelectValue(selectBusinessCategory),
+      getSelectValue(
+        selectBusinessCategory
+      ),
 
     BusinessDescription:
-      textareaBusinessDescription?.value
-        .trim() || "",
+      textareaBusinessDescription
+        ?.value.trim() || "",
 
     SalesScope:
-      salesScope,
+      normalizeRadioValue(
+        readRadioValue(
+          "sales_scope"
+        )
+      ),
 
     SalesChannel:
-      getSelectValue(selectSalesChannel),
+      getSelectValue(
+        selectSalesChannel
+      ),
 
     AcceptTerms:
-      checkboxAcceptTerms?.checked || false,
+      checkboxAcceptTerms
+        ?.checked || false,
   };
 };
 
@@ -174,12 +412,12 @@ const handleSubmit = (event) => {
 
   console.log(
     "CleverTap Event:",
-    "form_reactivacion_web",
+    EVENT_NAME,
     eventProperties
   );
 
   sendCleverTapEventEventOnly(
-    "form_reactivacion_web",
+    EVENT_NAME,
     eventProperties
   );
 };
@@ -188,7 +426,9 @@ const handleSubmit = (event) => {
  * @returns {void}
  */
 const configureBusinessLogo = () => {
-  if (!inputBusinessLogo) return;
+  if (!inputBusinessLogo) {
+    return;
+  }
 
   inputBusinessLogo.setAttribute(
     "accept",
@@ -199,6 +439,18 @@ const configureBusinessLogo = () => {
     "change",
     validateBusinessLogo
   );
+};
+
+/**
+ * @returns {void}
+ */
+const configureDocumentNumber = () => {
+  if (!inputDocumentNumber) {
+    return;
+  }
+
+  inputDocumentNumber.onkeypress =
+    validDocumentNumber;
 };
 
 /**
@@ -225,6 +477,8 @@ const main = async () => {
     "phone_number"
   );
 
+  configureDocumentNumber();
+
   setupTextareaCounter({
     textareaId:
       "business_description",
@@ -236,6 +490,31 @@ const main = async () => {
   });
 
   configureBusinessLogo();
+
+  if (selectCity) {
+    removeAllOptions(
+      selectCity
+    );
+
+    addFirstOption(
+      "Selecciona primero un departamento",
+      selectCity
+    );
+
+    selectCity.disabled = true;
+    selectCity.required = true;
+  }
+
+  if (selectDepartment) {
+    selectDepartment.required = true;
+  }
+
+  await loadDepartments();
+
+  selectDepartment?.addEventListener(
+    "change",
+    handleDepartmentChange
+  );
 
   form.addEventListener(
     "submit",
