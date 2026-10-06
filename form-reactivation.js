@@ -57,11 +57,20 @@ const inputGoogleMapsUrl =
 const selectBusinessCategory =
   document.getElementById("business_category");
 
-const inputBusinessLogo =
+const businessLogoElement =
   document.getElementById("business_logo");
 
+const inputBusinessLogo =
+  businessLogoElement?.matches('input[type="file"]')
+    ? businessLogoElement
+    : businessLogoElement?.querySelector(
+        'input[type="file"]'
+      );
+
 const textareaBusinessDescription =
-  document.getElementById("business_description");
+  document.getElementById(
+    "business_description"
+  );
 
 const selectSalesChannel =
   document.getElementById("sales_channel");
@@ -393,8 +402,22 @@ const buildEventProperties = () => {
 const handleSubmit = (event) => {
   if (!form) return;
 
+  console.log(
+    "[Reactivación] Submit detectado"
+  );
+
   const isLogoValid =
     validateBusinessLogo();
+
+  console.log(
+    "[Reactivación] Logo válido:",
+    isLogoValid
+  );
+
+  console.log(
+    "[Reactivación] Form válido:",
+    form.checkValidity()
+  );
 
   if (
     !isLogoValid ||
@@ -411,7 +434,7 @@ const handleSubmit = (event) => {
     buildEventProperties();
 
   console.log(
-    "CleverTap Event:",
+    "[Reactivación] Enviando CleverTap:",
     EVENT_NAME,
     eventProperties
   );
@@ -427,6 +450,10 @@ const handleSubmit = (event) => {
  */
 const configureBusinessLogo = () => {
   if (!inputBusinessLogo) {
+    console.warn(
+      "[Reactivación] No se encontró el input del logo"
+    );
+
     return;
   }
 
@@ -519,6 +546,10 @@ const main = async () => {
   form.addEventListener(
     "submit",
     handleSubmit
+  );
+
+  console.log(
+    "[Reactivación] Formulario inicializado"
   );
 };
 
