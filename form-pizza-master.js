@@ -6,15 +6,24 @@ import {
 
 const CONFIG = Object.freeze({
   formId: "pizza_master_form",
-  phoneId: "phone_number",
-  documentId: "document_number",
-  receiptId: "purchase_receipt",
   maxFileSize: 10 * 1024 * 1024,
-  allowedTypes: [
+  allowedFileTypes: [
     "application/pdf",
     "image/jpeg",
     "image/png",
   ],
+});
+
+const IDS = Object.freeze({
+  fullName: "full_name",
+  phone: "phone_number",
+  documentType: "document_type",
+  documentNumber: "document_number",
+  businessName: "business_name",
+  purchaseDate: "purchase_date",
+  purchaseAmount: "purchase_amount",
+  receipt: "purchase_receipt",
+  terms: "accept_terms",
 });
 
 /**
@@ -45,23 +54,116 @@ const resolveFileInput = (element) => {
 };
 
 /**
- * @param {HTMLInputElement} input
+ * @param {HTMLInputElement|null} input
+ * @returns {void}
+ */
+const configureTextInput = (input) => {
+  if (!input) return;
+
+  input.required = true;
+  input.maxLength = 150;
+};
+
+/**
+ * @param {HTMLInputElement|null} input
+ * @returns {void}
+ */
+const configureDocumentNumber = (input) => {
+  if (!input) return;
+
+  input.required = true;
+  input.onkeypress = validDocumentNumber;
+};
+
+/**
+ * @param {HTMLInputElement|null} input
+ * @returns {void}
+ */
+const configurePurchaseDate = (input) => {
+  if (!input) return;
+
+  input.type = "date";
+  input.lang = "es-CO";
+  input.required = true;
+
+  const today = new Date();
+
+  const year = today.getFullYear();
+
+  const month = String(
+    today.getMonth() + 1
+  ).padStart(2, "0");
+
+  const day = String(
+    today.getDate()
+  ).padStart(2, "0");
+
+  input.max = `${year}-${month}-${day}`;
+
+  input.addEventListener("click", () => {
+    if (typeof input.showPicker !== "function") {
+      return;
+    }
+
+    try {
+      input.showPicker();
+    } catch {
+      // Mantener el selector nativo.
+    }
+  });
+};
+
+/**
+ * @param {HTMLInputElement|null} input
+ * @returns {void}
+ */
+const configurePurchaseAmount = (input) => {
+  if (!input) return;
+
+  input.type = "text";
+  input.inputMode = "numeric";
+  input.required = true;
+  input.pattern = "[0-9]+";
+
+  const normalizeAmount = () => {
+    input.value = input.value.replace(/\D/g, "");
+  };
+
+  input.addEventListener(
+    "input",
+    normalizeAmount
+  );
+
+  input.addEventListener(
+    "change",
+    normalizeAmount
+  );
+
+  normalizeAmount();
+};
+
+/**
+ * @param {HTMLInputElement|null} input
  * @returns {boolean}
  */
 const validateReceipt = (input) => {
+  if (!input) return false;
+
   const file = input.files?.[0];
 
   if (!file) {
     input.setCustomValidity(
       "Adjunta el comprobante de compra."
     );
+
     return false;
   }
 
-  if (!CONFIG.allowedTypes.includes(file.type)) {
+  if (!CONFIG.allowedFileTypes.includes(file.type)) {
     input.setCustomValidity(
-      "Adjunta un archivo PDF, JPG o PNG."
+      "El archivo debe ser PDF, JPG o PNG."
     );
+
     return false;
   }
 
@@ -69,10 +171,12 @@ const validateReceipt = (input) => {
     input.setCustomValidity(
       "El archivo no puede superar los 10 MB."
     );
+
     return false;
   }
 
   input.setCustomValidity("");
+
   return true;
 };
 
@@ -83,12 +187,14 @@ const validateReceipt = (input) => {
 const configureReceipt = (input) => {
   if (!input) {
     console.warn(
-      "[Pizza Master] No se encontró el input del comprobante."
+      "[Pizza Master] No se encontró el comprobante."
     );
+
     return;
   }
 
   input.accept = ".pdf,.jpg,.jpeg,.png";
+  input.required = true;
 
   input.addEventListener("change", () => {
     validateReceipt(input);
@@ -119,11 +225,11 @@ const configureSubmit = (form, receipt) => {
     }
 
     console.log(
-      "[Pizza Master] Formulario válido. Envío a Webflow."
+      "[Pizza Master] Formulario válido."
     );
 
-    // No usamos preventDefault cuando es válido.
-    // Webflow continúa con su envío nativo.
+    // Webflow continúa con el envío nativo.
+    // No enviamos eventos a CleverTap.
   });
 };
 
@@ -141,30 +247,82 @@ const main = () => {
     console.warn(
       "[Pizza Master] No se encontró el formulario."
     );
+
     return;
   }
 
-  const documentNumber = getElement(
-    CONFIG.documentId
+  const inputFullName = getElement(
+    IDS.fullName
   );
 
-  const receipt = resolveFileInput(
-    getElement(CONFIG.receiptId)
+  const inputDocumentType = getElement(
+    IDS.documentType
   );
 
-  configurePhoneInput(CONFIG.phoneId);
+  const inputDocumentNumber = getElement(
+    IDS.documentNumber
+  );
 
-  if (documentNumber) {
-    documentNumber.onkeypress =
-      validDocumentNumber;
+  const inputBusinessName = getElement(
+    IDS.businessName
+  );
+
+  const inputPurchaseDate = getElement(
+    IDS.purchaseDate
+  );
+
+  const inputPurchaseAmount = getElement(
+    IDS.purchaseAmount
+  );
+
+  const inputTerms = getElement(
+    IDS.terms
+  );
+
+  const inputReceipt = resolveFileInput(
+    getElement(IDS.receipt)
+  );
+
+  configureTextInput(inputFullName);
+  configureTextInput(inputBusinessName);
+
+  configurePhoneInput(IDS.phone);
+
+  configureDocumentNumber(
+    inputDocumentNumber
+  );
+
+  if (inputDocumentType) {
+    inputDocumentType.required = true;
   }
 
-  configureReceipt(receipt);
-  configureSubmit(form, receipt);
+  configurePurchaseDate(
+    inputPurchaseDate
+  );
+
+  configurePurchaseAmount(
+    inputPurchaseAmount
+  );
+
+  configureReceipt(inputReceipt);
+
+  if (inputTerms) {
+    inputTerms.required = true;
+  }
+
+  configureSubmit(form, inputReceipt);
 
   console.log(
     "[Pizza Master] Formulario inicializado."
   );
 };
 
-main();
+if (document.readyState === "loading") {
+  document.addEventListener(
+    "DOMContentLoaded",
+    main,
+    { once: true }
+  );
+} else {
+  main();
+}
